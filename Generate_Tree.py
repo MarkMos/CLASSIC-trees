@@ -26,7 +26,7 @@ merger_tree_aux = tree_memory_arrays().merger_tree_aux
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e12
+mp_halo = 1e14
 m_res   = 1e8
 n_tree  = 1
 
