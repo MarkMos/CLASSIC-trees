@@ -106,7 +106,7 @@ def parallel_exe(n_tree,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_h
     nth_run = False
     start_offset = 0
     for result in results:
-        with h5py.File('./Code_own/Trees/tree_selftestfast_r.hdf5.10','a') as f:
+        with h5py.File('./Code_own/Trees/tree_selftestfast_r100.hdf5','a') as f:
             # Create or access groups of the merger tree file
             if 'TreeHalos' not in f:
                 grp1 = f.create_group('TreeHalos')
@@ -135,7 +135,7 @@ def parallel_exe(n_tree,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_h
         start_offset += result['count']
 
 if __name__ == '__main__':
-    n_tree = 10
+    n_tree = 100
     i_seed_0 = -8635
     mp_halo = 1e13
     a_halo = 1
