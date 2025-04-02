@@ -4,6 +4,7 @@ import scipy.integrate as itg
 from astropy.constants import G,M_sun,pc
 from classy import Class # type: ignore
 from numba import njit
+import scipy.interpolate as intp
 #from classy import DTYPE_t
 
 # z = np.array([0],dtype='float64')#np.ndarray.tolist(np.linspace(0,4))
@@ -43,7 +44,7 @@ def my_int(R,k,Pk):
     my_integrand = 9*(k*R*np.cos(k*R) - np.sin(k*R))**2 * Pk / k**4 / R**6 / 2 / np.pi**2
     return my_integrand
 
-def sigma_cdm(m,k=k_0,Pk=Pk_0):
+def sigma(m,k=k_0,Pk=Pk_0):
     #print('in sigma_cdm function')
     R = (3*m/(4*np.pi*rho_crit))**(1/3)
     # z_comp = 1/a - 1
@@ -53,9 +54,19 @@ def sigma_cdm(m,k=k_0,Pk=Pk_0):
     #print(R)
     my_integrand = my_int(R,k,Pk)
     #print(my_integrand)
-    sigma_cdm = np.sqrt(itg.simpson(my_integrand,k))
+    sigma = np.sqrt(itg.simpson(my_integrand,k))
     #print(sigma_cdm)
-    return sigma_cdm
+    return sigma
+m_rough = np.geomspace(1e7,1e15,200)
+Sig = np.zeros_like(m_rough)
+for i in range(len(m_rough)):
+    Sig[i]=sigma(m_rough[i])
+# Sig = np.array(Sig)
+# sig_inter = intp.interp1d(np.log(m_rough),np.log(Sig))
+@njit
+def sigma_cdm(m):
+    return np.exp(np.interp(np.log(m),np.log(m_rough),np.log(Sig)))
+    # return np.exp(sig_inter(np.log(m)))
 '''
 def sigma_cdm(m,a):
     z = 1/a-1
