@@ -5,13 +5,13 @@ import scipy.interpolate as intp
 m_res=1e8
 m_max=1e15
 
-lsig = lambda M: np.log(sigma_cdm(M))
+lsig = lambda M: np.log(sigma(M))
 
 m_array = np.linspace(m_res,m_max,100)
 
-logSig = []
+logSig = np.zeros_like(m_array)
 for i in range(len(m_array)):
-    logSig.append(lsig(m_array[i]))
+    logSig[i] = lsig(m_array[i])
 
 logM = np.log(m_array)
 
