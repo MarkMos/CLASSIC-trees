@@ -5,7 +5,8 @@ import scipy.interpolate as intp
 import matplotlib.pyplot as plt
 from alpha_func import *
 from functions import *
-
+from numba import njit
+from scipy.differentiate import derivative
 a_here = 1
 mass = 1e10 #4/3*np.pi*rho_crit*8**3
 #print('m_8 = ',mass)
@@ -65,7 +66,7 @@ print('alpha = ',alpha(mass))
 
 # lsig = lambda M: np.log(sigma_cdm(M))
 
-# m_array = np.linspace(1e8,1e15,1000)
+m_array = np.geomspace(1e8,1e15,1000)
 
 # # logSig = []
 # # for i in range(len(m_array)):
@@ -78,21 +79,27 @@ print('alpha = ',alpha(mass))
 
 # # print('here: ',np.exp(interpolation(np.log(mass))))
 # # print('alpha = ', alpha(np.log(mass/2)))
-
-# Sig = []
+m_rough = np.geomspace(1e7,1e16,400)
+Sig = np.zeros_like(m_rough)
+for i in range(len(m_rough)):
+    Sig[i]=sigma_cdm(m_rough[i])
+# Sig_npintp = np.zeros_like(m_array)
 # for i in range(len(m_array)):
-#     Sig.append(sigma_cdm(m_array[i]))
-# Sig = np.array(Sig)
-# sig_inter = intp.interp1d(np.log(m_array),np.log(Sig))
+#     Sig_npintp[i] = np.exp(np.interp(np.log(m_array[i]),np.log(m_rough),np.log(Sig)))
+# # Sig = np.array(Sig)
+# sig_inter = intp.interp1d(np.log(m_rough),np.log(Sig))
 # print('sigma = ',np.exp(sig_inter(np.log(mass))))
-
-# Sig_inter = []
-# for m in m_array:
-#     Sig_inter.append(np.exp(sig_inter(np.log(m))))
+# Sig = np.zeros_like(m_array)
+# for i in range(len(m_array)):
+#     Sig[i]=sigma_cdm(m_array[i])
+# Sig_inter = np.zeros_like(m_array)
+# for i, m in enumerate(m_array):
+#     Sig_inter[i] = np.exp(sig_inter(np.log(m)))
 # Sig_inter = np.array(Sig_inter)
-# # plt.plot(m_array,Sig,label='original',marker='.',lw=0)
-# # plt.plot(m_array,Sig_inter,label='interpolated',marker='.',lw=0)
-# plt.plot(m_array,abs(Sig-Sig_inter)/Sig,label='Difference',marker='.',lw=0)
+# plt.plot(m_array,Sig,label='original',marker='.',lw=0)
+# plt.plot(m_array,Sig_inter,label='interpolated',marker='.',lw=0)
+# plt.plot(m_array,abs(Sig-Sig_inter)/Sig,label='scipy',marker='.',lw=0)
+# plt.plot(m_array,abs(Sig-Sig_npintp)/Sig,label='numpy',marker='.',lw=0)
 # plt.xlabel('m')
 # plt.ylabel(r'$\Delta\sigma/\sigma$')
 # plt.xscale('log')
@@ -100,6 +107,7 @@ print('alpha = ',alpha(mass))
 # plt.legend()
 # plt.savefig('Sigma_comp.png')
 
+# print(Sig==Sig_npintp)
 
 # file_name = './Code_own/Data/pk_Mill.txt'
 # pk_data   = np.loadtxt(file_name)
@@ -143,35 +151,52 @@ print('alpha = ',alpha(mass))
 # plt.legend()
 # plt.savefig('Sigma_Test.png')
 
-# alp_CLASS = []
-# alp_FORT  = []
-# for i in range(len(m_arr)):
-#     alp_CLASS.append(alpha(m_arr[i]))
-#     alp_FORT.append(spl_intp(m_arr[i]*0.1825**3/0.25)[1])
+logM  = np.log(m_rough)
+logSig= np.log(Sig)
 
-# plt.plot(m_arr,alp_CLASS,label='CLASS')
-# plt.plot(m_arr,alp_FORT,label='FORTRAN')
-# plt.xlabel('Mass')
-# plt.ylabel('Alpha')
-# plt.xscale('log')
-# # plt.yscale('log')
-# plt.legend()
-# plt.savefig('Alpha_Test.png')
+intp_sig = intp.CubicSpline(logM,logSig)
+# dintpsig = derivative(intp_sig)
+alp_univ = []
+alp_othe = []
+for i in range(len(m_array)):
+    alp_univ.append(alpha(m_array[i]))
+    alp_othe.append(intp_sig(np.log(m_array[i]),1))
+alp_univ = np.array(alp_univ)
+alp_othe = np.array(alp_othe)
+
+plt.plot(m_array,alp_univ,label='UnivariateSpline')
+plt.plot(m_array,alp_othe,label='Other')
+# plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff')
+plt.xlabel('Mass')
+plt.ylabel('Alpha')
+plt.xscale('log')
+# plt.yscale('log')
+plt.legend()
+plt.savefig('Alpha_Comp.png')
 
 # z = np.logspace(-3,3,1000)
-
+# z_arr = np.logspace(-3,3,400)
 # J_u_intp = []
 # J_u_og = []
+# J_u_np = []
 # for i in z:
 #     J_u_intp.append(J_unresolved(i))
 #     J_u_og.append(J_pre(i))
 # J_u_og = np.array(J_u_og)
 # J_u_intp = np.array(J_u_intp)
+# J = []
+# for i in z_arr:
+#     J.append(J_pre(i))
+# for i in z:
+#     J_u_np.append(np.exp(np.interp(np.log(i),np.log(z_arr),np.log(J))))
+# J_u_np = np.array(J_u_np)
 
-# fig, (ax1,ax2) = plt.subplots(2,sharex=True)
+# fig, (ax1,ax2) = plt.subplots(2,sharex=True,figsize=(10,8))
 # ax1.plot(z,J_u_intp,label='interpolated')
 # ax1.plot(z,J_u_og,label='previous')
-# ax2.plot(z,abs(J_u_og-J_u_intp)/J_u_og,marker='.',lw=0)
+# ax1.plot(z,J_u_np,label='numpy')
+# ax2.plot(z,abs(J_u_og-J_u_intp)/J_u_og,label='scipy',marker='.',lw=0)
+# ax2.plot(z,abs(J_u_og-J_u_np)/J_u_og,label='numpy',marker='.',lw=0)
 # plt.xlabel('z')
 # ax1.set_ylabel('J(u)')
 # ax2.set_ylabel('D_J(u)')

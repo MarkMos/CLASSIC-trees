@@ -1,6 +1,9 @@
 import numpy as np
 import scipy.interpolate as intp
+from numba import njit, prange
 
+
+@njit(fastmath=True)
 def J_pre(z,gamma_1=0.38):
     i_first = 0
     eps = 1e-5
@@ -36,10 +39,17 @@ def J_pre(z,gamma_1=0.38):
         J_un = z
     return J_un
 z_arr = np.logspace(-3,3,400)
-J_arr = []
-for i in z_arr:
-    J_arr.append(np.log(J_pre(i)))
-log_J_used = intp.interp1d(np.log(z_arr),J_arr,kind=5)
+J_arr = np.zeros_like(z_arr)
+# for i in range(len(z_arr)):
+#     J_arr[i] = np.log(J_pre(z_arr[i]))
+
+@njit(parallel=True, fastmath=True)
+def compute_J_arr(z_arr, J_arr):
+    for i in prange(len(z_arr)):
+        J_arr[i] = np.log(J_pre(z_arr[i]))
+compute_J_arr(z_arr, J_arr)
+
+log_J_used = intp.CubicSpline(np.log(z_arr),J_arr,bc_type='natural')
 
 def J_unresolved(z):
     return np.exp(log_J_used(np.log(z)))

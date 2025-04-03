@@ -1,8 +1,6 @@
 from Tree_Node_and_Memory import *
 from make_tree_arrays_and_modules import *
 from split_function import *
-from index_functions import *
-from locate_function import *
 from Delta_crit import *
 import bisect
 
