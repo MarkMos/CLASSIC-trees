@@ -1,10 +1,10 @@
 from Make_Tree import *
-from Tree_Node_and_Memory import *
+# from Tree_Node_and_Memory import *
 from Moving_in_Tree import *
+# from walk_the_tree import walk_tree
 from Delta_crit import *
-from sigma_cdm_func import *
 import numpy as np
-import h5py
+# import h5py
 import time
 
 start = time.time()
