@@ -34,7 +34,7 @@ m_8crit  = rho_crit*4*pi*8**3/3
 # file_name = './Code_own/Data/pk_Mill.txt'
 # pk_data   = np.loadtxt(file_name)
 
-file_name = './Code_own/pk_CLASS.txt'
+file_name = './CLASSIC-trees/pk_CLASS.txt'
 pk_data   = np.loadtxt(file_name)
 k_0  = pk_data[0]
 Pk_0 = pk_data[1]*0.73**3
