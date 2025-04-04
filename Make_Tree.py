@@ -1,19 +1,20 @@
-from Tree_Node_and_Memory import *
-from make_tree_arrays_and_modules import *
+from classic_trees import Tree_Node
+from classic_trees import Make_Siblings
+from classic_trees import functions
+# from classic_trees import split
+import numpy as np
+# from Tree_Node_and_Memory import *
+# from make_tree_arrays_and_modules import *
 from split_function import *
-from Delta_crit import *
+# from Delta_crit import *
 import bisect
 
-#n_prog = 0
-#m_prog = [0.0, 0.0]
-
-#merger_tree = tree_memory_arrays_passable().merger_tree
-
-#tree_index = tree_memory_arrays_passable().tree_index
+filename = './CLASSIC-trees/Data/flat.txt'
+DELTA = functions(filename)
 
 def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
     # print('in make_tree function')
-    merger_tree = [] # tree_memory_arrays_passable().merger_tree
+    merger_tree = []
     n_v = 20000
     # merger_tree.append([])
     # merger_tree.append([])
@@ -34,7 +35,7 @@ def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
     w_node = np.zeros(n_v) #[0]*n_v
     l_node = np.zeros(n_v,dtype='bool') #[False]*n_v
 
-    for i_frag in range(int(n_frag_max/5)):
+    for i_frag in range(int(n_frag_max)):
         node = Tree_Node()
         node.mhalo = 0.0
         node.jlevel = 0
@@ -43,44 +44,11 @@ def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
         node.child  = None
         node.sibling= None
         merger_tree.append(node)
-        node = Tree_Node()
-        node.mhalo = 0.0
-        node.jlevel = 0
-        node.nchild = 0
-        node.parent = None
-        node.child  = None
-        node.sibling= None
-        merger_tree.append(node)
-        node = Tree_Node()
-        node.mhalo = 0.0
-        node.jlevel = 0
-        node.nchild = 0
-        node.parent = None
-        node.child  = None
-        node.sibling= None
-        merger_tree.append(node)
-        node = Tree_Node()
-        node.mhalo = 0.0
-        node.jlevel = 0
-        node.nchild = 0
-        node.parent = None
-        node.child  = None
-        node.sibling= None
-        merger_tree.append(node)
-        node = Tree_Node()
-        node.mhalo = 0.0
-        node.jlevel = 0
-        node.nchild = 0
-        node.parent = None
-        node.child  = None
-        node.sibling= None
-        merger_tree.append(node)
-        
         
     a_lev[0] = a_0
     #print('a_lev = ',a_lev)
     for i_lev in range(n_lev):
-        w_lev[i_lev] = delta_crit(a_lev[i_lev])
+        w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
     #print(w_lev)
     #w_lev = np.loadtxt('./Code_own/delta_crit_values.txt')
     i_node = 0
@@ -106,7 +74,7 @@ def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
     count = 0
     while m_left[i_node] > 0.0:
         count += 1
-        #print('count: ',count)
+        # print('count: ',count)
         dw_max = w_lev[i_lev] - w
         #print('i_lev = ',i_lev)
         #print('dw_max = ',dw_max)
@@ -254,75 +222,8 @@ def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
                 i_frag_c = i_sib[i_frag_c]
             # print('number of children here: ',n_ch)
             merger_tree[j_frag].nchild = n_ch
-            
-    # k_frag = 0
-    # j_index[0] = 0
-    # i_sib = [0]*n_frag_max
-    # i_child = [0]*n_frag_max
-    # m_tr = [0]*n_frag_max
-    #print('now here: ',m_tr)
-    # merger_tree[0].mhalo = m_tr[0]
-    # print('I am here with ',m_tr[0])
-    '''
-    for j in range(n_frag_tot):
-        merger_tree[j].mhalo = m_tr[j]
-    
-    for i_lev in range(n_lev-1):
-        # print('start point range: ',jp_frag[i_lev])
-        # print('end point range: ',jp_frag[i_lev]+n_frag_lev[i_lev])
-        for k_frag_p in range(jp_frag[i_lev],jp_frag[i_lev]+n_frag_lev[i_lev]):
-            #print('k_frag_p = ',k_frag_p)
-            j_frag_p = j_index[k_frag_p]
-            n_child1 = merger_tree[j_frag_p].nchild
-            i_sib[k_frag_p] = n_child1
-            j_child1 = child_ref[j_frag_p]
-            if n_child1==1:
-                #print('indx_ch = ',indx_ch)
-                indx_ch[0] = 0
-            elif n_child1 >= 2:
-                if n_child1 > n_ch_max:
-                    print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
-                #length = len(merger_tree[j_child1:j_child1+n_child1])
-                indx_ch = indexxx(n_child1,[merger_tree[i+j_child1].mhalo for i in range(n_child1)],indx_ch)
-            if n_child1 >= 1:
-                i_child[k_frag_p] = k_frag + 1
-            else:
-                i_child[k_frag_p] = -1
-            for k_child in range(n_child1-1,-1,-1):
-                j_frag_c = indx_ch[k_child] + j_child1 - 1  # Adjust for Python's 0-based indexing
-                k_frag += 1
-                j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing
-                #merger_tree[k_frag].parent = merger_tree[k_frag_p]  # Assign parent as a reference
-                #m_tr[k_frag] = merger_tree[j_frag_c].mhalo  # Store mhalo value in mtr array
-    '''
-    # for k_frag in range(jp_frag[n_lev-1],jp_frag[n_lev-1]+n_frag_lev[n_lev-1]+1):
-    #     i_sib[k_frag] = 0
-    #     i_child[k_frag] = -1
-    #m_tr.sort(reverse=True)
-    # for j in range(n_frag_tot):
-    #     merger_tree[j].mhalo = m_tr[j]
-    # child_ref[0:n_frag_tot] = i_child[0:n_frag_tot]
-    # for i_frag in range(n_frag_tot):
-    #     if i_child[i_frag] > 0:
-    #         merger_tree[i_frag].child = merger_tree[i_child[i_frag]]
-    #     else:
-    #         merger_tree[i_frag].child = None
-    
-    # for k in range(n_frag_tot):
-    #    merger_tree[k].nchild = i_sib[k]
 
-    merger_tree = build_sibling(merger_tree,n_frag_tot)
+    merger_tree = Make_Siblings().build_sibling(merger_tree,n_frag_tot)
     
     i_err = 0
-    # c_m = 0
-    # for m in merger_tree:
-    #     if m.mhalo != 0:
-    #         c_m += m.mhalo
-            # print(m.mhalo)
-    # print('sum of masses: ',c_m)
-    # print('len(merger_tree) = ',len(merger_tree))
-    # print('n_frag_tot = ',n_frag_tot)
-    # print(i_child)
-    #print(node.mhalo,'here')
-    #print('i_sib = ',i_sib)
     return i_err, n_frag_lev, jp_frag, m_tr, merger_tree, node
