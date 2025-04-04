@@ -2,81 +2,13 @@ from numpy import log,sqrt
 import random
 import numpy as np
 import scipy.integrate as itg
-from sigma_cdm_func import sigma_cdm
-from alpha_func import alpha
+# from sigma_cdm_func import sigma_cdm
+# from alpha_func import alpha
+from classic_trees import sigma_cdm
+from classic_trees import SigmaInterpolator
 from functions import *
-'''
-def J_unresolved(u):
-    gamma_2 = modified_merger_tree().gamma_2
-    integrand = (1+1/(u**2))**(gamma_2/2)
-    J_U = itg.simpson(integrand,u)
-    return J_U
-
-def ran3(idum):
-    mbig = 1000000000
-    mseed = 161803398
-    mz = 0
-    iff = 1
-    fac = 1.0 / mbig
-    if idum < 0 or iff==0:
-        iff = 1
-        mj = mseed - abs(idum)
-        mj = mj % mbig
-        if mj < mz:
-            mj += mbig
-        ma = [0] * 55
-        ma[54] = mj
-        mk = 1
-        for i in range(1, 55):
-            ii = (21 * i) % 55
-            ma[ii] = mk
-            mk = mj - mk
-            if mk < 0:
-                mk += mbig
-            mj = ma[ii]
-
-        for k in range(1, 5):
-            for i in range(55):
-                ma[i] -= ma[1+(i + 30) % 55]
-                if ma[i] < mz:
-                    ma[i] += mbig
-        inext = 0
-        inextp= 31
-        idum  = 1
-    inext +=1
-    if inext == 56:
-        inext = 1
-    inextp += 1
-    if inextp == 56:
-        inextp = 1
-    mj = ma[inext] - ma[inextp]
-    if mj < mk:
-        mj += mbig
-    ma[inext] = mj
-    return idum, mj * fac
-'''
-
-# random1 = np.loadtxt('./code/random1_1.txt')
-# random2 = np.loadtxt('./code/random2_1.txt')
-# random3 = np.loadtxt('./code/random3_1.txt')
 
 SQRT2OPI=0.7978845608
-
-# class modified_merger_tree:
-#     def __init__(self):
-#         self.gamma_1 = 0.38
-#         self.gamma_2 = -0.01
-#         self.G_0 = 0.57
-'''
-class time_parameters:
-    def __init__(self):
-        self.eps_1 = eps_1
-        self.eps_2 = eps_2
-        self.i_step = i_step
-
-eps_1 = time_parameters().eps_1
-eps_2 = time_parameters().eps_2
-'''
 
 def split(m_2, w,m_min,dw_max,eps_1,eps_2,m_min_last):
     #print('dw_max = ',dw_max)
@@ -103,7 +35,7 @@ def split(m_2, w,m_min,dw_max,eps_1,eps_2,m_min_last):
     sigsq_m2 = sigma_m2**2
     sig_hf = sigma_cdm(0.5*m_2) # sigma(m_2/2) and slope alpha_hf
     sigsq_hf = sig_hf**2
-    alpha_hf = -alpha(0.5*m_2) # log(sig_hf)/log(0.5*m_2)
+    alpha_hf = -SigmaInterpolator().alpha(0.5*m_2) # log(sig_hf)/log(0.5*m_2)
     #print('alpha_hf = ',alpha_hf)
     #print('m_min = ',m_min,'\n m_2 = ',m_2)
     q_min = m_min/m_2 # Minimum mass ratio
@@ -184,7 +116,7 @@ def split(m_2, w,m_min,dw_max,eps_1,eps_2,m_min_last):
                 q = q_min*(2*q_min)**(-rand)
             sig_q = sigma_cdm(q*m_2)
             sigsq_q = sig_q**2
-            alpha_q = -alpha(q*m_2) #-log(sig_q)/log(q*m_2)
+            alpha_q = -SigmaInterpolator().alpha(q*m_2) #-log(sig_q)/log(q*m_2)
             diff12_q = sqrt(sigsq_q - sigsq_m2)
             v_q = sigsq_q/diff12_q**3
 
