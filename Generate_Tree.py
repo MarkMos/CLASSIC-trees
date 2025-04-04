@@ -2,12 +2,17 @@ from Make_Tree import *
 # from Tree_Node_and_Memory import *
 from Moving_in_Tree import *
 # from walk_the_tree import walk_tree
-from Delta_crit import *
+import random
+# from Delta_crit import *
+from classic_trees import functions
 import numpy as np
 # import h5py
 import time
 
 start = time.time()
+
+filename = './CLASSIC-trees/Data/flat.txt'
+DELTA = functions(filename)
 
 nth_run = False
 def append_create_dataset(grp,name,data):
@@ -26,7 +31,7 @@ merger_tree_aux = tree_memory_arrays().merger_tree_aux
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e14
+mp_halo = 1e13
 m_res   = 1e8
 n_tree  = 1
 
@@ -61,7 +66,7 @@ a_lev = []
 for i_lev in range(1,n_lev+1):
     a_lev.append(1/(1 + z_max*(i_lev-1)/(n_lev-1)))
     #print(a_lev)
-    d_c = delta_crit(a_lev[i_lev-1])
+    d_c = DELTA.delta_crit(a_lev[i_lev-1])
     print('z = ',1/a_lev[i_lev-1]-1,' at which delta_crit = ',d_c)
 a_lev = np.array(a_lev)
 jp_halo = []
