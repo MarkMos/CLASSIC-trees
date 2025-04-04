@@ -3,6 +3,7 @@ from Tree_Node_and_Memory import *
 from Moving_in_Tree import *
 from Delta_crit import *
 from sigma_cdm_func import *
+import random
 import numpy as np
 import h5py
 import time
