@@ -151,29 +151,38 @@ for i in range(len(m_rough)):
 # plt.legend()
 # plt.savefig('Sigma_Test.png')
 
-logM  = np.log(m_rough)
-logSig= np.log(Sig)
+# logM  = np.log(m_rough)
+# logSig= np.log(Sig)
 
-intp_sig = intp.CubicSpline(logM,logSig)
+# intp_sig = intp.BSpline(logM,logSig,k=4)
 # dintpsig = derivative(intp_sig)
-alp_univ = []
-alp_othe = []
-for i in range(len(m_array)):
-    alp_univ.append(alpha(m_array[i]))
-    alp_othe.append(intp_sig(np.log(m_array[i]),1))
-alp_univ = np.array(alp_univ)
-alp_othe = np.array(alp_othe)
+# alp_univ = []
+# alp_othe = []
+# for i in range(len(m_array)):
+#     alp_univ.append(alpha(m_array[i]))
+    # alp_othe.append(intp_sig(np.log(m_array[i]),1))
+# alp_univ = np.array(alp_univ)
+# alp_othe = np.array(alp_othe)
 
-plt.plot(m_array,alp_univ,label='UnivariateSpline')
-plt.plot(m_array,alp_othe,label='Other')
-# plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff')
-plt.xlabel('Mass')
-plt.ylabel('Alpha')
-plt.xscale('log')
+# from classic_trees import alpha
+# alp_othe = []
+# for i in range(len(m_array)):
+#     alp_othe.append(alpha(m_array[i]))
+# alp_othe = np.array(alp_othe)
+
+# plt.plot(m_array,alp_univ,label='UnivariateSpline')
+# plt.plot(m_array,alp_othe,label='Other')
+# plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff',marker='.',lw=0)
+# plt.xlabel('Mass')
+# plt.ylabel('Alpha')
+# plt.xscale('log')
 # plt.yscale('log')
-plt.legend()
-plt.savefig('Alpha_Comp.png')
+# plt.legend()
+# plt.savefig('Alpha_Comp.png')
 
+
+# import timeit
+# py_time = timeit.timeit(lambda: J_unresolved(1), number=1000)
 # z = np.logspace(-3,3,1000)
 # z_arr = np.logspace(-3,3,400)
 # J_u_intp = []
@@ -191,12 +200,20 @@ plt.savefig('Alpha_Comp.png')
 #     J_u_np.append(np.exp(np.interp(np.log(i),np.log(z_arr),np.log(J))))
 # J_u_np = np.array(J_u_np)
 
+# from classic_trees import J_unresolved
+# cy_time = timeit.timeit(lambda: J_unresolved(1), number=1000)
+# J_cy = []
+# for i in z:
+#     J_cy.append(J_unresolved(i))
+# J_cy = np.array(J_cy)
 # fig, (ax1,ax2) = plt.subplots(2,sharex=True,figsize=(10,8))
 # ax1.plot(z,J_u_intp,label='interpolated')
 # ax1.plot(z,J_u_og,label='previous')
 # ax1.plot(z,J_u_np,label='numpy')
+# ax1.plot(z,J_cy,label='cython')
 # ax2.plot(z,abs(J_u_og-J_u_intp)/J_u_og,label='scipy',marker='.',lw=0)
 # ax2.plot(z,abs(J_u_og-J_u_np)/J_u_og,label='numpy',marker='.',lw=0)
+# ax2.plot(z,abs(J_u_intp-J_cy)/J_u_intp,label='cython/intp',marker='.',lw=0)
 # plt.xlabel('z')
 # ax1.set_ylabel('J(u)')
 # ax2.set_ylabel('D_J(u)')
@@ -205,3 +222,59 @@ plt.savefig('Alpha_Comp.png')
 # plt.legend()
 # plt.savefig('J_unresolved.png')
 
+import timeit
+import random
+
+random.seed(-8635-19)
+
+from split_function import split
+
+py_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
+py_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
+from classic_trees import split
+
+# random.seed(10)
+
+cy_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
+cy_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
+
+print(f"Python Time: {py_time:.6f} seconds")
+print(f"Cython Time: {cy_time:.6f} seconds")
+print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
+print('With the values: ',py_value,' = ',cy_value)
+
+# import timeit
+
+# from sigma_cdm_func import sigma_cdm
+
+# py_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
+# py_value = sigma_cdm(mass)
+# from classic_trees import sigma_cdm
+
+# cy_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
+# cy_value = sigma_cdm(mass)
+
+# print(f"Python Time: {py_time:.6f} seconds")
+# print(f"Cython Time: {cy_time:.6f} seconds")
+# print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
+# print('With the values: ',py_value,' = ',cy_value)
+
+# sig_py = []
+# for i in m_array:
+#     sig_py.append(sigma_cdm(i))
+# sig_py = np.array(sig_py)
+
+# from classic_trees import sigma_cdm
+
+# sig_cy = []
+# for i in m_array:
+#     sig_cy.append(sigma_cdm(i))
+# sig_cy = np.array(sig_cy)
+
+# plt.plot(m_array,abs(sig_py-sig_cy)/sig_py,label='python/cython')
+# plt.xlabel('Mass')
+# plt.ylabel('Diff. Sigma')
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.legend()
+# plt.savefig('Sigma_compare.png')
