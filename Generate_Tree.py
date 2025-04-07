@@ -1,15 +1,13 @@
 from Make_Tree import *
 # from Tree_Node_and_Memory import *
-from Moving_in_Tree import *
+# from Moving_in_Tree import *
 # from walk_the_tree import walk_tree
 import random
 # from Delta_crit import *
-from classic_trees import functions
+from classic_trees import functions, node_vals_and_counter
 import numpy as np
 # import h5py
 import time
-
-start = time.time()
 
 filename = './CLASSIC-trees/Data/flat.txt'
 DELTA = functions(filename)
@@ -25,13 +23,13 @@ def append_create_dataset(grp,name,data):
     else:
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
-merger_tree = tree_memory_arrays_passable().merger_tree
-merger_tree_aux = tree_memory_arrays().merger_tree_aux
+# merger_tree = tree_memory_arrays_passable().merger_tree
+# merger_tree_aux = tree_memory_arrays().merger_tree_aux
 
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e13
+mp_halo = 1e14
 m_res   = 1e8
 n_tree  = 1
 
@@ -74,7 +72,7 @@ n_frag_max = 10
 start_offset = 0
 for i in range(n_tree):
     iter = 1
-
+    start = time.time()
     while i_err != 0 or iter == 1:
         if iter == 1:
             i_seed_0 -= 19
@@ -98,43 +96,47 @@ for i in range(n_tree):
         print('We have the following values for mhalo in node ',i,' as:')
         print(merger_tree[i].mhalo)
     '''
+    end = time.time()
+    print(f"Elapsed time in make_tree: {end - start} seconds")
     this_node = merger_tree[0]
     print('m_halo = ',this_node.mhalo)
     count = 0
-    arr_mhalo = np.zeros(n_halo_max)-1
-    arr_nodid = np.zeros(n_halo_max,dtype='int_')-1
-    arr_treeid= np.zeros(n_halo_max,dtype='int_')-1
-    arr_time  = np.zeros(n_halo_max,dtype='int_')-1
-    arr_1prog = np.zeros(n_halo_max,dtype='int_')-1
-    arr_desc  = np.zeros(n_halo_max,dtype='int_')-1
-    while this_node is not None:
-        node_ID = count
-        arr_nodid[node_ID] = node_ID
-        arr_mhalo[node_ID] = this_node.mhalo
-        arr_treeid[node_ID]= i
-        arr_time[node_ID]  = this_node.jlevel
-        if this_node.child is not None:
-            arr_1prog[node_ID] = merger_tree.index(this_node.child)
-        else:
-            arr_1prog[node_ID] = -1
-        if this_node.parent is not None:
-            arr_desc[node_ID] = merger_tree.index(this_node.parent)
-        else:
-            arr_desc[node_ID] = -1
-        count +=1
-        this_node = walk_tree(this_node)
-        # print(this_node)
-        # print('index = ',this_node.mhalo)
-        # print('m_halo = ',this_node.mhalo)
-        # print('count = ',count)
-        # break
+    # arr_mhalo = np.zeros(n_halo_max)-1
+    # arr_nodid = np.zeros(n_halo_max,dtype='int_')-1
+    # arr_treeid= np.zeros(n_halo_max,dtype='int_')-1
+    # arr_time  = np.zeros(n_halo_max,dtype='int_')-1
+    # arr_1prog = np.zeros(n_halo_max,dtype='int_')-1
+    # arr_desc  = np.zeros(n_halo_max,dtype='int_')-1
+    # while this_node is not None:
+    #     node_ID = count
+    #     arr_nodid[node_ID] = node_ID
+    #     arr_mhalo[node_ID] = this_node.mhalo
+    #     arr_treeid[node_ID]= i
+    #     arr_time[node_ID]  = this_node.jlevel
+    #     if this_node.child is not None:
+    #         arr_1prog[node_ID] = merger_tree.index(this_node.child)
+    #     else:
+    #         arr_1prog[node_ID] = -1
+    #     if this_node.parent is not None:
+    #         arr_desc[node_ID] = merger_tree.index(this_node.parent)
+    #     else:
+    #         arr_desc[node_ID] = -1
+    #     count +=1
+    #     this_node = walk_tree(this_node)
+    #     # print(this_node)
+    #     # print('index = ',this_node.mhalo)
+    #     # print('m_halo = ',this_node.mhalo)
+    #     # print('count = ',count)
+    #     # break
 
-    arr_mhalo = arr_mhalo[0:count]
-    arr_nodid = arr_nodid[0:count]
-    arr_treeid= arr_treeid[0:count]
-    arr_time  = arr_time[0:count]
-    arr_1prog = arr_1prog[0:count]
-    arr_desc  = arr_desc[0:count]
+    # arr_mhalo = arr_mhalo[0:count]
+    # arr_nodid = arr_nodid[0:count]
+    # arr_treeid= arr_treeid[0:count]
+    # arr_time  = arr_time[0:count]
+    # arr_1prog = arr_1prog[0:count]
+    # arr_desc  = arr_desc[0:count]
+    start = time.time()
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(count,this_node,n_halo_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -176,5 +178,5 @@ for i in range(n_tree):
     start_offset += count
 
 
-end = time.time()
-print(f"Elapsed time: {end - start} seconds")
+    end = time.time()
+    print(f"Elapsed time walking tree: {end - start} seconds")
