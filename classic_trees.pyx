@@ -2,7 +2,7 @@ import numpy as np
 cimport numpy as np
 import bisect
 import random
-from libc.stdlib cimport rand, srand
+#from libc.stdlib cimport rand, srand
 from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
 from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs
@@ -26,6 +26,59 @@ cdef class Tree_Node:
         self.child = None
         self.parent = None
         self.sibling = None
+
+cdef walk_tree(Tree_Node this_node):
+    '''
+    Walk through the entire merger tree.
+    '''
+    cdef Tree_Node next_node = this_node
+    if next_node.child is not None:
+        next_node = next_node.child
+    else:
+        if next_node.sibling is not None:
+            next_node = next_node.sibling
+        else:
+            while next_node.sibling is None and next_node.parent is not None:
+                next_node = next_node.parent
+            if next_node.sibling is not None:
+                next_node = next_node.sibling
+            else:
+                next_node = None
+    return next_node
+
+def node_vals_and_counter(int count,Tree_Node this_node,int n_halo_max,list merger_tree):
+    cdef:
+        np.ndarray arr_mhalo = np.zeros(n_halo_max)-1
+        np.ndarray arr_nodid = np.zeros(n_halo_max,dtype='int_')-1
+        np.ndarray arr_treeid= np.zeros(n_halo_max,dtype='int_')-1
+        np.ndarray arr_time  = np.zeros(n_halo_max,dtype='int_')-1
+        np.ndarray arr_1prog = np.zeros(n_halo_max,dtype='int_')-1
+        np.ndarray arr_desc  = np.zeros(n_halo_max,dtype='int_')-1
+        int node_ID
+    while this_node is not None:
+        node_ID = count
+        arr_nodid[node_ID] = node_ID
+        arr_mhalo[node_ID] = this_node.mhalo
+        arr_treeid[node_ID]= i
+        arr_time[node_ID]  = this_node.jlevel
+        if this_node.child is not None:
+            arr_1prog[node_ID] = merger_tree.index(this_node.child)
+        else:
+            arr_1prog[node_ID] = -1
+        if this_node.parent is not None:
+            arr_desc[node_ID] = merger_tree.index(this_node.parent)
+        else:
+            arr_desc[node_ID] = -1
+        count +=1
+        this_node = walk_tree(this_node)
+    arr_mhalo = arr_mhalo[0:count]
+    arr_nodid = arr_nodid[0:count]
+    arr_treeid= arr_treeid[0:count]
+    arr_time  = arr_time[0:count]
+    arr_1prog = arr_1prog[0:count]
+    arr_desc  = arr_desc[0:count]
+
+    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
 
 cdef class Tree_Values:
     # class of different operations on the merger trees,
@@ -173,8 +226,8 @@ cdef double rho_crit = 3 * H_0100**2 / (8 * pi * G_used)
 
 # Load data from file
 cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')
-cdef np.ndarray k_0 = pk_data[:, 0]
-cdef np.ndarray Pk_0 = pk_data[:, 1] * 0.73**3
+cdef np.ndarray k_0 = pk_data[0]
+cdef np.ndarray Pk_0 = pk_data[1] * 0.73**3
 
 # Precompute sigma values for interpolation
 cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 200)
@@ -203,28 +256,27 @@ for i in range(m_rough.shape[0]):
 def sigma_cdm(double m):
     return exp(np.interp(np.log(m), np.log(m_rough), np.log(Sig)))
 
-cdef class SigmaInterpolator:
-    cdef object _interp
-    cdef object _deriv
+
+cdef double m_min=1e8
+cdef double m_max=1e15
+cdef int num_points=200
+cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
+cdef log_sig = compute_log_sig(m_array)
+log_m = np.log(m_array)
+interp = UnivariateSpline(log_m, log_sig, k=4, s=0.1)
+deriv = interp.derivative(n=1)
+
+cdef compute_log_sig(np.ndarray m_array):
+    cdef int i
+    cdef int n = m_array.shape[0]
+    cdef np.float_t[:] log_sig = np.empty(n, dtype=DTYPE)
     
-    def __init__(self, m_min=1e8, m_max=1e15, num_points=200):
-        cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
-        cdef np.ndarray log_sig = self._compute_log_sig(m_array)
-        log_m = np.log(m_array)
-        self._interp = UnivariateSpline(log_m, log_sig, k=4, s=0.1)
-        self._deriv = self._interp.derivative(n=1)
-    
-    cdef np.ndarray _compute_log_sig(self, np.ndarray m_array):
-        cdef int i
-        cdef int n = m_array.shape[0]
-        cdef np.float_t[:] log_sig = np.empty(n, dtype=DTYPE)
-        
-        for i in range(n):
-            log_sig[i] = log(sigma_cdm(m_array[i]))
-        return log_sig
-    
-    def alpha(self, double m):
-        return float(self._deriv(log(m)))
+    for i in range(n):
+        log_sig[i] = log(sigma_cdm(m_array[i]))
+    return log_sig
+
+def alpha(double m):
+    return float(deriv(log(m)))
 
 
 cdef double eps = 1e-5
@@ -280,9 +332,9 @@ log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural')
 def J_unresolved(z):
     return exp(log_J_used(log(z)))
 
-cdef double SQRT2OPI = 1.0/sqrt(2.0*pi)
+cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
 
-cpdef tupel split(
+cpdef split(
     double m_2,
     double w,
     double m_min,
@@ -320,7 +372,7 @@ cpdef tupel split(
     sigsq_m2 = sigma_m2**2
     sig_hf = sigma_cdm(0.5*m_2)
     sigsq_hf = sig_hf**2
-    alpha_hf = -SigmaInterpolator().alpha(0.5*m_2)
+    alpha_hf = -alpha(0.5*m_2)
     q_min = m_min/m_2 # Minimum mass ratio
 
     g_fac0 = G_0*((w/sigma_m2)**gamma_2)
@@ -371,17 +423,17 @@ cpdef tupel split(
 
         z = sigma_m2/diff12_q_min
         f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2
-        rand = random.random()
-        if rand <= n_av:
-            rand = random.random()
+        randy = random.random()
+        if randy <= n_av:
+            randy = random.random()
             if fabs(eta) > eps_eta:
-                q_pow_eta = q_min_exp + rand*f_fac
+                q_pow_eta = q_min_exp + randy*f_fac
                 q = q_pow_eta**eta_inv
             else:
-                q = q_min*(2*q_min)**(-rand)
+                q = q_min*(2*q_min)**(-randy)
             sig_q = sigma_cdm(q*m_2)
             sigsq_q = sig_q**2
-            alpha_q = -SigmaInterpolator().alpha(q*m_2)
+            alpha_q = -alpha(q*m_2)
             diff12_q = sqrt(sigsq_q - sigsq_m2)
             v_q = sigsq_q/diff12_q**3
 
@@ -389,8 +441,8 @@ cpdef tupel split(
 
             if R_q > 1.00001:
                 raise ValueError('split(): R_q > 1')
-            rand = random.random()
-            if rand >= R_q:
+            randy = random.random()
+            if randy >= R_q:
                 q = 0
         else:
             q = 0
