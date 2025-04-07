@@ -1,11 +1,11 @@
 from classic_trees import Tree_Node
 from classic_trees import Make_Siblings
 from classic_trees import functions
-# from classic_trees import split
+from classic_trees import split
 import numpy as np
 # from Tree_Node_and_Memory import *
 # from make_tree_arrays_and_modules import *
-from split_function import *
+# from split_function import *
 # from Delta_crit import *
 import bisect
 
@@ -14,7 +14,7 @@ DELTA = functions(filename)
 
 def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
     # print('in make_tree function')
-    merger_tree = []
+    merger_tree = [None]*n_frag_max
     n_v = 20000
     # merger_tree.append([])
     # merger_tree.append([])
@@ -43,7 +43,7 @@ def make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot=0):
         node.parent = None
         node.child  = None
         node.sibling= None
-        merger_tree.append(node)
+        merger_tree[i_frag] = node
         
     a_lev[0] = a_0
     #print('a_lev = ',a_lev)
