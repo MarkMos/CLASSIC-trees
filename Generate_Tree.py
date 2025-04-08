@@ -29,7 +29,7 @@ def append_create_dataset(grp,name,data):
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e14
+mp_halo = 1e13
 m_res   = 1e8
 n_tree  = 1
 
