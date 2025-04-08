@@ -222,59 +222,59 @@ for i in range(len(m_rough)):
 # plt.legend()
 # plt.savefig('J_unresolved.png')
 
-import timeit
-import random
-
-random.seed(-8635-19)
-
-from split_function import split
-
-py_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
-py_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
-from classic_trees import split
-
-# random.seed(10)
-
-cy_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
-cy_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
-
-print(f"Python Time: {py_time:.6f} seconds")
-print(f"Cython Time: {cy_time:.6f} seconds")
-print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
-print('With the values: ',py_value,' = ',cy_value)
-
 # import timeit
+# import random
 
-# from sigma_cdm_func import sigma_cdm
+# random.seed(-8635-19)
 
-# py_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
-# py_value = sigma_cdm(mass)
-# from classic_trees import sigma_cdm
+# from split_function import split
 
-# cy_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
-# cy_value = sigma_cdm(mass)
+# py_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
+# py_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
+# from classic_trees import split
+
+# # random.seed(10)
+
+# cy_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
+# cy_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
 
 # print(f"Python Time: {py_time:.6f} seconds")
 # print(f"Cython Time: {cy_time:.6f} seconds")
 # print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
 # print('With the values: ',py_value,' = ',cy_value)
 
-# sig_py = []
-# for i in m_array:
-#     sig_py.append(sigma_cdm(i))
-# sig_py = np.array(sig_py)
+import timeit
 
-# from classic_trees import sigma_cdm
+from sigma_cdm_func import sigma_cdm
 
-# sig_cy = []
-# for i in m_array:
-#     sig_cy.append(sigma_cdm(i))
-# sig_cy = np.array(sig_cy)
+py_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
+py_value = sigma_cdm(mass)
+from classic_trees import sigma_cdm
 
-# plt.plot(m_array,abs(sig_py-sig_cy)/sig_py,label='python/cython')
-# plt.xlabel('Mass')
-# plt.ylabel('Diff. Sigma')
-# plt.xscale('log')
-# plt.yscale('log')
-# plt.legend()
-# plt.savefig('Sigma_compare.png')
+cy_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
+cy_value = sigma_cdm(mass)
+
+print(f"Python Time: {py_time:.6f} seconds")
+print(f"Cython Time: {cy_time:.6f} seconds")
+print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
+print('With the values: ',py_value,' = ',cy_value)
+
+sig_py = []
+for i in m_array:
+    sig_py.append(sigma_cdm(i))
+sig_py = np.array(sig_py)
+
+from classic_trees import sigma_cdm
+
+sig_cy = []
+for i in m_array:
+    sig_cy.append(sigma_cdm(i))
+sig_cy = np.array(sig_cy)
+
+plt.plot(m_array,abs(sig_py-sig_cy)/sig_py,label='python/cython')
+plt.xlabel('Mass')
+plt.ylabel('Diff. Sigma')
+plt.xscale('log')
+plt.yscale('log')
+plt.legend()
+plt.savefig('Sigma_compare.png')
