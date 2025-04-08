@@ -1,3 +1,4 @@
+import cython
 import numpy as np
 cimport numpy as np
 import bisect
@@ -7,9 +8,137 @@ from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
 from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs
 from scipy.interpolate import UnivariateSpline, CubicSpline
+from libc.stdlib cimport malloc, free
 
-ctypedef np.float_t DTYPE_t
+ctypedef np.float64_t DTYPE_t
 DTYPE = np.float64
+
+
+cdef double* c_logspace(double start, double stop,int n):
+    cdef double* c_arr = <double*>malloc(n*sizeof(double))
+    if not c_arr:
+        raise MemoryError()
+    cdef double step = (stop-start)/(n-1)
+    for i in range(n):
+        c_arr[i] = 10**(start + i*step)
+    return c_arr
+
+cdef struct cspline:
+    int n
+    double * x
+    double *y
+    double *b
+    double *c
+    double *d
+
+cdef cspline* cspline_alloc(int n, double * x, double * y) nogil:
+    cdef cspline* s = <cspline*>malloc(sizeof(cspline))
+    cdef int i
+
+    # allocate already n, x and y
+    s.n = n
+    s.x = x
+    s.y = y
+    # and prepare the allocation of b, c and d
+    s.b = <double*>malloc(n*sizeof(double))
+    s.c = <double*>malloc((n-1)*sizeof(double))
+    s.d = <double*>malloc((n-1)*sizeof(double))
+
+    # derivative calculation and allocation
+    cdef double* dx = <double*>malloc((n-1)*sizeof(double))
+    cdef double* dydx = <double*>malloc((n-1)*sizeof(double))
+    for i in range(n-1):
+        dx[i] = x[i+1] - x[i]
+        dydx[i] = (y[i+1] - y[i])/dx[i]
+    
+    cdef double* D = <double*>malloc(n*sizeof(double))
+    cdef double* Q = <double*>malloc((n-1)*sizeof(double))
+    cdef double* B = <double*>malloc(n*sizeof(double))
+    D[0] = 2
+    for i in range(n-2):
+        D[i+1] = 2*dx[i]/dx[i+1]+2
+    D[n-1] = 2
+
+    Q[0] = 1
+    for i in range(n-2):
+        Q[i+1] = dx[i]/dx[i+1]
+    for i in range(n-2):
+        B[i+1] = 3*(dydx[i]+dydx[i+1]*dx[i]/dx[i+1])
+    B[0] = 3*dydx[0]
+    B[n-1] = 3*dydx[n-2]
+
+    for i in range(1,n):
+        D[i] -= Q[i-1]/D[i-1]
+        B[i] -= B[i-1]/D[i-1]
+    
+    s.b[n-1] = B[n-1]/D[n-1]
+
+    for i in range(n-2,0,-1):
+        s.b[i] = (B[i] - Q[i]*s.b[i+1])/D[i]
+    for i in range(n-1):
+        s.c[i] = (-2*s.b[i] - s.b[i+1] + 3*dydx[i])/dx[i]
+        s.d[i] = (s.b[i] + s.b[i+1] - 2*dydx[i])/dx[i]/dx[i]
+    return s
+
+cdef double cspline_eval(cspline * s, double z):
+    # function to evaluate a spline
+    cdef int n = s.n
+    assert(n>1 and z>=s.x[0] and z<=s.x[n-1])
+    cdef int i = 0
+    cdef int j = n-1
+    cdef int m
+    while j-i>1:
+        m = (i+j)//2
+        if z > s.x[m]:
+            i = m
+        else:
+            j = m
+    return s.y[i] + s.b[i]*(z-s.x[i]) + s.c[i]*(z-s.x[i])*(z-s.x[i]) + s.d[i]*(z-s.x[i])*(z-s.x[i])*(z-s.x[i])
+
+cdef double cspline_deriv(cspline * s, double z):
+    # function to calculate the derivative of a spline
+    cdef int n = s.n
+    assert(n>1 and z>=s.x[0] and z<=s.x[n-1])
+    cdef int i = 0
+    cdef int j = n-1
+    cdef int m
+    while j-i>1:
+        m = (i+j)//2
+        if z > s.x[m]:
+            i = m
+        else:
+            j = m
+    return s.b[i] + 2*s.c[i]*(z-s.x[i]) + 3*s.d[i]*(z-s.x[i])*(z-s.x[i])
+
+cdef double cspline_int(cspline * s, double z):
+    # function to calculate the integral of a spline
+    cdef int n = s.n
+    assert(n>1 and z>=s.x[0] and z<=s.x[n-1])
+    cdef int i = 0
+    cdef int j = n-1
+    cdef int m
+    while j-i>1:
+        m = (i+j)//2
+        if z > s.x[m]:
+            i = m
+        else:
+            j = m
+    cdef double intsum = 0
+    cdef int k
+    cdef double deltax
+    for k in range(i):
+        deltax = s.x[k+1] - s.x[k]
+        intsum += s.y[k]*deltax + 0.5*s.b[k]*deltax*deltax + s.c[k]*deltax*deltax*deltax/3.0 + s.d[k]*deltax*deltax*deltax*deltax/4.0
+    intsum += s.y[i]*(z-s.x[i]) + 0.5*s.b[i]*(z-s.x[i])*(z-s.x[i]) + s.c[i]*(z-s.x[i])*(z-s.x[i])*(z-s.x[i])/3.0 + s.d[i]*(z-s.x[i])*(z-s.x[i])*(z-s.x[i])*(z-s.x[i])/4.0
+    return intsum
+
+cdef void cspline_free(cspline * s):
+    free(s.x)
+    free(s.y)
+    free(s.b)
+    free(s.c)
+    free(s.d)
+    free(s)
 
 cdef class Tree_Node:
     # definition of the class of Tree Nodes
@@ -226,35 +355,45 @@ cdef double rho_crit = 3 * H_0100**2 / (8 * pi * G_used)
 
 # Load data from file
 cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')
-cdef np.ndarray k_0 = pk_data[0]
-cdef np.ndarray Pk_0 = pk_data[1] * 0.73**3
+cdef np.ndarray k_0_np = pk_data[0]
+cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
+cdef int n_Pk_k = len(pk_data[0])
 
+cdef double* Pk_0 = <double*>malloc(n_Pk_k*sizeof(double*))
+cdef double* k_0 = <double*>malloc(n_Pk_k*sizeof(double*))
+cdef int i_k
+for i_k in range(n_Pk_k):
+    k_0[i_k] = k_0_np[i_k]
+    Pk_0[i_k] = Pk_0_np[i_k]
 # Precompute sigma values for interpolation
-cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 200)
-cdef np.ndarray Sig = np.zeros_like(m_rough)
+cdef double* m_rough = c_logspace(7.0,15.0,200) #np.geomspace(1e7, 1e15, 200)
+#cdef np.ndarray Sig = np.zeros_like(m_rough)
 
 # Helper function for integrand calculation
-def my_int(double R, double k, double Pk):
+cdef double my_int(double R, double k, double Pk) nogil:
     return 9 * (k * R * cos(k * R) - sin(k * R))**2 * Pk / k**4 / R**6 / (2 * pi**2)
 
 # Sigma function
-def sigma(double m):
+cdef double sigma(double m):
     cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
-    cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
+    cdef double* my_integrand = <double*>malloc(n_Pk_k*sizeof(double*))
     cdef int i
+    cdef cspline* sigma_spline
     
-    for i in range(k_0.shape[0]):
+    for i in range(n_Pk_k):
         my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
-    
-    return sqrt(simpson(my_integrand, k_0))
-cdef int i
+    sigma_spline = cspline_alloc(n_Pk_k,k_0,Pk_0)
+    sigma_val = cspline_int(sigma_spline,m)
+    cspline_free(sigma_spline)
+    return sigma_val
+#cdef int i
 
-for i in range(m_rough.shape[0]):
-    Sig[i] = sigma(m_rough[i])
+#for i in range(m_rough.shape[0]):
+#    Sig[i] = sigma(m_rough[i])
 
 # Interpolated sigma function
 def sigma_cdm(double m):
-    return exp(np.interp(np.log(m), np.log(m_rough), np.log(Sig)))
+    return sigma(m)
 
 
 cdef double m_min=1e8
@@ -269,11 +408,11 @@ deriv = interp.derivative(n=1)
 cdef compute_log_sig(np.ndarray m_array):
     cdef int i
     cdef int n = m_array.shape[0]
-    cdef np.float_t[:] log_sig = np.empty(n, dtype=DTYPE)
+    cdef double log_sig[200]
     
     for i in range(n):
         log_sig[i] = log(sigma_cdm(m_array[i]))
-    return log_sig
+    return np.asarray(log_sig)
 
 def alpha(double m):
     return float(deriv(log(m)))
@@ -281,24 +420,25 @@ def alpha(double m):
 
 cdef double eps = 1e-5
 cdef double z_max = 10
-cdef int n_tab = 10000
-cdef np.ndarray J_tab = np.zeros(n_tab)
-cdef np.ndarray z_tab = np.zeros(n_tab)
+cdef int N_TAB = 10000
+cdef double gamma_1=0.38
 
-cdef J_pre(double z,double gamma_1=0.38):
+cdef double J_pre(double z):
+    cdef float J_tab[10000]
+    cdef float z_tab[10000]
     cdef int i_first = 0
-    cdef double dz, inv_dz, h, J_un
+    cdef double h, J_un
     cdef int i
+    cdef double dz = z_max/N_TAB
+    cdef double inv_dz = 1.0/dz
     if fabs(gamma_1) > eps:
         if i_first == 0:
-            dz = z_max/n_tab
-            inv_dz = 1.0/dz
             if fabs(1.0-gamma_1) > eps:
                 J_tab[0] = dz**(1.0-gamma_1)/(1.0-gamma_1)
             else:
                 J_tab[0] = log(dz)
             z_tab[0] = dz
-            for i in range(1,n_tab):
+            for i in range(1,N_TAB):
                 z_tab[i] = (i+1)*dz
                 J_tab[i] = (J_tab[i-1]
                 +(1.0+1.0/z_tab[i]**2)**(0.5*gamma_1)*0.5*dz
@@ -309,9 +449,9 @@ cdef J_pre(double z,double gamma_1=0.38):
             if fabs(1.0-gamma_1) > eps:
                 J_un = (z**(1.0-gamma_1))/(1.0-gamma_1)
             else:
-                J_un = np.log(z)
-        elif i >= n_tab-1:
-            J_un = J_tab[n_tab-1]+z-z_tab[n_tab-1]
+                J_un = log(z)
+        elif i >= N_TAB-1:
+            J_un = J_tab[N_TAB-1]+z-z_tab[N_TAB-1]
         else:
             h = (z-z_tab[i])*inv_dz
             J_un = J_tab[i]*(1.0-h)+J_tab[i+1]*h
@@ -319,18 +459,28 @@ cdef J_pre(double z,double gamma_1=0.38):
         J_un = z
     return J_un
 
-def compute_J_arr(np.ndarray z_arr, np.ndarray J_arr):
+cdef int n = 400
+cdef double* compute_J_arr(double* z_arr):
     cdef int i
-    for i in range(z_arr.shape[0]):
+    cdef double* J_arr = <double*>malloc(n*sizeof(double*))
+    for i in range(n):
         J_arr[i] = log(J_pre(z_arr[i]))
-z_arr = np.logspace(-3, 3, 400)
-J_arr = np.zeros_like(z_arr)
-compute_J_arr(z_arr, J_arr)
+    return J_arr
+cdef double* z_arr = c_logspace(-3.0,3.0,n)
+cdef double* J_arr = compute_J_arr(z_arr)
+cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))
+for i in range(n):
+    log_z_arr[i] = log(z_arr[i])
+#compute_J_arr(z_arr, J_arr)
+cdef cspline* spline = cspline_alloc(n,log_z_arr,J_arr)
 
-log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural')
+#log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural') 
 
-def J_unresolved(z):
-    return exp(log_J_used(log(z)))
+def J_unresolved(double z):
+    #return J_pre(z)
+    log_J_used = cspline_eval(spline,log(z))
+    
+    return exp(log_J_used)
 
 cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
 
