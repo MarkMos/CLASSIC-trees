@@ -83,7 +83,8 @@ cdef cspline* cspline_alloc(int n, double * x, double * y) nogil:
 cdef double cspline_eval(cspline * s, double z):
     # function to evaluate a spline
     cdef int n = s.n
-    assert(n>1 and z>=s.x[0] and z<=s.x[n-1])
+    if not (n>1 and z>=s.x[0] and z<=s.x[n-1]):
+        raise ValueError('z does not lay in range of x')
     cdef int i = 0
     cdef int j = n-1
     cdef int m
@@ -98,7 +99,8 @@ cdef double cspline_eval(cspline * s, double z):
 cdef double cspline_deriv(cspline * s, double z):
     # function to calculate the derivative of a spline
     cdef int n = s.n
-    assert(n>1 and z>=s.x[0] and z<=s.x[n-1])
+    if not (n>1 and z>=s.x[0] and z<=s.x[n-1]):
+        raise ValueError('z does not lay in range of x')
     cdef int i = 0
     cdef int j = n-1
     cdef int m
@@ -113,7 +115,8 @@ cdef double cspline_deriv(cspline * s, double z):
 cdef double cspline_int(cspline * s, double z):
     # function to calculate the integral of a spline
     cdef int n = s.n
-    assert(n>1 and z>=s.x[0] and z<=s.x[n-1])
+    if not (n>1 and z>=s.x[0] and z<=s.x[n-1]):
+        raise ValueError('z does not lay in range of x')
     cdef int i = 0
     cdef int j = n-1
     cdef int m
@@ -359,46 +362,71 @@ cdef np.ndarray k_0_np = pk_data[0]
 cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
 cdef int n_Pk_k = len(pk_data[0])
 
-cdef double* Pk_0 = <double*>malloc(n_Pk_k*sizeof(double*))
-cdef double* k_0 = <double*>malloc(n_Pk_k*sizeof(double*))
+cdef double[:] Pk_0 = Pk_0_np
+cdef double[:] k_0 = k_0_np
 cdef int i_k
-for i_k in range(n_Pk_k):
-    k_0[i_k] = k_0_np[i_k]
-    Pk_0[i_k] = Pk_0_np[i_k]
+#for i_k in range(n_Pk_k):
+#    k_0[i_k] = k_0_np[i_k]
+#    Pk_0[i_k] = Pk_0_np[i_k]
 # Precompute sigma values for interpolation
-cdef double* m_rough = c_logspace(7.0,15.0,200) #np.geomspace(1e7, 1e15, 200)
-#cdef np.ndarray Sig = np.zeros_like(m_rough)
+cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 500)
+cdef np.ndarray Sig = np.zeros_like(m_rough)
 
 # Helper function for integrand calculation
 cdef double my_int(double R, double k, double Pk) nogil:
-    return 9 * (k * R * cos(k * R) - sin(k * R))**2 * Pk / k**4 / R**6 / (2 * pi**2)
+    return 9.0 * (k * R * cos(k * R) - sin(k * R))**2.0 * Pk / k**4.0 / R**6.0 / (2.0 * pi**2.0)
+    
+
+def sig_int(double m):
+    cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
+    cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
+    cdef int i
+    for i in range(k_0.shape[0]):
+        my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
+    return sqrt(simpson(my_integrand, k_0))
 
 # Sigma function
+'''
 cdef double sigma(double m):
-    cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
-    cdef double* my_integrand = <double*>malloc(n_Pk_k*sizeof(double*))
+    cdef double sigma_val
+    cdef double* sigma_temp = <double*>malloc(500*sizeof(double))
+    cdef double* m_rough = c_logspace(7.0,15.0,500)
     cdef int i
+    cdef double* log_m_r = <double*>malloc(500*sizeof(double))
+    for i in range(500):
+        log_m_r[i] = log(m_rough[i])
     cdef cspline* sigma_spline
-    
-    for i in range(n_Pk_k):
-        my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
-    sigma_spline = cspline_alloc(n_Pk_k,k_0,Pk_0)
-    sigma_val = cspline_int(sigma_spline,m)
-    cspline_free(sigma_spline)
-    return sigma_val
-#cdef int i
-
-#for i in range(m_rough.shape[0]):
-#    Sig[i] = sigma(m_rough[i])
-
+    try:
+        for i in range(500):
+            sigma_temp[i] = log(sig_int(m))
+        sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
+        try:
+            sigma_val = cspline_eval(sigma_spline,log(m))
+        finally:
+            cspline_free(sigma_spline)
+        return sigma_val
+    finally:
+        free(sigma_temp)
+        free(m_rough)
+        free(log_m_r)
+'''
+cdef double* log_m_r = <double*>malloc(500*sizeof(double))
+cdef double* sigma_temp = <double*>malloc(500*sizeof(double))
+cdef double* alpha_temp = <double*>malloc(500*sizeof(double))
+cdef int i
+for i in range(m_rough.shape[0]):
+    log_m_r[i] = np.log(m_rough[i])
+    sigma_temp[i] = sig_int(m_rough[i])
+    Sig[i] = sig_int(m_rough[i])
+cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
 # Interpolated sigma function
 def sigma_cdm(double m):
-    return sigma(m)
+    return cspline_eval(sigma_spline, log(m))#exp(np.interp(log(m),np.log(m_rough),np.log(Sig)))
 
 
 cdef double m_min=1e8
 cdef double m_max=1e15
-cdef int num_points=200
+cdef int num_points=500
 cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
 cdef log_sig = compute_log_sig(m_array)
 log_m = np.log(m_array)
@@ -408,14 +436,16 @@ deriv = interp.derivative(n=1)
 cdef compute_log_sig(np.ndarray m_array):
     cdef int i
     cdef int n = m_array.shape[0]
-    cdef double log_sig[200]
+    cdef double log_sig[500]
     
     for i in range(n):
         log_sig[i] = log(sigma_cdm(m_array[i]))
     return np.asarray(log_sig)
-
+for i in range(m_rough.shape[0]):
+    alpha_temp[i] = interp(log(m_rough[i]))
+cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)
 def alpha(double m):
-    return float(deriv(log(m)))
+    return cspline_deriv(alpha_spline,log(m))#float(deriv(log(m)))
 
 
 cdef double eps = 1e-5
@@ -472,14 +502,12 @@ cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))
 for i in range(n):
     log_z_arr[i] = log(z_arr[i])
 #compute_J_arr(z_arr, J_arr)
-cdef cspline* spline = cspline_alloc(n,log_z_arr,J_arr)
 
 #log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural') 
-
+cdef cspline* J_spline = cspline_alloc(n,log_z_arr,J_arr)
 def J_unresolved(double z):
+    log_J_used = cspline_eval(J_spline,log(z))
     #return J_pre(z)
-    log_J_used = cspline_eval(spline,log(z))
-    
     return exp(log_J_used)
 
 cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
