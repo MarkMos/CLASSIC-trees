@@ -3,7 +3,7 @@ import numpy as np
 import scipy.integrate as itg
 from astropy.constants import G,M_sun,pc
 from classy import Class # type: ignore
-from numba import njit
+from numba import njit, float64, prange
 import scipy.interpolate as intp
 #from classy import DTYPE_t
 
@@ -39,31 +39,56 @@ pk_data   = np.loadtxt(file_name)
 k_0  = pk_data[0]
 Pk_0 = pk_data[1]*0.73**3
 
-@njit
-def my_int(R,k,Pk):
-    my_integrand = 9*(k*R*np.cos(k*R) - np.sin(k*R))**2 * Pk / k**4 / R**6 / 2 / np.pi**2
-    return my_integrand
+# @njit
+# def my_int(R,k,Pk):
+#     my_integrand = 9*(k*R*np.cos(k*R) - np.sin(k*R))**2 * Pk / k**4 / R**6 / 2 / np.pi**2
+#     return my_integrand
 
-def sigma(m,k=k_0,Pk=Pk_0):
-    #print('in sigma_cdm function')
-    R = (3*m/(4*np.pi*rho_crit))**(1/3)
-    # z_comp = 1/a - 1
-    # z = np.array([z_comp],dtype='float64')
-    #k  = pk_data[:,0] #k_array[:,0,0]
-    #Pk = pk_data[:,1] #cosmo.get_pk(k_array,z,N_k,1,1)[:,0,0]
-    #print(R)
-    my_integrand = my_int(R,k,Pk)
-    #print(my_integrand)
-    sigma = np.sqrt(itg.simpson(my_integrand,k))
-    #print(sigma_cdm)
-    return sigma
+# def sigma(m,k=k_0,Pk=Pk_0):
+#     #print('in sigma_cdm function')
+#     R = (3*m/(4*np.pi*rho_crit))**(1/3)
+#     # z_comp = 1/a - 1
+#     # z = np.array([z_comp],dtype='float64')
+#     #k  = pk_data[:,0] #k_array[:,0,0]
+#     #Pk = pk_data[:,1] #cosmo.get_pk(k_array,z,N_k,1,1)[:,0,0]
+#     #print(R)
+#     my_integrand = my_int(R,k,Pk)
+#     #print(my_integrand)
+#     sigma = np.sqrt(itg.simpson(my_integrand,k))
+#     #print(sigma_cdm)
+#     return sigma
+
+@njit(float64(float64, float64, float64), cache=True)
+def my_int(R, k, Pk):
+    """Numba-optimized integrand calculation"""
+    if k == 0 or R == 0:
+        return 0.0
+    kR = k * R
+    trig_part = kR * np.cos(kR) - np.sin(kR)
+    scale = 9.0 / (2 * np.pi**2 * R**6)
+    return scale * (trig_part**2) * Pk / k**4
+
+@njit(float64[:](float64, float64[:], float64[:]), parallel=True)
+def compute_integrand(R, k, Pk):
+    """Vectorized integrand computation"""
+    result = np.empty_like(k)
+    for i in prange(len(k)):
+        result[i] = my_int(R, k[i], Pk[i])
+    return result
+
+def sigma(m, k=k_0, Pk=Pk_0):
+    """Optimized σ(m) calculation"""
+    R = (3 * m / (4 * np.pi * rho_crit))**(1/3)
+    integrand = compute_integrand(R, k, Pk)
+    return np.sqrt(itg.simpson(integrand, k))
+
 m_rough = np.geomspace(1e7,1e15,200)
 Sig = np.zeros_like(m_rough)
 for i in range(len(m_rough)):
     Sig[i]=sigma(m_rough[i])
 # Sig = np.array(Sig)
 # sig_inter = intp.interp1d(np.log(m_rough),np.log(Sig))
-@njit
+@njit(fastmath=True)
 def sigma_cdm(m):
     return np.exp(np.interp(np.log(m),np.log(m_rough),np.log(Sig)))
     # return np.exp(sig_inter(np.log(m)))
