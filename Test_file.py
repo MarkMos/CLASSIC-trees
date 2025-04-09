@@ -136,14 +136,20 @@ for i in range(len(m_rough)):
 
 
 # m_arr = np.linspace(1e8,1e15)
+# from classy import Class
+# cosmo = Class()
+# cosmo.set({'output':'mPk','P_k_max_h/Mpc':100})
+# cosmo.compute()
+
 # sig_CLASS = []
 # sig_FORT  = []
-# for i in range(len(m_arr)):
-#     sig_CLASS.append(sigma_cdm(m_arr[i]))
-#     sig_FORT.append(scla*spl_intp(m_arr[i]*0.1825**3/0.25)[0])
+# for i in range(len(m_array)):
+#     R = (3*m_array[i]/(4*np.pi*rho_crit))**(1/3)
+#     sig_CLASS.append(cosmo.sigma(R,0,h_units=True))
+#     sig_FORT.append(scla*spl_intp(m_array[i]*0.1825**3/0.25)[0])
 
-# plt.plot(m_arr,sig_CLASS,label='CLASS')
-# plt.plot(m_arr,sig_FORT,label='FORTRAN')
+# plt.plot(m_array,sig_CLASS,label='CLASS')
+# plt.plot(m_array,sig_FORT,label='FORTRAN')
 # plt.xlabel('Mass')
 # plt.ylabel('Sigma')
 # plt.xscale('log')
@@ -156,33 +162,33 @@ for i in range(len(m_rough)):
 
 # intp_sig = intp.BSpline(logM,logSig,k=4)
 # dintpsig = derivative(intp_sig)
-# alp_univ = []
+alp_univ = []
 # alp_othe = []
-# for i in range(len(m_array)):
-#     alp_univ.append(alpha(m_array[i]))
+for i in range(len(m_array)):
+    alp_univ.append(alpha(m_array[i]))
     # alp_othe.append(intp_sig(np.log(m_array[i]),1))
-# alp_univ = np.array(alp_univ)
+alp_univ = np.array(alp_univ)
 # alp_othe = np.array(alp_othe)
 
-# from classic_trees import alpha
-# alp_othe = []
-# for i in range(len(m_array)):
-#     alp_othe.append(alpha(m_array[i]))
-# alp_othe = np.array(alp_othe)
+from classic_trees import alpha
+alp_othe = []
+for i in range(len(m_array)):
+    alp_othe.append(alpha(m_array[i]))
+alp_othe = np.array(alp_othe)
 
 # plt.plot(m_array,alp_univ,label='UnivariateSpline')
 # plt.plot(m_array,alp_othe,label='Other')
-# plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff',marker='.',lw=0)
-# plt.xlabel('Mass')
-# plt.ylabel('Alpha')
-# plt.xscale('log')
-# plt.yscale('log')
-# plt.legend()
-# plt.savefig('Alpha_Comp.png')
+plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff',marker='.',lw=0)
+plt.xlabel('Mass')
+plt.ylabel('Diff. Alpha')
+plt.xscale('log')
+plt.yscale('log')
+plt.legend()
+plt.savefig('Alpha_Comp.png')
 
 
 # import timeit
-# py_time = timeit.timeit(lambda: J_unresolved(1), number=1000)
+# py_time = timeit.timeit(lambda: J_unresolved(1), number=10000)
 # z = np.logspace(-3,3,1000)
 # z_arr = np.logspace(-3,3,400)
 # J_u_intp = []
@@ -201,7 +207,7 @@ for i in range(len(m_rough)):
 # J_u_np = np.array(J_u_np)
 
 # from classic_trees import J_unresolved
-# cy_time = timeit.timeit(lambda: J_unresolved(1), number=1000)
+# cy_time = timeit.timeit(lambda: J_unresolved(1), number=10000)
 # J_cy = []
 # for i in z:
 #     J_cy.append(J_unresolved(i))
@@ -245,36 +251,63 @@ for i in range(len(m_rough)):
 
 import timeit
 
-from sigma_cdm_func import sigma_cdm
+from alpha_func import alpha
 
-py_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
-py_value = sigma_cdm(mass)
-from classic_trees import sigma_cdm
+py_time = timeit.timeit(lambda: alpha(1e14), number=10000000)
+py_value = alpha(1e14)
+from classic_trees import alpha
 
-cy_time = timeit.timeit(lambda: sigma_cdm(mass), number=392309)
-cy_value = sigma_cdm(mass)
+cy_time = timeit.timeit(lambda: alpha(1e14), number=10000000)
+cy_value = alpha(1e14)
+
+# from classy import Class
+# cosmo = Class()
+# cosmo.set({'output':'mPk','P_k_max_h/Mpc':1})
+# cosmo.compute()
+
+# R = (3*mass/(4*np.pi*rho_crit))**(1/3)
+
+# cl_time = timeit.timeit(lambda: cosmo.sigma(R,0), number=392309)
 
 print(f"Python Time: {py_time:.6f} seconds")
 print(f"Cython Time: {cy_time:.6f} seconds")
+# print(f'class Time: {cl_time:.6f} seconds')
 print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
+# print(f"class is {py_time / cl_time:.2f}x faster than Python")
 print('With the values: ',py_value,' = ',cy_value)
 
-sig_py = []
-for i in m_array:
-    sig_py.append(sigma_cdm(i))
-sig_py = np.array(sig_py)
+# from sigma_cdm_func import sigma_cdm
+# sig_py = []
+# for i in m_array:
+#     sig_py.append(sigma_cdm(i))
+# sig_py = np.array(sig_py)
 
-from classic_trees import sigma_cdm
+# from classic_trees import sigma_cdm
 
-sig_cy = []
-for i in m_array:
-    sig_cy.append(sigma_cdm(i))
-sig_cy = np.array(sig_cy)
+# sig_cy = []
+# for i in m_array:
+#     sig_cy.append(sigma_cdm(i))
+# sig_cy = np.array(sig_cy)
 
-plt.plot(m_array,abs(sig_py-sig_cy)/sig_py,label='python/cython')
-plt.xlabel('Mass')
-plt.ylabel('Diff. Sigma')
-plt.xscale('log')
-plt.yscale('log')
-plt.legend()
-plt.savefig('Sigma_compare.png')
+# from classy import Class
+# cosmo = Class()
+# cosmo.set({'output':'mPk','P_k_max_h/Mpc':100})
+# cosmo.compute()
+
+# sig_class = []
+# for m in m_array:
+#     R = (3*m/(4*np.pi*rho_crit))**(1/3)
+#     sig_class.append(cosmo.sigma(R,0,h_units=True))
+
+
+# plt.plot(m_array,sig_py,label='python')
+# plt.plot(m_array,sig_cy,label='cython')
+# plt.plot(m_array,sig_class,label='class')
+# plt.plot(m_array,abs(sig_py-sig_cy)/sig_py,label='python/cython')
+# plt.plot(m_array,abs(sig_py-sig_class)/sig_py,label='python/class')
+# plt.xlabel('Mass')
+# plt.ylabel('Diff. Sigma')
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.legend()
+# plt.savefig('Sigma_compare.png')
