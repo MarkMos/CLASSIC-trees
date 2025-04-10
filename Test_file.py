@@ -162,29 +162,29 @@ for i in range(len(m_rough)):
 
 # intp_sig = intp.BSpline(logM,logSig,k=4)
 # dintpsig = derivative(intp_sig)
-alp_univ = []
+# alp_univ = []
 # alp_othe = []
-for i in range(len(m_array)):
-    alp_univ.append(alpha(m_array[i]))
+# for i in range(len(m_array)):
+#     alp_univ.append(alpha(m_array[i]))
     # alp_othe.append(intp_sig(np.log(m_array[i]),1))
-alp_univ = np.array(alp_univ)
+# alp_univ = np.array(alp_univ)
 # alp_othe = np.array(alp_othe)
 
-from classic_trees import alpha
-alp_othe = []
-for i in range(len(m_array)):
-    alp_othe.append(alpha(m_array[i]))
-alp_othe = np.array(alp_othe)
+# from classic_trees import alpha
+# alp_othe = []
+# for i in range(len(m_array)):
+#     alp_othe.append(alpha(m_array[i]))
+# alp_othe = np.array(alp_othe)
 
 # plt.plot(m_array,alp_univ,label='UnivariateSpline')
 # plt.plot(m_array,alp_othe,label='Other')
-plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff',marker='.',lw=0)
-plt.xlabel('Mass')
-plt.ylabel('Diff. Alpha')
-plt.xscale('log')
-plt.yscale('log')
-plt.legend()
-plt.savefig('Alpha_Comp.png')
+# plt.plot(m_array,abs(alp_univ-alp_othe)/abs(alp_univ),label='diff',marker='.',lw=0)
+# plt.xlabel('Mass')
+# plt.ylabel('Diff. Alpha')
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.legend()
+# plt.savefig('Alpha_Comp.png')
 
 
 # import timeit
@@ -228,37 +228,37 @@ plt.savefig('Alpha_Comp.png')
 # plt.legend()
 # plt.savefig('J_unresolved.png')
 
-# import timeit
-# import random
-
-# random.seed(-8635-19)
-
-# from split_function import split
-
-# py_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
-# py_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
-# from classic_trees import split
-
-# # random.seed(10)
-
-# cy_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=127265)
-# cy_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
-
-# print(f"Python Time: {py_time:.6f} seconds")
-# print(f"Cython Time: {cy_time:.6f} seconds")
-# print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
-# print('With the values: ',py_value,' = ',cy_value)
-
 import timeit
+import random
 
-from alpha_func import alpha
+random.seed(-8635-19)
 
-py_time = timeit.timeit(lambda: alpha(1e14), number=10000000)
-py_value = alpha(1e14)
-from classic_trees import alpha
+from split_function import split
 
-cy_time = timeit.timeit(lambda: alpha(1e14), number=10000000)
-cy_value = alpha(1e14)
+py_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=1000000)
+py_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
+from classic_trees import split
+
+# random.seed(10)
+
+cy_time = timeit.timeit(lambda: split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0), number=1000000)
+cy_value = split(mass, 1.6737489820197762, 1e8,2.074982366493683-1.6737489820197762,0.1,0.1,0)
+
+print(f"Python Time: {py_time:.6f} seconds")
+print(f"Cython Time: {cy_time:.6f} seconds")
+print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
+print('With the values: ',py_value,' = ',cy_value)
+
+# import timeit
+
+# from alpha_func import alpha
+
+# py_time = timeit.timeit(lambda: alpha(1e14), number=10000000)
+# py_value = alpha(1e14)
+# from classic_trees import alpha
+
+# cy_time = timeit.timeit(lambda: alpha(1e14), number=10000000)
+# cy_value = alpha(1e14)
 
 # from classy import Class
 # cosmo = Class()
@@ -269,12 +269,12 @@ cy_value = alpha(1e14)
 
 # cl_time = timeit.timeit(lambda: cosmo.sigma(R,0), number=392309)
 
-print(f"Python Time: {py_time:.6f} seconds")
-print(f"Cython Time: {cy_time:.6f} seconds")
+# print(f"Python Time: {py_time:.6f} seconds")
+# print(f"Cython Time: {cy_time:.6f} seconds")
 # print(f'class Time: {cl_time:.6f} seconds')
-print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
+# print(f"Cython is {py_time / cy_time:.2f}x faster than Python")
 # print(f"class is {py_time / cl_time:.2f}x faster than Python")
-print('With the values: ',py_value,' = ',cy_value)
+# print('With the values: ',py_value,' = ',cy_value)
 
 # from sigma_cdm_func import sigma_cdm
 # sig_py = []
