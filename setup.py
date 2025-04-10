@@ -7,6 +7,7 @@ extensions = [
         'classic_trees',
         sources=['classic_trees.pyx'],
         language='c',
+        extra_compile_args=['-std=c99'],
         include_dirs=[np.get_include()]
     )
 ]
@@ -18,8 +19,8 @@ setup(
         extensions,
         compiler_directives={
             'language_level': '3',
-            'boundscheck': False,
-            'wraparound': False
+            'boundscheck': True,
+            'wraparound': True
         }
     ),
 )
