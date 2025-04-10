@@ -6,7 +6,7 @@ import random
 #from libc.stdlib cimport rand, srand
 from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
-from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs
+from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh
 from scipy.interpolate import UnivariateSpline, CubicSpline
 from libc.stdlib cimport malloc, free
 
@@ -158,6 +158,17 @@ cdef class Tree_Node:
         self.child = None
         self.parent = None
         self.sibling = None
+'''
+
+cdef struct Tree_Node:
+    Tree_Node* child
+    Tree_Node* sibling
+    Tree_Node* parent
+    int jlevel
+    int nchild
+    int index
+    double mhalo
+'''
 
 cdef walk_tree(Tree_Node this_node):
     '''
@@ -178,14 +189,31 @@ cdef walk_tree(Tree_Node this_node):
                 next_node = None
     return next_node
 
-def node_vals_and_counter(int count,Tree_Node this_node,int n_halo_max,list merger_tree):
+def node_vals_and_counter(int i,Tree_Node this_node,int n_halo_max,list merger_tree):
+    '''
+    Function to count the number of nodes in a merger tree and get values out of it.
+    Input:
+        i          : the level of the tree worked with in this call
+        this_node  : the node where to start counting (best use to start with the base node)
+        n_halo_max : maximum size of the merger tree
+        merger_tree: list of the nodes of the given merger tree
+    Output:
+        count     : the number of nodes inside the tree
+        arr_halo  : the masses of the different nodes
+        arr_nodid : the nodes id
+        arr_treeid: the id of the tree
+        arr_time  : the time level of the nodes
+        arr_1prog : first progenitor of the nodes (-1 is no first progenitor)
+        arr_desc  : descandant of the nodes (-1 is no descandant)
+    '''
     cdef:
-        np.ndarray arr_mhalo = np.zeros(n_halo_max)-1
-        np.ndarray arr_nodid = np.zeros(n_halo_max,dtype='int_')-1
-        np.ndarray arr_treeid= np.zeros(n_halo_max,dtype='int_')-1
-        np.ndarray arr_time  = np.zeros(n_halo_max,dtype='int_')-1
-        np.ndarray arr_1prog = np.zeros(n_halo_max,dtype='int_')-1
-        np.ndarray arr_desc  = np.zeros(n_halo_max,dtype='int_')-1
+        int count = 0
+        double* arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
+        int* arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
+        int* arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
+        int* arr_time = <int*>malloc(n_halo_max*sizeof(int))
+        int* arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
+        int* arr_desc = <int*>malloc(n_halo_max*sizeof(int))
         int node_ID
     while this_node is not None:
         node_ID = count
@@ -203,14 +231,15 @@ def node_vals_and_counter(int count,Tree_Node this_node,int n_halo_max,list merg
             arr_desc[node_ID] = -1
         count +=1
         this_node = walk_tree(this_node)
-    arr_mhalo = arr_mhalo[0:count]
-    arr_nodid = arr_nodid[0:count]
-    arr_treeid= arr_treeid[0:count]
-    arr_time  = arr_time[0:count]
-    arr_1prog = arr_1prog[0:count]
-    arr_desc  = arr_desc[0:count]
-
-    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
+    cdef int j
+    np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+    np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
+    np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+    np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+    np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
+    np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
+    
+    return count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc
 
 cdef class Tree_Values:
     # class of different operations on the merger trees,
@@ -224,50 +253,69 @@ cdef class Tree_Values:
         index = merger_tree.index(node)
         return index
 
-cdef class Make_Siblings:
-    # class of the build up of the siblings from a certain Tree Node
-    cdef Tree_Node this_node, child_node, parent_node, Sibling, sibs_left
-    cdef list sib_nodes, sib_sorted
-    cdef int n_frag_tot, child_index, i
-    cdef public list merger_tree
-    def next_sibling(self,child_node, parent_node):
-        '''
-        Get the next sibling of the child node.
-        '''
-        if child_node == parent_node:
-            if parent_node.child is not None:
-                Sibling = parent_node.child
-            else:
-                raise ValueError('next_sibling(): Parent has no children.')
+# class of the build up of the siblings from a certain Tree Node
+
+cpdef next_sibling(Tree_Node child_node,Tree_Node parent_node):
+    '''
+    Get the next sibling of the child node.
+    '''
+    if child_node == parent_node:
+        if parent_node.child is not None:
+            Sibling = parent_node.child
         else:
-            if child_node.sibling is not None:
-                Sibling = child_node.sibling
-            else:
-                raise ValueError('next_sibling(): Child has no siblings.')
-        sibs_left = Sibling.sibling
-        return Sibling, sibs_left
+            raise ValueError('next_sibling(): Parent has no children.')
+    else:
+        if child_node.sibling is not None:
+            Sibling = child_node.sibling
+        else:
+            raise ValueError('next_sibling(): Child has no siblings.')
+    sibs_left = Sibling.sibling
+    return Sibling, sibs_left
 
-    def associated_siblings(self,this_node,merger_tree):
-        if this_node.nchild > 1:
-            child_index = Tree_Values().tree_index(this_node.child,merger_tree)
-            sib_nodes = []
-            merger_temp = []
-            for i_frag in range(child_index, child_index + this_node.nchild -1):
-                sib_nodes.append([merger_tree[i_frag+1],i_frag])
-            sib_sorted = sorted(sib_nodes,key=lambda x:x[0].mhalo,reverse=True)
-            n = len(sib_sorted)
-            for i in range(n):
-                merger_temp.append(merger_tree[sib_sorted[i][1]+1])
-            for k in range(n):
-                merger_tree[sib_nodes[k][1]+1] = merger_temp[k]
-            for j in range(n):
-                merger_tree[sib_nodes[j][1]].sibling = merger_tree[sib_nodes[j][1]+1]
-        return merger_tree
-
-    def build_sibling(self,merger_tree,n_frag_tot):
-        for i in range(n_frag_tot):
-            merger_tree = Make_Siblings().associated_siblings(merger_tree[i],merger_tree)
-        return merger_tree
+cdef list associated_siblings(Tree_Node this_node,list merger_tree):
+    if this_node.nchild > 1:
+        child_index = Tree_Values().tree_index(this_node.child,merger_tree)
+        sib_nodes = []
+        merger_temp = []
+        for i_frag in range(child_index, child_index + this_node.nchild -1):
+            sib_nodes.append([merger_tree[i_frag+1],i_frag])
+        sib_sorted = sorted(sib_nodes,key=lambda x:x[0].mhalo,reverse=True)
+        n = len(sib_sorted)
+        for i in range(n):
+            merger_temp.append(merger_tree[sib_sorted[i][1]+1])
+        for k in range(n):
+            merger_tree[sib_nodes[k][1]+1] = merger_temp[k]
+        for j in range(n):
+            merger_tree[sib_nodes[j][1]].sibling = merger_tree[sib_nodes[j][1]+1]
+    return merger_tree
+'''
+cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree) nogil:
+    cdef:
+        int child_index, i_frag, k, j
+        Tree_Node* temp
+    
+    if this_node.nchild > 1:
+        child_index = tree_index(this_node.child)
+        
+        # 1. Sort siblings in-place using mhalo
+        for i_frag in range(child_index, child_index + this_node.nchild - 2):
+            for j in range(child_index, child_index + this_node.nchild - 2 - i_frag):
+                if merger_tree[j + 1].mhalo < merger_tree[j + 2].mhalo:
+                    # Swap pointers
+                    temp = merger_tree[j + 1]
+                    merger_tree[j + 1] = merger_tree[j + 2]
+                    merger_tree[j + 2] = temp
+        
+        # 2. Update sibling pointers
+        for k in range(child_index, child_index + this_node.nchild - 1):
+            merger_tree[k].sibling = merger_tree[k + 1]
+    
+    return merger_tree
+'''
+cdef list build_sibling(list merger_tree,int n_frag_tot):
+    for i in range(n_frag_tot):
+        merger_tree = associated_siblings(merger_tree[i],merger_tree)
+    return merger_tree
 
 cdef class functions:
     # class to define the different functions used in the making of the tree
@@ -276,31 +324,34 @@ cdef class functions:
     cdef np.ndarray data
     def __init__(self,str filename):
         self.data = np.loadtxt(filename)
-    def delta_crit(self,a,l_0=0.75,omega_0=0.25):
-        omega_flat= self.data[:,0]
-        delflat   = self.data[:,-1] 
-        n_table = 200
-        n_v = 1000
-        a_min = 0.1
-        eps_om = 1e-5
-        n_sum = 2000
-        delta_flat = [0]*n_table
-        a_flat     = []
-        omega_0_save = 0
-        l_0_save = 0
+    def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):
+        cdef:
+            double[:] omega_flat= self.data[:,0]
+            double[:] delflat   = self.data[:,-1] 
+            int n_table = 200
+            int n_v = 1000
+            double a_min = 0.1
+            double eps_om = 1e-5
+            int n_sum = 2000
+            double* delta_flat = <double*>malloc(n_table*sizeof(double))
+            double* a_flat = <double*>malloc(n_table*sizeof(double))
+            double omega_0_save = 0
+            double l_0_save = 0
+            int i_o
+            double x_p
         if fabs(1-omega_0) <= eps_om:
             del_c0 = 3*(12*pi)**(2/3)/20
             delta_c = del_c0/a
         elif (1-omega_0) > eps_om and l_0 < eps_om:
-            eta_0 = np.acosh(2/omega_0-1)
-            sh_0  = np.sinh(eta_0)
-            ch_0  = np.cosh(eta_0)
+            eta_0 = acosh(2/omega_0-1)
+            sh_0  = sinh(eta_0)
+            ch_0  = sinh(eta_0)
             t_omega = 2*pi/(sh_0-eta_0)
             d_0   = 3*sh_0*(sh_0-eta_0)/(ch_0-1)**2-2
 
             ch = a*(ch_0-1)+1
-            eta= np.acosh(ch)
-            sh = np.sinh(eta)
+            eta= acosh(ch)
+            sh = sinh(eta)
             t  = (sh-eta)/(sh_0-eta_0)
             delta_c = 1.5*d_0*(1+(t_omega/t)**(2/3))
 
@@ -322,7 +373,7 @@ cdef class functions:
                 
                 for i in range(1,n_table+1):
                     aa = a_min+(1-a_min)*float(i-1)/float(n_table-1)
-                    a_flat.append(aa)
+                    a_flat[i-1] = aa
                     l = l_0/(l_0+(1-omega_0-l_0)/aa**2+omega_0/aa**3)
                     omega = omega_0*l/(l_0*aa**3)
                     x = x_0*aa
@@ -349,6 +400,8 @@ cdef class functions:
                 delta_c = delta_flat[0]*a_min/a
             else:
                 raise ValueError('delta_crit(): FATAL - look up tale only for a<1 \n a=',a)
+        #free(delta_flat)
+        #free(a_flat)
         return delta_c
 
 # Constants
@@ -522,7 +575,7 @@ cpdef split(
     double m_min_last):
 
     cdef:
-        np.ndarray m_prog = np.zeros(2)
+        double m_prog[2]
         double eps_eta = 1e-6
         double eps_q = 6e-6
         double gamma_1 = 0.38
@@ -662,4 +715,266 @@ cpdef split(
             n_prog = 0
             m_prog[0] = 0
         m_prog[1] = 0
-    return dw, n_prog, m_prog,m_min_last
+    return dw, n_prog, np.asarray(m_prog),m_min_last
+
+
+cdef locate(double* xx,int n,double x):
+    cdef int jl = 0
+    cdef int ju = n+1
+    while ju-jl > 1:
+        jm = (ju+jl)//2
+        if ((xx[n-1] > xx[0]) == (x > xx[jm-1])):
+            jl = jm
+        else:
+            ju = jm
+    return int(jl-1)
+
+cdef str filename = './CLASSIC-trees/Data/flat.txt'
+cdef DELTA = functions(filename)
+
+cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
+    cdef:
+        list merger_tree = [None]*n_frag_max #<Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
+        Tree_Node node
+        int n_v = 20000
+        int i_err = 0
+        int i_lev
+        np.ndarray child_ref = np.zeros(n_frag_max) #[0]*n_frag_max
+        np.ndarray j_index = np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
+        np.ndarray m_tr = np.zeros(n_frag_max) #[0]*n_frag_max
+        np.ndarray i_par = np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
+        np.ndarray i_sib = np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
+        np.ndarray i_child = np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
+        list w_lev = [0]*n_lev
+        list n_frag_lev = [-1]*n_lev
+        list jp_frag = [-1]*n_lev
+        np.ndarray m_left = np.zeros(n_v) #[0]*n_v
+        np.ndarray m_right = np.zeros(n_v) #[0]*n_v
+        np.ndarray w_node = np.zeros(n_v) #[0]*n_v
+        np.ndarray l_node = np.zeros(n_v,dtype='bool') #[False]*n_v
+    
+    for i_frag in range(n_frag_max):
+        node = Tree_Node()
+        node.mhalo = 0.0
+        node.jlevel = 0
+        node.nchild = 0
+        node.parent = None
+        node.child  = None
+        node.sibling= None
+        merger_tree[i_frag] = node
+    a_lev[0] = a_0
+    #print('a_lev = ',a_lev)
+    for i_lev in range(n_lev):
+        w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
+    #print(w_lev)
+    #w_lev = np.loadtxt('./Code_own/delta_crit_values.txt')
+    i_node = 0
+    w_fin = w_lev[n_lev-1]
+    
+    i_frag_lev = [-1]*n_lev
+    #print('m_0 = ',m_0)
+    m_left[0] = m_0
+    m_right[0] = -1
+    m = m_0
+    w_node[0] = w_lev[0]
+    w = w_lev[0]
+    i_lev = 1
+    i_frag_lev[0] = 0
+
+    i_frag = 0
+    m_tr[0] = m_0
+    m_minlast= 0
+    i_par[0] = -1
+    i_sib[0] = -1
+    i_child[0] = -1
+    #print('m = ',m)
+    count = 0
+    while m_left[i_node] > 0.0:
+        count += 1
+        # print('count: ',count)
+        dw_max = w_lev[i_lev] - w
+        #print('i_lev = ',i_lev)
+        #print('dw_max = ',dw_max)
+        dw,n_prog,m_prog,m_minlast = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
+        #print('dw = ',dw)
+        w += dw
+        #print('m_prog = ',m_prog)
+        if n_prog==2:
+            i_node += 1
+            w_node[i_node] = w
+            l_node[i_node] = False
+            m_left[i_node] = m_prog[0]
+            m_right[i_node] = m_prog[1]
+            m = m_left[i_node]
+        elif n_prog==1:
+            m = m_prog[0]
+        elif n_prog==0:
+            m = 0.0
+            m_left[i_node] = -1
+        if w == w_lev[i_lev] and  n_prog > 0.0:
+            #print('In here?---------------------?')
+            if i_frag+2 > n_frag_max:
+                i_err = 1
+                return None
+
+            i_frag += 1
+            #print('i_lev = ',i_lev)
+            m_tr[i_frag] = m_prog[0]
+            i_par[i_frag] = i_frag_lev[i_lev-1]
+            i_sib[i_frag] = -1
+            i_child[i_frag] = -1
+
+            i_frag_prev = i_frag_lev[i_lev]
+            if i_frag_prev > 0:
+                i_par_prev = i_par[i_frag_prev]
+                if i_par_prev == i_par[i_frag]:
+                    i_sib[i_frag_prev] = i_frag
+                else:
+                    i_child[i_par[i_frag]] = i_frag
+            else:
+                i_child[i_par[i_frag]] = i_frag
+            
+            i_frag_lev[i_lev] = i_frag
+
+            if n_prog == 2:
+                i_frag += 1
+                m_tr[i_frag] = m_prog[1]
+                i_par[i_frag] = i_frag_lev[i_lev-1]
+                i_sib[i_frag] = -1
+                i_child[i_frag] = -1
+                i_sib[i_frag-1] = i_frag
+                l_node[i_node] = True
+                if i_lev == n_lev-1:
+                    i_frag_lev[i_lev] = i_frag
+            if i_lev < n_lev-1:
+                i_lev +=1
+            
+        if w >= w_fin:
+            if n_prog == 2:
+                m_left[i_node] = -1
+                m_right[i_node] = -1
+            else:
+                m_left[i_node] = -1
+            
+        while m_left[i_node] < 0.0 and i_node > 0:
+            if m_right[i_node] > 0.0:
+                m_left[i_node] = m_right[i_node]
+                m_right[i_node] = -1
+                w = w_node[i_node]
+                m = m_left[i_node]
+                # print('w = ',w)
+                # print('w[i_lev-1] = ',w_lev[i_lev-1])
+                # print('w[i_lev] = ',w_lev[i_lev])
+                if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:
+                    iw = bisect.bisect_left(w_lev,w) #locate(w_lev, n_lev, w)
+                    i_lev = iw
+                    #print('i_lev = ',i_lev)
+                    #print(w_lev[i_lev],' = ',w)
+                    if w_lev[i_lev] == w:
+                        #print('briefly here --------------!')
+                        i_lev += 1
+                #print('l_node[i_node] = ',l_node[i_node])
+                if l_node[i_node]:
+                    i_frag_lev[i_lev-1] += 1
+            else:
+                i_node -= 1
+                m_left[i_node] = -1
+
+    n_frag_tot = i_frag
+    # c_sib = 0
+    # for sib in i_par:
+    #     if sib != 0:
+    #         c_sib += 1
+    #         print(sib)
+    # print('number of non-zero elements in i_par: ',c_sib)
+    j_frag = -1
+    for i_lev_wk in range(n_lev):
+        #print('Or here?---------------------?')
+        i_lev = 0
+        i_frag  = 0
+        while i_frag >= 0:
+            while i_lev < i_lev_wk and i_child[i_frag] > 0:
+                i_frag = i_child[i_frag]
+                i_lev += 1
+            if i_lev == i_lev_wk:
+                if jp_frag[i_lev_wk]<0:
+                    jp_frag[i_lev_wk] = j_frag +1
+                while i_frag >= 0:
+                    #print('Or here?---------------------?')
+                    j_frag += 1
+                    # print('j_frag = ',j_frag)
+                    j_index[i_frag] = j_frag
+                    n_frag_lev[i_lev_wk] += 1
+                    merger_tree[j_frag].mhalo = m_tr[i_frag]
+                    merger_tree[j_frag].jlevel = i_lev_wk
+
+                    if i_lev > 0:
+                        merger_tree[j_frag].parent = merger_tree[j_index[i_par[i_frag]]]
+                    else:
+                        merger_tree[j_frag].parent = None
+                    i_frag_prev = i_frag
+                    i_frag = i_sib[i_frag]
+                i_frag = i_frag_prev
+                if i_lev > 0:
+                    i_lev -=1
+                    i_frag = i_par[i_frag]
+        
+            while i_sib[i_frag] < 0 and i_lev > 0:
+                i_lev -= 1
+                i_frag = i_par[i_frag]
+            if i_lev > 0:
+                i_frag = i_sib[i_frag]
+            else:
+                i_frag = -1
+    for i_frag in range(n_frag_tot):
+        j_frag = j_index[i_frag]
+        i_frag_c = i_child[i_frag]
+        if i_frag_c >= 0:
+            child_ref[j_frag] = j_index[i_frag_c]
+
+            merger_tree[j_frag].child = merger_tree[j_index[i_frag_c]]
+            n_ch = 0
+            while i_frag_c >= 0:
+                n_ch += 1
+                i_frag_c = i_sib[i_frag_c]
+            merger_tree[j_frag].nchild = n_ch
+
+    merger_tree = build_sibling(merger_tree,n_frag_tot)
+    
+    i_err = 0
+    return merger_tree
+
+def get_tree_vals(
+    int i,
+    int i_seed_0,
+    double m_0,
+    double a_0,
+    double m_min,
+    double[:] a_lev,
+    int n_lev,
+    int n_frag_max,
+    int n_frag_tot=0):
+
+    i_seed_0 -=19
+    cdef:
+        int i_seed = i_seed_0
+        list merger_tree
+        Tree_Node this_node
+        int count = 0
+    random.seed(i_seed)
+    merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)
+
+    print('Made a tree ',i+1)
+    this_node = merger_tree[0]
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+
+    print('Number of nodes in tree',i+1,'is',count)
+    
+    print('Example information from tree:')
+    this_node = merger_tree[0]
+    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    this_node = this_node.child
+    print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    this_node = this_node.sibling
+    print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    return count,i_seed,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
