@@ -1,10 +1,10 @@
-from Make_Tree import *
+# from Make_Tree import *
 # from Tree_Node_and_Memory import *
 # from Moving_in_Tree import *
 # from walk_the_tree import walk_tree
 import random
 # from Delta_crit import *
-from classic_trees import functions, node_vals_and_counter
+from classic_trees import functions, get_tree_vals#node_vals_and_counter, make_tree
 import numpy as np
 # import h5py
 import time
@@ -31,7 +31,7 @@ n_halo_lev = 10
 
 mp_halo = 1e13
 m_res   = 1e8
-n_tree  = 1
+n_tree  = 10
 
 G_0=0.57
 gamma_1=0.38
@@ -71,36 +71,35 @@ jp_halo = []
 n_frag_max = 10
 start_offset = 0
 for i in range(n_tree):
-    iter = 1
-    start = time.time()
-    while i_err != 0 or iter == 1:
-        if iter == 1:
-            i_seed_0 -= 19
-        i_seed = i_seed_0
-        random.seed(i_seed)
-        '''
-        for j in range(n_halo_max):
-            merger_tree_aux[j].index = j
-        merger_tree = merger_tree_aux'
-        '''
-        print('Making a tree...',i)
-        my_tree = make_tree(mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
-        # print(my_tree)
-        i_err = my_tree[0]
-        merger_tree = my_tree[-2]
-        iter +=1
-        #print(merger_tree)
-    print('Made a tree',i)
+    # iter = 1
+    # start = time.time()
+    # while i_err != 0 or iter == 1:
+    #     if iter == 1:
+    #         i_seed_0 -= 19
+    #     i_seed = i_seed_0
+    #     random.seed(i_seed)
+    #     '''
+    #     for j in range(n_halo_max):
+    #         merger_tree_aux[j].index = j
+    #     merger_tree = merger_tree_aux'
+    #     '''
+    #     print('Making a tree...',i)
+    #     my_tree = make_tree(mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
+    #     # print(my_tree)
+    #     i_err = my_tree[0]
+    #     merger_tree = my_tree[1]
+    #     iter +=1
+    #     #print(merger_tree)
+    # print('Made a tree',i)
     '''
     for i in range(len(merger_tree)):
         print('We have the following values for mhalo in node ',i,' as:')
         print(merger_tree[i].mhalo)
     '''
-    end = time.time()
-    print(f"Elapsed time in make_tree: {end - start} seconds")
-    this_node = merger_tree[0]
-    print('m_halo = ',this_node.mhalo)
-    count = 0
+    # end = time.time()
+    # print(f"Elapsed time in make_tree: {end - start} seconds")
+    # this_node = merger_tree[0]
+    # print('m_halo = ',this_node.mhalo)
     # arr_mhalo = np.zeros(n_halo_max)-1
     # arr_nodid = np.zeros(n_halo_max,dtype='int_')-1
     # arr_treeid= np.zeros(n_halo_max,dtype='int_')-1
@@ -136,17 +135,17 @@ for i in range(n_tree):
     # arr_1prog = arr_1prog[0:count]
     # arr_desc  = arr_desc[0:count]
     start = time.time()
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(count,this_node,n_halo_max,merger_tree)
+    count,i_seed_0,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
 
-    print('Number of nodes in tree',i+1,'is',count)
+    # print('Number of nodes in tree',i+1,'is',count)
     
-    print('Example information from tree:')
-    this_node = merger_tree[0]
-    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-    this_node = this_node.child
-    print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    this_node = this_node.sibling
-    print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    # print('Example information from tree:')
+    # this_node = merger_tree[0]
+    # print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    # this_node = this_node.child
+    # print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    # this_node = this_node.sibling
+    # print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     # print(arr_mhalo)
     # with h5py.File('./Code_own/Trees/tree_selftest1e12_2.hdf5','a') as f:
     #     # Create or access groups of the merger tree file
@@ -179,4 +178,4 @@ for i in range(n_tree):
 
 
     end = time.time()
-    print(f"Elapsed time walking tree: {end - start} seconds")
+    print(f"Elapsed time: {end - start} seconds")
