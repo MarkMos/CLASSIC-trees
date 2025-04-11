@@ -1,8 +1,9 @@
-from Make_Tree import *
-from Tree_Node_and_Memory import *
-from Moving_in_Tree import *
-from Delta_crit import *
-from sigma_cdm_func import *
+# from Make_Tree import *
+# from Tree_Node_and_Memory import *
+# from Moving_in_Tree import *
+# from Delta_crit import *
+# from sigma_cdm_func import *
+from classic_trees import get_tree_vals, functions
 import random
 import numpy as np
 import h5py
@@ -13,70 +14,73 @@ start = time.time()
 
 lock = Lock()
 
+filename = './CLASSIC-trees/Data/flat.txt'
+DELTA = functions(filename)
+
 def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo):
-    iter = 1
-    i_err= 1 #Initialising error
+    # iter = 1
+    # i_err= 1 #Initialising error
 
-    while i_err != 0 or iter == 1:
-        if iter == 1:
-            i_seed_0 -= 19*(1+i)
-        i_seed = i_seed_0
-        random.seed(i_seed)
-        print('Making a tree...',i)
+    # while i_err != 0 or iter == 1:
+    #     if iter == 1:
+    #         i_seed_0 -= 19*(1+i)
+    #     i_seed = i_seed_0
+    #     random.seed(i_seed)
+    #     print('Making a tree...',i)
 
-        # Make a merger-tree using the make_tree function
-        my_tree = make_tree(mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
-        i_err = my_tree[0]
-        merger_tree = my_tree[-2]
-        iter +=1
-    print('Made a tree',i)
-
+    #     # Make a merger-tree using the make_tree function
+    #     my_tree = make_tree(mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
+    #     i_err = my_tree[0]
+    #     merger_tree = my_tree[-2]
+    #     iter +=1
+    # print('Made a tree',i)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
     # Initialising arrays to save important quantaties of the merger-tree and
     # walking through tree to count the number of nodes using walk_tree function
-    this_node = merger_tree[0]
-    count = 0
-    arr_mhalo = np.zeros(n_halo_max)-1              # array for halo masses
-    arr_nodid = np.zeros(n_halo_max,dtype='int_')-1 # array for the node id's
-    arr_treeid= np.zeros(n_halo_max,dtype='int_')-1 # array for the tree id's
-    arr_time  = np.zeros(n_halo_max,dtype='int_')-1 # array for the scale factor of the nodes
-    arr_1prog = np.zeros(n_halo_max,dtype='int_')-1 # array for first progenitors of nodes
-    arr_desc  = np.zeros(n_halo_max,dtype='int_')-1 # array for the descandant of nodes
-    while this_node is not None:
-        node_ID = count
-        arr_nodid[node_ID] = node_ID
-        arr_mhalo[node_ID] = this_node.mhalo
-        arr_treeid[node_ID]= i
-        arr_time[node_ID]  = this_node.jlevel
-        if this_node.child is not None:
-            arr_1prog[node_ID] = merger_tree.index(this_node.child)
-        else:
-            arr_1prog[node_ID] = -1
-        if this_node.parent is not None:
-            arr_desc[node_ID] = merger_tree.index(this_node.parent)
-        else:
-            arr_desc[node_ID] = -1
-        count +=1
-        this_node = walk_tree(this_node)
+    # this_node = merger_tree[0]
+    # count = 0
+    # arr_mhalo = np.zeros(n_halo_max)-1              # array for halo masses
+    # arr_nodid = np.zeros(n_halo_max,dtype='int_')-1 # array for the node id's
+    # arr_treeid= np.zeros(n_halo_max,dtype='int_')-1 # array for the tree id's
+    # arr_time  = np.zeros(n_halo_max,dtype='int_')-1 # array for the scale factor of the nodes
+    # arr_1prog = np.zeros(n_halo_max,dtype='int_')-1 # array for first progenitors of nodes
+    # arr_desc  = np.zeros(n_halo_max,dtype='int_')-1 # array for the descandant of nodes
+    # while this_node is not None:
+    #     node_ID = count
+    #     arr_nodid[node_ID] = node_ID
+    #     arr_mhalo[node_ID] = this_node.mhalo
+    #     arr_treeid[node_ID]= i
+    #     arr_time[node_ID]  = this_node.jlevel
+    #     if this_node.child is not None:
+    #         arr_1prog[node_ID] = merger_tree.index(this_node.child)
+    #     else:
+    #         arr_1prog[node_ID] = -1
+    #     if this_node.parent is not None:
+    #         arr_desc[node_ID] = merger_tree.index(this_node.parent)
+    #     else:
+    #         arr_desc[node_ID] = -1
+    #     count +=1
+    #     this_node = walk_tree(this_node)
 
     # Trim arrays to actual size
-    arr_mhalo = arr_mhalo[0:count]
-    arr_nodid = arr_nodid[0:count]
-    arr_treeid= arr_treeid[0:count]
-    arr_time  = arr_time[0:count]
-    arr_1prog = arr_1prog[0:count]
-    arr_desc  = arr_desc[0:count]
+    # arr_mhalo = arr_mhalo[0:count]
+    # arr_nodid = arr_nodid[0:count]
+    # arr_treeid= arr_treeid[0:count]
+    # arr_time  = arr_time[0:count]
+    # arr_1prog = arr_1prog[0:count]
+    # arr_desc  = arr_desc[0:count]
     count = np.array([count],dtype='int_')
     i = np.array([i],dtype='int_')
 
-    print('Number of nodes in tree',i+1,'is',count)
+    # print('Number of nodes in tree',i+1,'is',count)
     
-    print('Example information from tree:')
-    this_node = merger_tree[0]
-    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-    this_node = this_node.child
-    print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    this_node = this_node.sibling
-    print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    # print('Example information from tree:')
+    # this_node = merger_tree[0]
+    # print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    # this_node = this_node.child
+    # print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    # this_node = this_node.sibling
+    # print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     return {
         "arr_mhalo": arr_mhalo,
         "arr_nodid": arr_nodid,
@@ -107,7 +111,7 @@ def parallel_exe(n_tree,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_h
     nth_run = False
     start_offset = 0
     for result in results:
-        with h5py.File('./Code_own/Trees/tree_selftestfast_r100.hdf5','a') as f:
+        with h5py.File('./Code_own/Trees/tree_selftestfast_r1000.hdf5','a') as f:
             # Create or access groups of the merger tree file
             if 'TreeHalos' not in f:
                 grp1 = f.create_group('TreeHalos')
@@ -136,7 +140,7 @@ def parallel_exe(n_tree,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_h
         start_offset += result['count']
 
 if __name__ == '__main__':
-    n_tree = 100
+    n_tree = 10
     i_seed_0 = -8635
     mp_halo = 1e13
     a_halo = 1
@@ -150,7 +154,7 @@ if __name__ == '__main__':
     for i_lev in range(1,n_lev+1):
         a_lev.append(1/(1 + z_max*(i_lev-1)/(n_lev-1)))
         #print(a_lev)
-        d_c = delta_crit(a_lev[i_lev-1])
+        d_c = DELTA.delta_crit(a_lev[i_lev-1])
         print('z = ',1/a_lev[i_lev-1]-1,' at which delta_crit = ',d_c)
     a_lev = np.array(a_lev)
     parallel_exe(n_tree,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
