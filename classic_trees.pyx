@@ -763,16 +763,12 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
         node.sibling= None
         merger_tree[i_frag] = node
     a_lev[0] = a_0
-    #print('a_lev = ',a_lev)
     for i_lev in range(n_lev):
         w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
-    #print(w_lev)
-    #w_lev = np.loadtxt('./Code_own/delta_crit_values.txt')
     i_node = 0
     w_fin = w_lev[n_lev-1]
     
     i_frag_lev = [-1]*n_lev
-    #print('m_0 = ',m_0)
     m_left[0] = m_0
     m_right[0] = -1
     m = m_0
@@ -787,18 +783,12 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
     i_par[0] = -1
     i_sib[0] = -1
     i_child[0] = -1
-    #print('m = ',m)
     count = 0
     while m_left[i_node] > 0.0:
         count += 1
-        # print('count: ',count)
         dw_max = w_lev[i_lev] - w
-        #print('i_lev = ',i_lev)
-        #print('dw_max = ',dw_max)
         dw,n_prog,m_prog,m_minlast = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
-        #print('dw = ',dw)
         w += dw
-        #print('m_prog = ',m_prog)
         if n_prog==2:
             i_node += 1
             w_node[i_node] = w
@@ -812,13 +802,11 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
             m = 0.0
             m_left[i_node] = -1
         if w == w_lev[i_lev] and  n_prog > 0.0:
-            #print('In here?---------------------?')
             if i_frag+2 > n_frag_max:
                 i_err = 1
                 return None
 
             i_frag += 1
-            #print('i_lev = ',i_lev)
             m_tr[i_frag] = m_prog[0]
             i_par[i_frag] = i_frag_lev[i_lev-1]
             i_sib[i_frag] = -1
@@ -862,18 +850,11 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
                 m_right[i_node] = -1
                 w = w_node[i_node]
                 m = m_left[i_node]
-                # print('w = ',w)
-                # print('w[i_lev-1] = ',w_lev[i_lev-1])
-                # print('w[i_lev] = ',w_lev[i_lev])
                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:
                     iw = bisect.bisect_left(w_lev,w) #locate(w_lev, n_lev, w)
                     i_lev = iw
-                    #print('i_lev = ',i_lev)
-                    #print(w_lev[i_lev],' = ',w)
                     if w_lev[i_lev] == w:
-                        #print('briefly here --------------!')
                         i_lev += 1
-                #print('l_node[i_node] = ',l_node[i_node])
                 if l_node[i_node]:
                     i_frag_lev[i_lev-1] += 1
             else:
@@ -881,15 +862,8 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
                 m_left[i_node] = -1
 
     n_frag_tot = i_frag
-    # c_sib = 0
-    # for sib in i_par:
-    #     if sib != 0:
-    #         c_sib += 1
-    #         print(sib)
-    # print('number of non-zero elements in i_par: ',c_sib)
     j_frag = -1
     for i_lev_wk in range(n_lev):
-        #print('Or here?---------------------?')
         i_lev = 0
         i_frag  = 0
         while i_frag >= 0:
@@ -900,9 +874,7 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
                 if jp_frag[i_lev_wk]<0:
                     jp_frag[i_lev_wk] = j_frag +1
                 while i_frag >= 0:
-                    #print('Or here?---------------------?')
                     j_frag += 1
-                    # print('j_frag = ',j_frag)
                     j_index[i_frag] = j_frag
                     n_frag_lev[i_lev_wk] += 1
                     merger_tree[j_frag].mhalo = m_tr[i_frag]
@@ -955,7 +927,7 @@ def get_tree_vals(
     int n_frag_max,
     int n_frag_tot=0):
 
-    i_seed_0 -=19
+    i_seed_0 -=19*(1+i)
     cdef:
         int i_seed = i_seed_0
         list merger_tree
@@ -977,4 +949,4 @@ def get_tree_vals(
     print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     this_node = this_node.sibling
     print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    return count,i_seed,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
+    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
