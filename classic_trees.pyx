@@ -258,6 +258,7 @@ cdef int tree_index(Tree_Node* node):
     if node is NULL:
         raise ValueError('Node is not associated with any tree')
     index = node.index
+    print(index)
     return index
 
 # class of the build up of the siblings from a certain Tree Node
@@ -1050,7 +1051,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
             while i_frag_c >= 0:
                 n_ch += 1
                 i_frag_c = i_sib[i_frag_c]
-            print('n_ch = ',n_ch)
+            #print('n_ch = ',n_ch)
             merger_tree[j_frag].nchild = n_ch
             #print(i_frag)
     print('out of here')
@@ -1117,6 +1118,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
     for k in range(n_frag_tot):
        merger_tree[k].nchild = i_sib[k]
     '''
+    print(merger_tree[0].index,merger_tree[100].index,merger_tree[1000].index)
     merger_tree = build_sibling(merger_tree,n_frag_tot)
     
     i_err = 0
