@@ -31,7 +31,7 @@ n_halo_lev = 10
 
 mp_halo = 1e13
 m_res   = 1e8
-n_tree  = 10
+n_tree  = 1
 
 G_0=0.57
 gamma_1=0.38
@@ -135,7 +135,7 @@ for i in range(n_tree):
     # arr_1prog = arr_1prog[0:count]
     # arr_desc  = arr_desc[0:count]
     start = time.time()
-    count,i_seed_0,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
 
     # print('Number of nodes in tree',i+1,'is',count)
     
