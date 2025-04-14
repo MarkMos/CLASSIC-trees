@@ -779,6 +779,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include "numpy/ufuncobject.h"
 #include <math.h>
 #include <stdlib.h>
+#include "stdlib.h"
 #include "pythread.h"
 #include "pystate.h"
 #ifdef _OPENMP
@@ -1276,7 +1277,7 @@ typedef npy_double __pyx_t_5numpy_double_t;
 typedef npy_longdouble __pyx_t_5numpy_longdouble_t;
 
 /* "classic_trees.pyx":13
- * from libc.stdlib cimport malloc, free
+ * from libc.stdlib cimport malloc, free, rand, srand
  * 
  * ctypedef np.float64_t DTYPE_t             # <<<<<<<<<<<<<<
  * DTYPE = np.float64
@@ -1382,8 +1383,8 @@ struct __pyx_t_13classic_trees_Tree_Node {
   double mhalo;
 };
 
-/* "classic_trees.pyx":580
- *         return b
+/* "classic_trees.pyx":584
+ *     int RAND_MAX
  * 
  * cdef struct split_result:             # <<<<<<<<<<<<<<
  *     double dw
@@ -1396,7 +1397,7 @@ struct __pyx_t_13classic_trees_split_result {
   double m_min_last;
 };
 
-/* "classic_trees.pyx":832
+/* "classic_trees.pyx":836
  * cdef DELTA = functions(filename)
  * 
  * cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev,int n_frag_max,int n_frag_tot=0):             # <<<<<<<<<<<<<<
@@ -1408,7 +1409,7 @@ struct __pyx_opt_args_13classic_trees_make_tree {
   int n_frag_tot;
 };
 
-/* "classic_trees.pyx":319
+/* "classic_trees.pyx":320
  *     return merger_tree
  * 
  * cdef class functions:             # <<<<<<<<<<<<<<
@@ -1793,38 +1794,6 @@ static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
 /* PyObjectCall2Args.proto */
 static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
 
-/* GetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
-#endif
-
-/* SwapException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSwap(type, value, tb)  __Pyx__ExceptionSwap(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#else
-static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb);
-#endif
-
-/* GetTopmostException.proto */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
-#endif
-
-/* SaveResetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-#else
-#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
-#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
-#endif
-
 /* RaiseDoubleKeywords.proto */
 static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
 
@@ -1995,16 +1964,6 @@ static Py_ssize_t __Pyx_minusones[] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 static Py_ssize_t __Pyx_zeros[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 #define __Pyx_BufPtrStrided1d(type, buf, i0, s0) (type)((char*)buf + i0 * s0)
-/* PyObjectCallNoArg.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
-#else
-#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
-#endif
-
-/* PyIntCompare.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_EqObjC(PyObject *op1, PyObject *op2, long intval, long inplace);
-
 /* RaiseTooManyValuesToUnpack.proto */
 static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
 
@@ -2031,6 +1990,30 @@ static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name);
 
 /* HasAttr.proto */
 static CYTHON_INLINE int __Pyx_HasAttr(PyObject *, PyObject *);
+
+/* GetTopmostException.proto */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
+#endif
+
+/* SaveResetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+#else
+#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
+#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
+#endif
+
+/* GetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
+#endif
 
 /* IncludeStringH.proto */
 #include <string.h>
@@ -2079,6 +2062,14 @@ static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
 
 /* RaiseNoneIterError.proto */
 static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void);
+
+/* SwapException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSwap(type, value, tb)  __Pyx__ExceptionSwap(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#else
+static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb);
+#endif
 
 /* FastTypeChecks.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -2551,7 +2542,6 @@ static double __pyx_f_13classic_trees_min3(double, double, double); /*proto*/
 static double __pyx_f_13classic_trees_min2(double, double); /*proto*/
 static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split(double, double, double, double, double, double, double); /*proto*/
 static PyObject *__pyx_f_13classic_trees_locate(double *, int, double); /*proto*/
-static int *__pyx_f_13classic_trees_indexxx(int, __Pyx_memviewslice, int *); /*proto*/
 static int *__pyx_f_13classic_trees_indexx(int, __Pyx_memviewslice, int *); /*proto*/
 static int *__pyx_f_13classic_trees_indexsh(int, __Pyx_memviewslice, int *); /*proto*/
 static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_tree(double, double, double, __Pyx_memviewslice, int, int, struct __pyx_opt_args_13classic_trees_make_tree *__pyx_optional_args); /*proto*/
@@ -2634,10 +2624,10 @@ static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_mass[] = "  mass =";
 static const char __pyx_k_mode[] = "mode";
+static const char __pyx_k_n_ch[] = "n_ch = ";
 static const char __pyx_k_name[] = "name";
 static const char __pyx_k_ndim[] = "ndim";
 static const char __pyx_k_pack[] = "pack";
-static const char __pyx_k_seed[] = "seed";
 static const char __pyx_k_size[] = "size";
 static const char __pyx_k_step[] = "step";
 static const char __pyx_k_stop[] = "stop";
@@ -2665,12 +2655,12 @@ static const char __pyx_k_value[] = "value";
 static const char __pyx_k_bisect[] = "bisect";
 static const char __pyx_k_encode[] = "encode";
 static const char __pyx_k_format[] = "format";
+static const char __pyx_k_i_frag[] = "i_frag = ";
 static const char __pyx_k_i_seed[] = "i_seed";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_interp[] = "interp";
 static const char __pyx_k_name_2[] = "__name__";
 static const char __pyx_k_pickle[] = "pickle";
-static const char __pyx_k_random[] = "random";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_unpack[] = "unpack";
@@ -2720,16 +2710,17 @@ static const char __pyx_k_Made_a_tree[] = "Made a tree ";
 static const char __pyx_k_MemoryError[] = "MemoryError";
 static const char __pyx_k_PickleError[] = "PickleError";
 static const char __pyx_k_bisect_left[] = "bisect_left";
+static const char __pyx_k_child_index[] = "child_index = ";
 static const char __pyx_k_merger_tree[] = "merger_tree";
 static const char __pyx_k_out_of_here[] = "out of here";
 static const char __pyx_k_split_R_q_1[] = "split(): R_q > 1";
-static const char __pyx_k_Up_till_here[] = "Up till here!";
 static const char __pyx_k_my_integrand[] = "my_integrand";
 static const char __pyx_k_n_frag_tot_2[] = "n_frag_tot";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_split_beta_0[] = "split(): beta <= 0";
 static const char __pyx_k_stringsource[] = "stringsource";
 static const char __pyx_k_Got_till_here[] = "Got till here!";
+static const char __pyx_k_Siblings_mass[] = "Siblings mass = ";
 static const char __pyx_k_classic_trees[] = "classic_trees";
 static const char __pyx_k_get_tree_vals[] = "get_tree_vals";
 static const char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
@@ -2739,7 +2730,6 @@ static const char __pyx_k_First_for_loop[] = "First for loop";
 static const char __pyx_k_View_MemoryView[] = "View.MemoryView";
 static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static const char __pyx_k_dtype_is_object[] = "dtype_is_object";
-static const char __pyx_k_end_point_range[] = "end point range: ";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_scipy_integrate[] = "scipy.integrate";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
@@ -2748,7 +2738,6 @@ static const char __pyx_k_astropy_constants[] = "astropy.constants";
 static const char __pyx_k_classic_trees_pyx[] = "classic_trees.pyx";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_scipy_interpolate[] = "scipy.interpolate";
-static const char __pyx_k_start_point_range[] = "start point range: ";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
@@ -2772,12 +2761,14 @@ static const char __pyx_k_Example_information_from_tree[] = "Example information
 static const char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
 static const char __pyx_k_strided_and_direct_or_indirect[] = "<strided and direct or indirect>";
 static const char __pyx_k_Node_is_not_associated_with_any[] = "Node is not associated with any tree";
+static const char __pyx_k_number_of_children_in_this_node[] = "number of children in this node: ";
 static const char __pyx_k_Buffer_view_does_not_expose_stri[] = "Buffer view does not expose strides";
 static const char __pyx_k_Can_only_create_a_buffer_that_is[] = "Can only create a buffer that is contiguous in memory.";
 static const char __pyx_k_Cannot_assign_to_read_only_memor[] = "Cannot assign to read-only memoryview";
 static const char __pyx_k_Cannot_create_writable_memory_vi[] = "Cannot create writable memory view from read-only memoryview";
 static const char __pyx_k_Empty_shape_tuple_for_cython_arr[] = "Empty shape tuple for cython.array";
 static const char __pyx_k_Failed_to_allocate_memory_for_ar[] = "Failed to allocate memory for arrays in node_vals_counter function!";
+static const char __pyx_k_In_node_vals_and_counter_functio[] = "In node_vals_and_counter function";
 static const char __pyx_k_Incompatible_checksums_0x_x_vs_0[] = "Incompatible checksums (0x%x vs (0x6e0bb00, 0x060fdf8, 0x9ecc675) = (a, a_min, data, delta_c, n_sum, n_table, n_v))";
 static const char __pyx_k_Indirect_dimensions_not_supporte[] = "Indirect dimensions not supported";
 static const char __pyx_k_Invalid_mode_expected_c_or_fortr[] = "Invalid mode, expected 'c' or 'fortran', got %s";
@@ -2785,7 +2776,6 @@ static const char __pyx_k_Out_of_bounds_on_buffer_access_a[] = "Out of bounds on
 static const char __pyx_k_Unable_to_convert_item_to_object[] = "Unable to convert item to object";
 static const char __pyx_k_delta_crit_FATAL_look_up_tale_on[] = "delta_crit(): FATAL - look up tale only for a<1 \n a=";
 static const char __pyx_k_got_differing_extents_in_dimensi[] = "got differing extents in dimension %d (got %d and %d)";
-static const char __pyx_k_make_tree_n_child1_n_ch_max_incr[] = "make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
 static const char __pyx_k_numpy__core_multiarray_failed_to[] = "numpy._core.multiarray failed to import";
 static const char __pyx_k_numpy__core_umath_failed_to_impo[] = "numpy._core.umath failed to import";
@@ -2813,6 +2803,7 @@ static PyObject *__pyx_kp_u_First_progenitor_mass;
 static PyObject *__pyx_n_s_G;
 static PyObject *__pyx_kp_u_Got_till_here;
 static PyObject *__pyx_n_s_ImportError;
+static PyObject *__pyx_kp_u_In_node_vals_and_counter_functio;
 static PyObject *__pyx_kp_s_Incompatible_checksums_0x_x_vs_0;
 static PyObject *__pyx_kp_s_Incompatible_checksums_0x_x_vs_0_2;
 static PyObject *__pyx_n_s_IndexError;
@@ -2830,10 +2821,10 @@ static PyObject *__pyx_n_b_O;
 static PyObject *__pyx_kp_s_Out_of_bounds_on_buffer_access_a;
 static PyObject *__pyx_n_s_PickleError;
 static PyObject *__pyx_n_s_R;
+static PyObject *__pyx_kp_u_Siblings_mass;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
 static PyObject *__pyx_n_s_UnivariateSpline;
-static PyObject *__pyx_kp_u_Up_till_here;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
 static PyObject *__pyx_n_s_a;
@@ -2854,6 +2845,7 @@ static PyObject *__pyx_n_s_bisect;
 static PyObject *__pyx_n_s_bisect_left;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
+static PyObject *__pyx_kp_u_child_index;
 static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_classic_trees;
 static PyObject *__pyx_kp_s_classic_trees_pyx;
@@ -2870,7 +2862,6 @@ static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_dtype_is_object;
 static PyObject *__pyx_n_s_empty_like;
 static PyObject *__pyx_n_s_encode;
-static PyObject *__pyx_kp_u_end_point_range;
 static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_error;
 static PyObject *__pyx_n_s_filename;
@@ -2885,6 +2876,7 @@ static PyObject *__pyx_n_s_get_tree_vals;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
 static PyObject *__pyx_n_s_i;
+static PyObject *__pyx_kp_u_i_frag;
 static PyObject *__pyx_n_s_i_seed;
 static PyObject *__pyx_n_s_i_seed_0;
 static PyObject *__pyx_n_s_id;
@@ -2903,13 +2895,13 @@ static PyObject *__pyx_n_s_m;
 static PyObject *__pyx_n_s_m_0;
 static PyObject *__pyx_n_s_m_min;
 static PyObject *__pyx_n_s_main;
-static PyObject *__pyx_kp_u_make_tree_n_child1_n_ch_max_incr;
 static PyObject *__pyx_kp_u_mass;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_merger_tree;
 static PyObject *__pyx_n_s_mode;
 static PyObject *__pyx_n_s_my_integrand;
 static PyObject *__pyx_n_s_n;
+static PyObject *__pyx_kp_u_n_ch;
 static PyObject *__pyx_n_s_n_frag_max;
 static PyObject *__pyx_kp_u_n_frag_tot;
 static PyObject *__pyx_n_s_n_frag_tot_2;
@@ -2920,6 +2912,7 @@ static PyObject *__pyx_n_s_ndim;
 static PyObject *__pyx_n_s_new;
 static PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
 static PyObject *__pyx_n_s_np;
+static PyObject *__pyx_kp_u_number_of_children_in_this_node;
 static PyObject *__pyx_kp_u_number_of_progenitors;
 static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_kp_u_numpy__core_multiarray_failed_to;
@@ -2940,7 +2933,6 @@ static PyObject *__pyx_n_s_pyx_type;
 static PyObject *__pyx_n_s_pyx_unpickle_Enum;
 static PyObject *__pyx_n_s_pyx_unpickle_functions;
 static PyObject *__pyx_n_s_pyx_vtable;
-static PyObject *__pyx_n_s_random;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_reduce;
 static PyObject *__pyx_n_s_reduce_cython;
@@ -2948,7 +2940,6 @@ static PyObject *__pyx_n_s_reduce_ex;
 static PyObject *__pyx_n_s_s;
 static PyObject *__pyx_n_s_scipy_integrate;
 static PyObject *__pyx_n_s_scipy_interpolate;
-static PyObject *__pyx_n_s_seed;
 static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
 static PyObject *__pyx_n_s_shape;
@@ -2958,7 +2949,6 @@ static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_kp_u_split_R_q_1;
 static PyObject *__pyx_kp_u_split_beta_0;
 static PyObject *__pyx_n_s_start;
-static PyObject *__pyx_kp_u_start_point_range;
 static PyObject *__pyx_n_s_step;
 static PyObject *__pyx_n_s_stop;
 static PyObject *__pyx_kp_s_strided_and_direct;
@@ -3031,12 +3021,10 @@ static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); 
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new__memoryviewslice(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_float_0_0;
 static PyObject *__pyx_float_0_1;
 static PyObject *__pyx_float_1e6;
 static PyObject *__pyx_float_1e7;
 static PyObject *__pyx_float_1e15;
-static PyObject *__pyx_float_1_00001;
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_2;
@@ -3051,10 +3039,10 @@ static PyObject *__pyx_int_166512245;
 static PyObject *__pyx_int_184977713;
 static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_tuple_;
-static PyObject *__pyx_slice__4;
+static PyObject *__pyx_slice__5;
 static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__3;
-static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_tuple__4;
 static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
@@ -4722,8 +4710,8 @@ static struct __pyx_t_13classic_trees_Tree_Node *__pyx_f_13classic_trees_walk_tr
  *     return next_node
  * 
  * cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):             # <<<<<<<<<<<<<<
+ *     print('In node_vals_and_counter function')
  *     '''
- *     Function to count the number of nodes in a merger tree and get values out of it.
  */
 
 static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, struct __pyx_t_13classic_trees_Tree_Node *__pyx_v_this_node, int __pyx_v_n_halo_max, CYTHON_UNUSED struct __pyx_t_13classic_trees_Tree_Node **__pyx_v_merger_tree) {
@@ -4750,9 +4738,9 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
   int __pyx_8genexpr5__pyx_v_j;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
+  PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
+  int __pyx_t_3;
   double __pyx_t_4;
   int __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
@@ -4760,19 +4748,23 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
   int __pyx_t_8;
   int __pyx_t_9;
   PyObject *__pyx_t_10 = NULL;
-  char const *__pyx_t_11;
-  PyObject *__pyx_t_12 = NULL;
-  PyObject *__pyx_t_13 = NULL;
-  PyObject *__pyx_t_14 = NULL;
-  PyObject *__pyx_t_15 = NULL;
-  PyObject *__pyx_t_16 = NULL;
-  PyObject *__pyx_t_17 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("node_vals_and_counter", 0);
 
-  /* "classic_trees.pyx":210
+  /* "classic_trees.pyx":193
+ * 
+ * cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
+ *     print('In node_vals_and_counter function')             # <<<<<<<<<<<<<<
+ *     '''
+ *     Function to count the number of nodes in a merger tree and get values out of it.
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "classic_trees.pyx":211
  *     '''
  *     cdef:
  *         int count = 0             # <<<<<<<<<<<<<<
@@ -4781,7 +4773,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_count = 0;
 
-  /* "classic_trees.pyx":211
+  /* "classic_trees.pyx":212
  *     cdef:
  *         int count = 0
  *         double* arr_mhalo = NULL #<double*>malloc(n_halo_max*sizeof(double))             # <<<<<<<<<<<<<<
@@ -4790,7 +4782,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_mhalo = NULL;
 
-  /* "classic_trees.pyx":212
+  /* "classic_trees.pyx":213
  *         int count = 0
  *         double* arr_mhalo = NULL #<double*>malloc(n_halo_max*sizeof(double))
  *         int* arr_nodid = NULL #<int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4799,7 +4791,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_nodid = NULL;
 
-  /* "classic_trees.pyx":213
+  /* "classic_trees.pyx":214
  *         double* arr_mhalo = NULL #<double*>malloc(n_halo_max*sizeof(double))
  *         int* arr_nodid = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_treeid = NULL #<int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4808,7 +4800,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_treeid = NULL;
 
-  /* "classic_trees.pyx":214
+  /* "classic_trees.pyx":215
  *         int* arr_nodid = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_treeid = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_time = NULL #<int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4817,7 +4809,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_time = NULL;
 
-  /* "classic_trees.pyx":215
+  /* "classic_trees.pyx":216
  *         int* arr_treeid = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_time = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_1prog = NULL #<int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4826,7 +4818,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_1prog = NULL;
 
-  /* "classic_trees.pyx":216
+  /* "classic_trees.pyx":217
  *         int* arr_time = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_1prog = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int* arr_desc = NULL #<int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4835,7 +4827,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_desc = NULL;
 
-  /* "classic_trees.pyx":218
+  /* "classic_trees.pyx":219
  *         int* arr_desc = NULL #<int*>malloc(n_halo_max*sizeof(int))
  *         int node_ID
  *         bint malloc_failed = 0             # <<<<<<<<<<<<<<
@@ -4844,7 +4836,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_malloc_failed = 0;
 
-  /* "classic_trees.pyx":219
+  /* "classic_trees.pyx":220
  *         int node_ID
  *         bint malloc_failed = 0
  *     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))             # <<<<<<<<<<<<<<
@@ -4853,7 +4845,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_mhalo = ((double *)malloc((__pyx_v_n_halo_max * (sizeof(double)))));
 
-  /* "classic_trees.pyx":220
+  /* "classic_trees.pyx":221
  *         bint malloc_failed = 0
  *     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
  *     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4862,7 +4854,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_nodid = ((int *)malloc((__pyx_v_n_halo_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":221
+  /* "classic_trees.pyx":222
  *     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
  *     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4871,7 +4863,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_treeid = ((int *)malloc((__pyx_v_n_halo_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":222
+  /* "classic_trees.pyx":223
  *     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_time = <int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4880,7 +4872,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_time = ((int *)malloc((__pyx_v_n_halo_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":223
+  /* "classic_trees.pyx":224
  *     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_time = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4889,7 +4881,7 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_1prog = ((int *)malloc((__pyx_v_n_halo_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":224
+  /* "classic_trees.pyx":225
  *     arr_time = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_desc = <int*>malloc(n_halo_max*sizeof(int))             # <<<<<<<<<<<<<<
@@ -4898,754 +4890,557 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
  */
   __pyx_v_arr_desc = ((int *)malloc((__pyx_v_n_halo_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":225
+  /* "classic_trees.pyx":226
  *     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_desc = <int*>malloc(n_halo_max*sizeof(int))
  *     if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc):             # <<<<<<<<<<<<<<
  *         malloc_failed = 1
- *     try:
+ *     if malloc_failed:
  */
-  __pyx_t_2 = (__pyx_v_arr_mhalo != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = (__pyx_v_arr_mhalo != 0);
+  if (__pyx_t_3) {
   } else {
-    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = __pyx_t_3;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_arr_nodid != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = (__pyx_v_arr_nodid != 0);
+  if (__pyx_t_3) {
   } else {
-    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = __pyx_t_3;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_arr_treeid != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = (__pyx_v_arr_treeid != 0);
+  if (__pyx_t_3) {
   } else {
-    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = __pyx_t_3;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_arr_time != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = (__pyx_v_arr_time != 0);
+  if (__pyx_t_3) {
   } else {
-    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = __pyx_t_3;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_arr_1prog != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = (__pyx_v_arr_1prog != 0);
+  if (__pyx_t_3) {
   } else {
-    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = __pyx_t_3;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_arr_desc != 0);
-  __pyx_t_1 = __pyx_t_2;
+  __pyx_t_3 = (__pyx_v_arr_desc != 0);
+  __pyx_t_2 = __pyx_t_3;
   __pyx_L4_bool_binop_done:;
-  __pyx_t_2 = ((!__pyx_t_1) != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = ((!__pyx_t_2) != 0);
+  if (__pyx_t_3) {
 
-    /* "classic_trees.pyx":226
+    /* "classic_trees.pyx":227
  *     arr_desc = <int*>malloc(n_halo_max*sizeof(int))
  *     if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc):
  *         malloc_failed = 1             # <<<<<<<<<<<<<<
- *     try:
- *         if malloc_failed:
+ *     if malloc_failed:
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
  */
     __pyx_v_malloc_failed = 1;
 
-    /* "classic_trees.pyx":225
+    /* "classic_trees.pyx":226
  *     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
  *     arr_desc = <int*>malloc(n_halo_max*sizeof(int))
  *     if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc):             # <<<<<<<<<<<<<<
  *         malloc_failed = 1
- *     try:
+ *     if malloc_failed:
  */
   }
 
-  /* "classic_trees.pyx":227
+  /* "classic_trees.pyx":228
  *     if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc):
  *         malloc_failed = 1
- *     try:             # <<<<<<<<<<<<<<
- *         if malloc_failed:
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
+ *     if malloc_failed:             # <<<<<<<<<<<<<<
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
+ *     while this_node is not NULL:
  */
-  /*try:*/ {
+  __pyx_t_3 = (__pyx_v_malloc_failed != 0);
+  if (unlikely(__pyx_t_3)) {
+
+    /* "classic_trees.pyx":229
+ *         malloc_failed = 1
+ *     if malloc_failed:
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')             # <<<<<<<<<<<<<<
+ *     while this_node is not NULL:
+ *         node_ID = count
+ */
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 229, __pyx_L1_error)
 
     /* "classic_trees.pyx":228
+ *     if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc):
  *         malloc_failed = 1
- *     try:
- *         if malloc_failed:             # <<<<<<<<<<<<<<
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
- *         while this_node is not NULL:
+ *     if malloc_failed:             # <<<<<<<<<<<<<<
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
+ *     while this_node is not NULL:
  */
-    __pyx_t_2 = (__pyx_v_malloc_failed != 0);
-    if (unlikely(__pyx_t_2)) {
+  }
 
-      /* "classic_trees.pyx":229
- *     try:
- *         if malloc_failed:
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')             # <<<<<<<<<<<<<<
- *         while this_node is not NULL:
- *             node_ID = count
+  /* "classic_trees.pyx":230
+ *     if malloc_failed:
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
+ *     while this_node is not NULL:             # <<<<<<<<<<<<<<
+ *         node_ID = count
+ *         arr_nodid[node_ID] = node_ID
  */
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 229, __pyx_L11_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __PYX_ERR(0, 229, __pyx_L11_error)
+  while (1) {
+    __pyx_t_3 = ((__pyx_v_this_node != NULL) != 0);
+    if (!__pyx_t_3) break;
 
-      /* "classic_trees.pyx":228
- *         malloc_failed = 1
- *     try:
- *         if malloc_failed:             # <<<<<<<<<<<<<<
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
- *         while this_node is not NULL:
+    /* "classic_trees.pyx":231
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
+ *     while this_node is not NULL:
+ *         node_ID = count             # <<<<<<<<<<<<<<
+ *         arr_nodid[node_ID] = node_ID
+ *         arr_mhalo[node_ID] = this_node.mhalo
  */
-    }
+    __pyx_v_node_ID = __pyx_v_count;
 
-    /* "classic_trees.pyx":230
- *         if malloc_failed:
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
- *         while this_node is not NULL:             # <<<<<<<<<<<<<<
- *             node_ID = count
- *             arr_nodid[node_ID] = node_ID
+    /* "classic_trees.pyx":232
+ *     while this_node is not NULL:
+ *         node_ID = count
+ *         arr_nodid[node_ID] = node_ID             # <<<<<<<<<<<<<<
+ *         arr_mhalo[node_ID] = this_node.mhalo
+ *         arr_treeid[node_ID]= i
  */
-    while (1) {
-      __pyx_t_2 = ((__pyx_v_this_node != NULL) != 0);
-      if (!__pyx_t_2) break;
+    (__pyx_v_arr_nodid[__pyx_v_node_ID]) = __pyx_v_node_ID;
 
-      /* "classic_trees.pyx":231
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
- *         while this_node is not NULL:
- *             node_ID = count             # <<<<<<<<<<<<<<
- *             arr_nodid[node_ID] = node_ID
- *             arr_mhalo[node_ID] = this_node.mhalo
+    /* "classic_trees.pyx":233
+ *         node_ID = count
+ *         arr_nodid[node_ID] = node_ID
+ *         arr_mhalo[node_ID] = this_node.mhalo             # <<<<<<<<<<<<<<
+ *         arr_treeid[node_ID]= i
+ *         arr_time[node_ID]  = this_node.jlevel
  */
-      __pyx_v_node_ID = __pyx_v_count;
+    __pyx_t_4 = __pyx_v_this_node->mhalo;
+    (__pyx_v_arr_mhalo[__pyx_v_node_ID]) = __pyx_t_4;
 
-      /* "classic_trees.pyx":232
- *         while this_node is not NULL:
- *             node_ID = count
- *             arr_nodid[node_ID] = node_ID             # <<<<<<<<<<<<<<
- *             arr_mhalo[node_ID] = this_node.mhalo
- *             arr_treeid[node_ID]= i
+    /* "classic_trees.pyx":234
+ *         arr_nodid[node_ID] = node_ID
+ *         arr_mhalo[node_ID] = this_node.mhalo
+ *         arr_treeid[node_ID]= i             # <<<<<<<<<<<<<<
+ *         arr_time[node_ID]  = this_node.jlevel
+ *         if this_node.child is not NULL:
  */
-      (__pyx_v_arr_nodid[__pyx_v_node_ID]) = __pyx_v_node_ID;
+    (__pyx_v_arr_treeid[__pyx_v_node_ID]) = __pyx_v_i;
 
-      /* "classic_trees.pyx":233
- *             node_ID = count
- *             arr_nodid[node_ID] = node_ID
- *             arr_mhalo[node_ID] = this_node.mhalo             # <<<<<<<<<<<<<<
- *             arr_treeid[node_ID]= i
- *             arr_time[node_ID]  = this_node.jlevel
+    /* "classic_trees.pyx":235
+ *         arr_mhalo[node_ID] = this_node.mhalo
+ *         arr_treeid[node_ID]= i
+ *         arr_time[node_ID]  = this_node.jlevel             # <<<<<<<<<<<<<<
+ *         if this_node.child is not NULL:
+ *             arr_1prog[node_ID] = this_node.child.index
  */
-      __pyx_t_4 = __pyx_v_this_node->mhalo;
-      (__pyx_v_arr_mhalo[__pyx_v_node_ID]) = __pyx_t_4;
+    __pyx_t_5 = __pyx_v_this_node->jlevel;
+    (__pyx_v_arr_time[__pyx_v_node_ID]) = __pyx_t_5;
 
-      /* "classic_trees.pyx":234
- *             arr_nodid[node_ID] = node_ID
- *             arr_mhalo[node_ID] = this_node.mhalo
- *             arr_treeid[node_ID]= i             # <<<<<<<<<<<<<<
- *             arr_time[node_ID]  = this_node.jlevel
- *             if this_node.child is not NULL:
+    /* "classic_trees.pyx":236
+ *         arr_treeid[node_ID]= i
+ *         arr_time[node_ID]  = this_node.jlevel
+ *         if this_node.child is not NULL:             # <<<<<<<<<<<<<<
+ *             arr_1prog[node_ID] = this_node.child.index
+ *         else:
  */
-      (__pyx_v_arr_treeid[__pyx_v_node_ID]) = __pyx_v_i;
+    __pyx_t_3 = ((__pyx_v_this_node->child != NULL) != 0);
+    if (__pyx_t_3) {
 
-      /* "classic_trees.pyx":235
- *             arr_mhalo[node_ID] = this_node.mhalo
- *             arr_treeid[node_ID]= i
- *             arr_time[node_ID]  = this_node.jlevel             # <<<<<<<<<<<<<<
- *             if this_node.child is not NULL:
- *                 arr_1prog[node_ID] = this_node.child.index
+      /* "classic_trees.pyx":237
+ *         arr_time[node_ID]  = this_node.jlevel
+ *         if this_node.child is not NULL:
+ *             arr_1prog[node_ID] = this_node.child.index             # <<<<<<<<<<<<<<
+ *         else:
+ *             arr_1prog[node_ID] = -1
  */
-      __pyx_t_5 = __pyx_v_this_node->jlevel;
-      (__pyx_v_arr_time[__pyx_v_node_ID]) = __pyx_t_5;
+      __pyx_t_5 = __pyx_v_this_node->child->index;
+      (__pyx_v_arr_1prog[__pyx_v_node_ID]) = __pyx_t_5;
 
       /* "classic_trees.pyx":236
- *             arr_treeid[node_ID]= i
- *             arr_time[node_ID]  = this_node.jlevel
- *             if this_node.child is not NULL:             # <<<<<<<<<<<<<<
- *                 arr_1prog[node_ID] = this_node.child.index
- *             else:
+ *         arr_treeid[node_ID]= i
+ *         arr_time[node_ID]  = this_node.jlevel
+ *         if this_node.child is not NULL:             # <<<<<<<<<<<<<<
+ *             arr_1prog[node_ID] = this_node.child.index
+ *         else:
  */
-      __pyx_t_2 = ((__pyx_v_this_node->child != NULL) != 0);
-      if (__pyx_t_2) {
+      goto __pyx_L13;
+    }
 
-        /* "classic_trees.pyx":237
- *             arr_time[node_ID]  = this_node.jlevel
- *             if this_node.child is not NULL:
- *                 arr_1prog[node_ID] = this_node.child.index             # <<<<<<<<<<<<<<
- *             else:
- *                 arr_1prog[node_ID] = -1
+    /* "classic_trees.pyx":239
+ *             arr_1prog[node_ID] = this_node.child.index
+ *         else:
+ *             arr_1prog[node_ID] = -1             # <<<<<<<<<<<<<<
+ *         if this_node.parent is not NULL:
+ *             arr_desc[node_ID] = this_node.parent.index
  */
-        __pyx_t_5 = __pyx_v_this_node->child->index;
-        (__pyx_v_arr_1prog[__pyx_v_node_ID]) = __pyx_t_5;
+    /*else*/ {
+      (__pyx_v_arr_1prog[__pyx_v_node_ID]) = -1;
+    }
+    __pyx_L13:;
 
-        /* "classic_trees.pyx":236
- *             arr_treeid[node_ID]= i
- *             arr_time[node_ID]  = this_node.jlevel
- *             if this_node.child is not NULL:             # <<<<<<<<<<<<<<
- *                 arr_1prog[node_ID] = this_node.child.index
- *             else:
+    /* "classic_trees.pyx":240
+ *         else:
+ *             arr_1prog[node_ID] = -1
+ *         if this_node.parent is not NULL:             # <<<<<<<<<<<<<<
+ *             arr_desc[node_ID] = this_node.parent.index
+ *         else:
  */
-        goto __pyx_L16;
-      }
+    __pyx_t_3 = ((__pyx_v_this_node->parent != NULL) != 0);
+    if (__pyx_t_3) {
 
-      /* "classic_trees.pyx":239
- *                 arr_1prog[node_ID] = this_node.child.index
- *             else:
- *                 arr_1prog[node_ID] = -1             # <<<<<<<<<<<<<<
- *             if this_node.parent is not NULL:
- *                 arr_desc[node_ID] = this_node.parent.index
+      /* "classic_trees.pyx":241
+ *             arr_1prog[node_ID] = -1
+ *         if this_node.parent is not NULL:
+ *             arr_desc[node_ID] = this_node.parent.index             # <<<<<<<<<<<<<<
+ *         else:
+ *             arr_desc[node_ID] = -1
  */
-      /*else*/ {
-        (__pyx_v_arr_1prog[__pyx_v_node_ID]) = -1;
-      }
-      __pyx_L16:;
+      __pyx_t_5 = __pyx_v_this_node->parent->index;
+      (__pyx_v_arr_desc[__pyx_v_node_ID]) = __pyx_t_5;
 
       /* "classic_trees.pyx":240
- *             else:
- *                 arr_1prog[node_ID] = -1
- *             if this_node.parent is not NULL:             # <<<<<<<<<<<<<<
- *                 arr_desc[node_ID] = this_node.parent.index
- *             else:
+ *         else:
+ *             arr_1prog[node_ID] = -1
+ *         if this_node.parent is not NULL:             # <<<<<<<<<<<<<<
+ *             arr_desc[node_ID] = this_node.parent.index
+ *         else:
  */
-      __pyx_t_2 = ((__pyx_v_this_node->parent != NULL) != 0);
-      if (__pyx_t_2) {
-
-        /* "classic_trees.pyx":241
- *                 arr_1prog[node_ID] = -1
- *             if this_node.parent is not NULL:
- *                 arr_desc[node_ID] = this_node.parent.index             # <<<<<<<<<<<<<<
- *             else:
- *                 arr_desc[node_ID] = -1
- */
-        __pyx_t_5 = __pyx_v_this_node->parent->index;
-        (__pyx_v_arr_desc[__pyx_v_node_ID]) = __pyx_t_5;
-
-        /* "classic_trees.pyx":240
- *             else:
- *                 arr_1prog[node_ID] = -1
- *             if this_node.parent is not NULL:             # <<<<<<<<<<<<<<
- *                 arr_desc[node_ID] = this_node.parent.index
- *             else:
- */
-        goto __pyx_L17;
-      }
-
-      /* "classic_trees.pyx":243
- *                 arr_desc[node_ID] = this_node.parent.index
- *             else:
- *                 arr_desc[node_ID] = -1             # <<<<<<<<<<<<<<
- *             count +=1
- *             this_node = walk_tree(this_node)
- */
-      /*else*/ {
-        (__pyx_v_arr_desc[__pyx_v_node_ID]) = -1;
-      }
-      __pyx_L17:;
-
-      /* "classic_trees.pyx":244
- *             else:
- *                 arr_desc[node_ID] = -1
- *             count +=1             # <<<<<<<<<<<<<<
- *             this_node = walk_tree(this_node)
- *         np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
- */
-      __pyx_v_count = (__pyx_v_count + 1);
-
-      /* "classic_trees.pyx":245
- *                 arr_desc[node_ID] = -1
- *             count +=1
- *             this_node = walk_tree(this_node)             # <<<<<<<<<<<<<<
- *         np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
- *         np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
- */
-      __pyx_v_this_node = __pyx_f_13classic_trees_walk_tree(__pyx_v_this_node);
+      goto __pyx_L14;
     }
 
-    /* "classic_trees.pyx":246
- *             count +=1
- *             this_node = walk_tree(this_node)
- *         np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])             # <<<<<<<<<<<<<<
- *         np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
- *         np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+    /* "classic_trees.pyx":243
+ *             arr_desc[node_ID] = this_node.parent.index
+ *         else:
+ *             arr_desc[node_ID] = -1             # <<<<<<<<<<<<<<
+ *         count +=1
+ *         this_node = walk_tree(this_node)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L11_error)
+    /*else*/ {
+      (__pyx_v_arr_desc[__pyx_v_node_ID]) = -1;
+    }
+    __pyx_L14:;
+
+    /* "classic_trees.pyx":244
+ *         else:
+ *             arr_desc[node_ID] = -1
+ *         count +=1             # <<<<<<<<<<<<<<
+ *         this_node = walk_tree(this_node)
+ *     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+ */
+    __pyx_v_count = (__pyx_v_count + 1);
+
+    /* "classic_trees.pyx":245
+ *             arr_desc[node_ID] = -1
+ *         count +=1
+ *         this_node = walk_tree(this_node)             # <<<<<<<<<<<<<<
+ *     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+ *     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
+ */
+    __pyx_v_this_node = __pyx_f_13classic_trees_walk_tree(__pyx_v_this_node);
+  }
+
+  /* "classic_trees.pyx":246
+ *         count +=1
+ *         this_node = walk_tree(this_node)
+ *     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])             # <<<<<<<<<<<<<<
+ *     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
+ *     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  { /* enter inner scope */
+    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    { /* enter inner scope */
-      __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L11_error)
+    __pyx_t_5 = __pyx_v_count;
+    __pyx_t_8 = __pyx_t_5;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_7genexpr__pyx_v_j = __pyx_t_9;
+      __pyx_t_10 = PyFloat_FromDouble((__pyx_v_arr_mhalo[__pyx_7genexpr__pyx_v_j])); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 246, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_10))) __PYX_ERR(0, 246, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    }
+  } /* exit inner scope */
+  __pyx_t_10 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
+    __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_7);
+    if (likely(__pyx_t_10)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_10);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_7, function);
+    }
+  }
+  __pyx_t_1 = (__pyx_t_10) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_10, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_v_np_arr_mhalo = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "classic_trees.pyx":247
+ *         this_node = walk_tree(this_node)
+ *     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+ *     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
+ *     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+ *     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  { /* enter inner scope */
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 247, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = __pyx_v_count;
+    __pyx_t_8 = __pyx_t_5;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_8genexpr1__pyx_v_j = __pyx_t_9;
+      __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_nodid[__pyx_8genexpr1__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 247, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_5 = __pyx_v_count;
-      __pyx_t_8 = __pyx_t_5;
-      for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
-        __pyx_7genexpr__pyx_v_j = __pyx_t_9;
-        __pyx_t_10 = PyFloat_FromDouble((__pyx_v_arr_mhalo[__pyx_7genexpr__pyx_v_j])); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 246, __pyx_L11_error)
-        __Pyx_GOTREF(__pyx_t_10);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_10))) __PYX_ERR(0, 246, __pyx_L11_error)
-        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-      }
-    } /* exit inner scope */
-    __pyx_t_10 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
-      __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_7);
-      if (likely(__pyx_t_10)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-        __Pyx_INCREF(__pyx_t_10);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_7, function);
-      }
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 247, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     }
-    __pyx_t_3 = (__pyx_t_10) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_10, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_v_np_arr_mhalo = __pyx_t_3;
-    __pyx_t_3 = 0;
+  } /* exit inner scope */
+  __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_1);
+  __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 247, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_np_arr_nodid = __pyx_t_10;
+  __pyx_t_10 = 0;
 
-    /* "classic_trees.pyx":247
- *             this_node = walk_tree(this_node)
- *         np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
- *         np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
- *         np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
- *         np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+  /* "classic_trees.pyx":248
+ *     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+ *     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
+ *     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
+ *     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+ *     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 247, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 247, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    { /* enter inner scope */
-      __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 247, __pyx_L11_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_5 = __pyx_v_count;
-      __pyx_t_8 = __pyx_t_5;
-      for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
-        __pyx_8genexpr1__pyx_v_j = __pyx_t_9;
-        __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_nodid[__pyx_8genexpr1__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 247, __pyx_L11_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 247, __pyx_L11_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      }
-    } /* exit inner scope */
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 247, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GIVEREF(__pyx_t_3);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3);
-    __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 247, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 247, __pyx_L11_error)
-    __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 247, __pyx_L11_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_array); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  { /* enter inner scope */
+    __pyx_t_10 = PyList_New(0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 248, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_np_arr_nodid = __pyx_t_10;
-    __pyx_t_10 = 0;
+    __pyx_t_5 = __pyx_v_count;
+    __pyx_t_8 = __pyx_t_5;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_8genexpr2__pyx_v_j = __pyx_t_9;
+      __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_treeid[__pyx_8genexpr2__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 248, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_10, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 248, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    }
+  } /* exit inner scope */
+  __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_10);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_10);
+  __pyx_t_10 = 0;
+  __pyx_t_10 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 248, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, __pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_v_np_arr_treeid = __pyx_t_7;
+  __pyx_t_7 = 0;
 
-    /* "classic_trees.pyx":248
- *         np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
- *         np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
- *         np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
- *         np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
- *         np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
+  /* "classic_trees.pyx":249
+ *     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
+ *     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+ *     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
+ *     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
+ *     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 248, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 248, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    { /* enter inner scope */
-      __pyx_t_10 = PyList_New(0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 248, __pyx_L11_error)
-      __Pyx_GOTREF(__pyx_t_10);
-      __pyx_t_5 = __pyx_v_count;
-      __pyx_t_8 = __pyx_t_5;
-      for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
-        __pyx_8genexpr2__pyx_v_j = __pyx_t_9;
-        __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_treeid[__pyx_8genexpr2__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 248, __pyx_L11_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_10, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 248, __pyx_L11_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      }
-    } /* exit inner scope */
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 248, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GIVEREF(__pyx_t_10);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_10);
-    __pyx_t_10 = 0;
-    __pyx_t_10 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 248, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 248, __pyx_L11_error)
-    __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, __pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 248, __pyx_L11_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  { /* enter inner scope */
+    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 249, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __pyx_v_np_arr_treeid = __pyx_t_7;
-    __pyx_t_7 = 0;
+    __pyx_t_5 = __pyx_v_count;
+    __pyx_t_8 = __pyx_t_5;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_8genexpr3__pyx_v_j = __pyx_t_9;
+      __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_time[__pyx_8genexpr3__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 249, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    }
+  } /* exit inner scope */
+  __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
+  __pyx_t_7 = 0;
+  __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_v_np_arr_time = __pyx_t_1;
+  __pyx_t_1 = 0;
 
-    /* "classic_trees.pyx":249
- *         np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
- *         np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
- *         np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
- *         np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
- *         np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 249, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 249, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    { /* enter inner scope */
-      __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 249, __pyx_L11_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_5 = __pyx_v_count;
-      __pyx_t_8 = __pyx_t_5;
-      for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
-        __pyx_8genexpr3__pyx_v_j = __pyx_t_9;
-        __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_time[__pyx_8genexpr3__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L11_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 249, __pyx_L11_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      }
-    } /* exit inner scope */
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GIVEREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
-    __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 249, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 249, __pyx_L11_error)
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 249, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_v_np_arr_time = __pyx_t_3;
-    __pyx_t_3 = 0;
-
-    /* "classic_trees.pyx":250
- *         np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
- *         np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
- *         np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
- *         np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
+  /* "classic_trees.pyx":250
+ *     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+ *     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+ *     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
+ *     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
  * 
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 250, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 250, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    { /* enter inner scope */
-      __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 250, __pyx_L11_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_5 = __pyx_v_count;
-      __pyx_t_8 = __pyx_t_5;
-      for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
-        __pyx_8genexpr4__pyx_v_j = __pyx_t_9;
-        __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_1prog[__pyx_8genexpr4__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L11_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 250, __pyx_L11_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      }
-    } /* exit inner scope */
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GIVEREF(__pyx_t_3);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3);
-    __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 250, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 250, __pyx_L11_error)
-    __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 250, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_v_np_arr_1prog = __pyx_t_10;
-    __pyx_t_10 = 0;
-
-    /* "classic_trees.pyx":251
- *         np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
- *         np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
- *         np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
- * 
- *         return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 251, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 251, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    { /* enter inner scope */
-      __pyx_t_10 = PyList_New(0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 251, __pyx_L11_error)
-      __Pyx_GOTREF(__pyx_t_10);
-      __pyx_t_5 = __pyx_v_count;
-      __pyx_t_8 = __pyx_t_5;
-      for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
-        __pyx_8genexpr5__pyx_v_j = __pyx_t_9;
-        __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_desc[__pyx_8genexpr5__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 251, __pyx_L11_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_10, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 251, __pyx_L11_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      }
-    } /* exit inner scope */
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 251, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GIVEREF(__pyx_t_10);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_10);
-    __pyx_t_10 = 0;
-    __pyx_t_10 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 251, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 251, __pyx_L11_error)
-    __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, __pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 251, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __pyx_v_np_arr_desc = __pyx_t_7;
-    __pyx_t_7 = 0;
-
-    /* "classic_trees.pyx":253
- *         np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
- * 
- *         return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)             # <<<<<<<<<<<<<<
- *     finally:
- *         if arr_mhalo: free(arr_mhalo)
- */
-    __Pyx_XDECREF(__pyx_r);
-    __pyx_t_7 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 253, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_10 = PyTuple_New(7); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 253, __pyx_L11_error)
-    __Pyx_GOTREF(__pyx_t_10);
-    __Pyx_GIVEREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_7);
-    __Pyx_INCREF(__pyx_v_np_arr_mhalo);
-    __Pyx_GIVEREF(__pyx_v_np_arr_mhalo);
-    PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_v_np_arr_mhalo);
-    __Pyx_INCREF(__pyx_v_np_arr_nodid);
-    __Pyx_GIVEREF(__pyx_v_np_arr_nodid);
-    PyTuple_SET_ITEM(__pyx_t_10, 2, __pyx_v_np_arr_nodid);
-    __Pyx_INCREF(__pyx_v_np_arr_treeid);
-    __Pyx_GIVEREF(__pyx_v_np_arr_treeid);
-    PyTuple_SET_ITEM(__pyx_t_10, 3, __pyx_v_np_arr_treeid);
-    __Pyx_INCREF(__pyx_v_np_arr_time);
-    __Pyx_GIVEREF(__pyx_v_np_arr_time);
-    PyTuple_SET_ITEM(__pyx_t_10, 4, __pyx_v_np_arr_time);
-    __Pyx_INCREF(__pyx_v_np_arr_1prog);
-    __Pyx_GIVEREF(__pyx_v_np_arr_1prog);
-    PyTuple_SET_ITEM(__pyx_t_10, 5, __pyx_v_np_arr_1prog);
-    __Pyx_INCREF(__pyx_v_np_arr_desc);
-    __Pyx_GIVEREF(__pyx_v_np_arr_desc);
-    PyTuple_SET_ITEM(__pyx_t_10, 6, __pyx_v_np_arr_desc);
-    __pyx_t_7 = 0;
-    __pyx_r = __pyx_t_10;
-    __pyx_t_10 = 0;
-    goto __pyx_L10_return;
-  }
-
-  /* "classic_trees.pyx":255
- *         return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
- *     finally:
- *         if arr_mhalo: free(arr_mhalo)             # <<<<<<<<<<<<<<
- *         if arr_nodid: free(arr_nodid)
- *         if arr_treeid: free(arr_treeid)
- */
-  /*finally:*/ {
-    __pyx_L11_error:;
-    /*exception exit:*/{
-      __Pyx_PyThreadState_declare
-      __Pyx_PyThreadState_assign
-      __pyx_t_12 = 0; __pyx_t_13 = 0; __pyx_t_14 = 0; __pyx_t_15 = 0; __pyx_t_16 = 0; __pyx_t_17 = 0;
-      __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (PY_MAJOR_VERSION >= 3) __Pyx_ExceptionSwap(&__pyx_t_15, &__pyx_t_16, &__pyx_t_17);
-      if ((PY_MAJOR_VERSION < 3) || unlikely(__Pyx_GetException(&__pyx_t_12, &__pyx_t_13, &__pyx_t_14) < 0)) __Pyx_ErrFetch(&__pyx_t_12, &__pyx_t_13, &__pyx_t_14);
-      __Pyx_XGOTREF(__pyx_t_12);
-      __Pyx_XGOTREF(__pyx_t_13);
-      __Pyx_XGOTREF(__pyx_t_14);
-      __Pyx_XGOTREF(__pyx_t_15);
-      __Pyx_XGOTREF(__pyx_t_16);
-      __Pyx_XGOTREF(__pyx_t_17);
-      __pyx_t_5 = __pyx_lineno; __pyx_t_8 = __pyx_clineno; __pyx_t_11 = __pyx_filename;
-      {
-        __pyx_t_2 = (__pyx_v_arr_mhalo != 0);
-        if (__pyx_t_2) {
-          free(__pyx_v_arr_mhalo);
-        }
-
-        /* "classic_trees.pyx":256
- *     finally:
- *         if arr_mhalo: free(arr_mhalo)
- *         if arr_nodid: free(arr_nodid)             # <<<<<<<<<<<<<<
- *         if arr_treeid: free(arr_treeid)
- *         if arr_time: free(arr_time)
- */
-        __pyx_t_2 = (__pyx_v_arr_nodid != 0);
-        if (__pyx_t_2) {
-          free(__pyx_v_arr_nodid);
-        }
-
-        /* "classic_trees.pyx":257
- *         if arr_mhalo: free(arr_mhalo)
- *         if arr_nodid: free(arr_nodid)
- *         if arr_treeid: free(arr_treeid)             # <<<<<<<<<<<<<<
- *         if arr_time: free(arr_time)
- *         if arr_1prog: free(arr_1prog)
- */
-        __pyx_t_2 = (__pyx_v_arr_treeid != 0);
-        if (__pyx_t_2) {
-          free(__pyx_v_arr_treeid);
-        }
-
-        /* "classic_trees.pyx":258
- *         if arr_nodid: free(arr_nodid)
- *         if arr_treeid: free(arr_treeid)
- *         if arr_time: free(arr_time)             # <<<<<<<<<<<<<<
- *         if arr_1prog: free(arr_1prog)
- *         if arr_desc: free(arr_desc)
- */
-        __pyx_t_2 = (__pyx_v_arr_time != 0);
-        if (__pyx_t_2) {
-          free(__pyx_v_arr_time);
-        }
-
-        /* "classic_trees.pyx":259
- *         if arr_treeid: free(arr_treeid)
- *         if arr_time: free(arr_time)
- *         if arr_1prog: free(arr_1prog)             # <<<<<<<<<<<<<<
- *         if arr_desc: free(arr_desc)
- * cdef int tree_index(Tree_Node* node):
- */
-        __pyx_t_2 = (__pyx_v_arr_1prog != 0);
-        if (__pyx_t_2) {
-          free(__pyx_v_arr_1prog);
-        }
-
-        /* "classic_trees.pyx":260
- *         if arr_time: free(arr_time)
- *         if arr_1prog: free(arr_1prog)
- *         if arr_desc: free(arr_desc)             # <<<<<<<<<<<<<<
- * cdef int tree_index(Tree_Node* node):
- *     # finding the Tree Node index of inside a merger tree
- */
-        __pyx_t_2 = (__pyx_v_arr_desc != 0);
-        if (__pyx_t_2) {
-          free(__pyx_v_arr_desc);
-        }
-      }
-      if (PY_MAJOR_VERSION >= 3) {
-        __Pyx_XGIVEREF(__pyx_t_15);
-        __Pyx_XGIVEREF(__pyx_t_16);
-        __Pyx_XGIVEREF(__pyx_t_17);
-        __Pyx_ExceptionReset(__pyx_t_15, __pyx_t_16, __pyx_t_17);
-      }
-      __Pyx_XGIVEREF(__pyx_t_12);
-      __Pyx_XGIVEREF(__pyx_t_13);
-      __Pyx_XGIVEREF(__pyx_t_14);
-      __Pyx_ErrRestore(__pyx_t_12, __pyx_t_13, __pyx_t_14);
-      __pyx_t_12 = 0; __pyx_t_13 = 0; __pyx_t_14 = 0; __pyx_t_15 = 0; __pyx_t_16 = 0; __pyx_t_17 = 0;
-      __pyx_lineno = __pyx_t_5; __pyx_clineno = __pyx_t_8; __pyx_filename = __pyx_t_11;
-      goto __pyx_L1_error;
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  { /* enter inner scope */
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = __pyx_v_count;
+    __pyx_t_8 = __pyx_t_5;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_8genexpr4__pyx_v_j = __pyx_t_9;
+      __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_1prog[__pyx_8genexpr4__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 250, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     }
-    __pyx_L10_return: {
-      __pyx_t_17 = __pyx_r;
-      __pyx_r = 0;
+  } /* exit inner scope */
+  __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_1);
+  __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 250, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 250, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_np_arr_1prog = __pyx_t_10;
+  __pyx_t_10 = 0;
 
-      /* "classic_trees.pyx":255
- *         return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
- *     finally:
- *         if arr_mhalo: free(arr_mhalo)             # <<<<<<<<<<<<<<
- *         if arr_nodid: free(arr_nodid)
- *         if arr_treeid: free(arr_treeid)
+  /* "classic_trees.pyx":251
+ *     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+ *     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
+ *     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')             # <<<<<<<<<<<<<<
+ * 
+ *     return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
  */
-      __pyx_t_2 = (__pyx_v_arr_mhalo != 0);
-      if (__pyx_t_2) {
-        free(__pyx_v_arr_mhalo);
-      }
-
-      /* "classic_trees.pyx":256
- *     finally:
- *         if arr_mhalo: free(arr_mhalo)
- *         if arr_nodid: free(arr_nodid)             # <<<<<<<<<<<<<<
- *         if arr_treeid: free(arr_treeid)
- *         if arr_time: free(arr_time)
- */
-      __pyx_t_2 = (__pyx_v_arr_nodid != 0);
-      if (__pyx_t_2) {
-        free(__pyx_v_arr_nodid);
-      }
-
-      /* "classic_trees.pyx":257
- *         if arr_mhalo: free(arr_mhalo)
- *         if arr_nodid: free(arr_nodid)
- *         if arr_treeid: free(arr_treeid)             # <<<<<<<<<<<<<<
- *         if arr_time: free(arr_time)
- *         if arr_1prog: free(arr_1prog)
- */
-      __pyx_t_2 = (__pyx_v_arr_treeid != 0);
-      if (__pyx_t_2) {
-        free(__pyx_v_arr_treeid);
-      }
-
-      /* "classic_trees.pyx":258
- *         if arr_nodid: free(arr_nodid)
- *         if arr_treeid: free(arr_treeid)
- *         if arr_time: free(arr_time)             # <<<<<<<<<<<<<<
- *         if arr_1prog: free(arr_1prog)
- *         if arr_desc: free(arr_desc)
- */
-      __pyx_t_2 = (__pyx_v_arr_time != 0);
-      if (__pyx_t_2) {
-        free(__pyx_v_arr_time);
-      }
-
-      /* "classic_trees.pyx":259
- *         if arr_treeid: free(arr_treeid)
- *         if arr_time: free(arr_time)
- *         if arr_1prog: free(arr_1prog)             # <<<<<<<<<<<<<<
- *         if arr_desc: free(arr_desc)
- * cdef int tree_index(Tree_Node* node):
- */
-      __pyx_t_2 = (__pyx_v_arr_1prog != 0);
-      if (__pyx_t_2) {
-        free(__pyx_v_arr_1prog);
-      }
-
-      /* "classic_trees.pyx":260
- *         if arr_time: free(arr_time)
- *         if arr_1prog: free(arr_1prog)
- *         if arr_desc: free(arr_desc)             # <<<<<<<<<<<<<<
- * cdef int tree_index(Tree_Node* node):
- *     # finding the Tree Node index of inside a merger tree
- */
-      __pyx_t_2 = (__pyx_v_arr_desc != 0);
-      if (__pyx_t_2) {
-        free(__pyx_v_arr_desc);
-      }
-      __pyx_r = __pyx_t_17;
-      __pyx_t_17 = 0;
-      goto __pyx_L0;
+  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 251, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_array); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  { /* enter inner scope */
+    __pyx_t_10 = PyList_New(0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 251, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_5 = __pyx_v_count;
+    __pyx_t_8 = __pyx_t_5;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_8genexpr5__pyx_v_j = __pyx_t_9;
+      __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_arr_desc[__pyx_8genexpr5__pyx_v_j])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 251, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_10, (PyObject*)__pyx_t_6))) __PYX_ERR(0, 251, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     }
-  }
+  } /* exit inner scope */
+  __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 251, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_10);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_10);
+  __pyx_t_10 = 0;
+  __pyx_t_10 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 251, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_dtype, __pyx_n_u_int) < 0) __PYX_ERR(0, 251, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, __pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 251, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_v_np_arr_desc = __pyx_t_7;
+  __pyx_t_7 = 0;
+
+  /* "classic_trees.pyx":253
+ *     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
+ * 
+ *     return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)             # <<<<<<<<<<<<<<
+ * 
+ * cdef int tree_index(Tree_Node* node):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_7 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_10 = PyTuple_New(7); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_GIVEREF(__pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_7);
+  __Pyx_INCREF(__pyx_v_np_arr_mhalo);
+  __Pyx_GIVEREF(__pyx_v_np_arr_mhalo);
+  PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_v_np_arr_mhalo);
+  __Pyx_INCREF(__pyx_v_np_arr_nodid);
+  __Pyx_GIVEREF(__pyx_v_np_arr_nodid);
+  PyTuple_SET_ITEM(__pyx_t_10, 2, __pyx_v_np_arr_nodid);
+  __Pyx_INCREF(__pyx_v_np_arr_treeid);
+  __Pyx_GIVEREF(__pyx_v_np_arr_treeid);
+  PyTuple_SET_ITEM(__pyx_t_10, 3, __pyx_v_np_arr_treeid);
+  __Pyx_INCREF(__pyx_v_np_arr_time);
+  __Pyx_GIVEREF(__pyx_v_np_arr_time);
+  PyTuple_SET_ITEM(__pyx_t_10, 4, __pyx_v_np_arr_time);
+  __Pyx_INCREF(__pyx_v_np_arr_1prog);
+  __Pyx_GIVEREF(__pyx_v_np_arr_1prog);
+  PyTuple_SET_ITEM(__pyx_t_10, 5, __pyx_v_np_arr_1prog);
+  __Pyx_INCREF(__pyx_v_np_arr_desc);
+  __Pyx_GIVEREF(__pyx_v_np_arr_desc);
+  PyTuple_SET_ITEM(__pyx_t_10, 6, __pyx_v_np_arr_desc);
+  __pyx_t_7 = 0;
+  __pyx_r = __pyx_t_10;
+  __pyx_t_10 = 0;
+  goto __pyx_L0;
 
   /* "classic_trees.pyx":192
  *     return next_node
  * 
  * cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):             # <<<<<<<<<<<<<<
+ *     print('In node_vals_and_counter function')
  *     '''
- *     Function to count the number of nodes in a merger tree and get values out of it.
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_10);
@@ -5663,12 +5458,12 @@ static PyObject *__pyx_f_13classic_trees_node_vals_and_counter(int __pyx_v_i, st
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":261
- *         if arr_1prog: free(arr_1prog)
- *         if arr_desc: free(arr_desc)
+/* "classic_trees.pyx":255
+ *     return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
+ * 
  * cdef int tree_index(Tree_Node* node):             # <<<<<<<<<<<<<<
  *     # finding the Tree Node index of inside a merger tree
- *     if node is NULL:
+ *     cdef int index
  */
 
 static int __pyx_f_13classic_trees_tree_index(struct __pyx_t_13classic_trees_Tree_Node *__pyx_v_node) {
@@ -5683,9 +5478,9 @@ static int __pyx_f_13classic_trees_tree_index(struct __pyx_t_13classic_trees_Tre
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("tree_index", 0);
 
-  /* "classic_trees.pyx":263
- * cdef int tree_index(Tree_Node* node):
+  /* "classic_trees.pyx":258
  *     # finding the Tree Node index of inside a merger tree
+ *     cdef int index
  *     if node is NULL:             # <<<<<<<<<<<<<<
  *         raise ValueError('Node is not associated with any tree')
  *     index = node.index
@@ -5693,29 +5488,29 @@ static int __pyx_f_13classic_trees_tree_index(struct __pyx_t_13classic_trees_Tre
   __pyx_t_1 = ((__pyx_v_node == NULL) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "classic_trees.pyx":264
- *     # finding the Tree Node index of inside a merger tree
+    /* "classic_trees.pyx":259
+ *     cdef int index
  *     if node is NULL:
  *         raise ValueError('Node is not associated with any tree')             # <<<<<<<<<<<<<<
  *     index = node.index
  *     return index
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 264, __pyx_L1_error)
+    __PYX_ERR(0, 259, __pyx_L1_error)
 
-    /* "classic_trees.pyx":263
- * cdef int tree_index(Tree_Node* node):
+    /* "classic_trees.pyx":258
  *     # finding the Tree Node index of inside a merger tree
+ *     cdef int index
  *     if node is NULL:             # <<<<<<<<<<<<<<
  *         raise ValueError('Node is not associated with any tree')
  *     index = node.index
  */
   }
 
-  /* "classic_trees.pyx":265
+  /* "classic_trees.pyx":260
  *     if node is NULL:
  *         raise ValueError('Node is not associated with any tree')
  *     index = node.index             # <<<<<<<<<<<<<<
@@ -5725,7 +5520,7 @@ static int __pyx_f_13classic_trees_tree_index(struct __pyx_t_13classic_trees_Tre
   __pyx_t_3 = __pyx_v_node->index;
   __pyx_v_index = __pyx_t_3;
 
-  /* "classic_trees.pyx":266
+  /* "classic_trees.pyx":261
  *         raise ValueError('Node is not associated with any tree')
  *     index = node.index
  *     return index             # <<<<<<<<<<<<<<
@@ -5735,12 +5530,12 @@ static int __pyx_f_13classic_trees_tree_index(struct __pyx_t_13classic_trees_Tre
   __pyx_r = __pyx_v_index;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":261
- *         if arr_1prog: free(arr_1prog)
- *         if arr_desc: free(arr_desc)
+  /* "classic_trees.pyx":255
+ *     return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
+ * 
  * cdef int tree_index(Tree_Node* node):             # <<<<<<<<<<<<<<
  *     # finding the Tree Node index of inside a merger tree
- *     if node is NULL:
+ *     cdef int index
  */
 
   /* function exit code */
@@ -5753,7 +5548,7 @@ static int __pyx_f_13classic_trees_tree_index(struct __pyx_t_13classic_trees_Tre
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":304
+/* "classic_trees.pyx":299
  *     return merger_tree
  * '''
  * cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree):             # <<<<<<<<<<<<<<
@@ -5767,63 +5562,156 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_associ
   struct __pyx_t_13classic_trees_Tree_Node **__pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
-  long __pyx_t_2;
-  long __pyx_t_3;
-  int __pyx_t_4;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  long __pyx_t_4;
+  long __pyx_t_5;
+  int __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("associated_siblings", 0);
 
-  /* "classic_trees.pyx":307
+  /* "classic_trees.pyx":302
  *     cdef:
  *         int child_index, i_frag
  *     if this_node.nchild > 1:             # <<<<<<<<<<<<<<
  *         child_index = tree_index(this_node.child)
- *         for i_frag in range(child_index,child_index+this_node.nchild-1):
+ *         print('child_index = ',child_index)
  */
   __pyx_t_1 = ((__pyx_v_this_node->nchild > 1) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":308
+    /* "classic_trees.pyx":303
  *         int child_index, i_frag
  *     if this_node.nchild > 1:
  *         child_index = tree_index(this_node.child)             # <<<<<<<<<<<<<<
- *         for i_frag in range(child_index,child_index+this_node.nchild-1):
- *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]
+ *         print('child_index = ',child_index)
+ *         print('number of children in this node: ',this_node.nchild)
  */
     __pyx_v_child_index = __pyx_f_13classic_trees_tree_index(__pyx_v_this_node->child);
 
-    /* "classic_trees.pyx":309
+    /* "classic_trees.pyx":304
  *     if this_node.nchild > 1:
  *         child_index = tree_index(this_node.child)
+ *         print('child_index = ',child_index)             # <<<<<<<<<<<<<<
+ *         print('number of children in this node: ',this_node.nchild)
+ *         for i_frag in range(child_index,child_index+this_node.nchild-1):
+ */
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_child_index); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_INCREF(__pyx_kp_u_child_index);
+    __Pyx_GIVEREF(__pyx_kp_u_child_index);
+    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_child_index);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "classic_trees.pyx":305
+ *         child_index = tree_index(this_node.child)
+ *         print('child_index = ',child_index)
+ *         print('number of children in this node: ',this_node.nchild)             # <<<<<<<<<<<<<<
+ *         for i_frag in range(child_index,child_index+this_node.nchild-1):
+ *             print('i_frag = ',i_frag)
+ */
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_this_node->nchild); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_INCREF(__pyx_kp_u_number_of_children_in_this_node);
+    __Pyx_GIVEREF(__pyx_kp_u_number_of_children_in_this_node);
+    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_number_of_children_in_this_node);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "classic_trees.pyx":306
+ *         print('child_index = ',child_index)
+ *         print('number of children in this node: ',this_node.nchild)
  *         for i_frag in range(child_index,child_index+this_node.nchild-1):             # <<<<<<<<<<<<<<
+ *             print('i_frag = ',i_frag)
  *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]
+ */
+    __pyx_t_4 = ((__pyx_v_child_index + __pyx_v_this_node->nchild) - 1);
+    __pyx_t_5 = __pyx_t_4;
+    for (__pyx_t_6 = __pyx_v_child_index; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_i_frag = __pyx_t_6;
+
+      /* "classic_trees.pyx":307
+ *         print('number of children in this node: ',this_node.nchild)
+ *         for i_frag in range(child_index,child_index+this_node.nchild-1):
+ *             print('i_frag = ',i_frag)             # <<<<<<<<<<<<<<
+ *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]
+ *             print('Siblings mass = ',merger_tree[i_frag].sibling.mhalo)
+ */
+      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_i_frag); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 307, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 307, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx_kp_u_i_frag);
+      __Pyx_GIVEREF(__pyx_kp_u_i_frag);
+      PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_i_frag);
+      __Pyx_GIVEREF(__pyx_t_2);
+      PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2);
+      __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 307, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+      /* "classic_trees.pyx":308
+ *         for i_frag in range(child_index,child_index+this_node.nchild-1):
+ *             print('i_frag = ',i_frag)
+ *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]             # <<<<<<<<<<<<<<
+ *             print('Siblings mass = ',merger_tree[i_frag].sibling.mhalo)
  * 
  */
-    __pyx_t_2 = ((__pyx_v_child_index + __pyx_v_this_node->nchild) - 1);
-    __pyx_t_3 = __pyx_t_2;
-    for (__pyx_t_4 = __pyx_v_child_index; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-      __pyx_v_i_frag = __pyx_t_4;
+      (__pyx_v_merger_tree[__pyx_v_i_frag])->sibling = (__pyx_v_merger_tree[(__pyx_v_i_frag + 1)]);
 
-      /* "classic_trees.pyx":310
- *         child_index = tree_index(this_node.child)
- *         for i_frag in range(child_index,child_index+this_node.nchild-1):
- *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]             # <<<<<<<<<<<<<<
+      /* "classic_trees.pyx":309
+ *             print('i_frag = ',i_frag)
+ *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]
+ *             print('Siblings mass = ',merger_tree[i_frag].sibling.mhalo)             # <<<<<<<<<<<<<<
  * 
  *     return merger_tree
  */
-      (__pyx_v_merger_tree[__pyx_v_i_frag])->sibling = (__pyx_v_merger_tree[(__pyx_v_i_frag + 1)]);
+      __pyx_t_2 = PyFloat_FromDouble((__pyx_v_merger_tree[__pyx_v_i_frag])->sibling->mhalo); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 309, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 309, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx_kp_u_Siblings_mass);
+      __Pyx_GIVEREF(__pyx_kp_u_Siblings_mass);
+      PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_Siblings_mass);
+      __Pyx_GIVEREF(__pyx_t_2);
+      PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2);
+      __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 309, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
 
-    /* "classic_trees.pyx":307
+    /* "classic_trees.pyx":302
  *     cdef:
  *         int child_index, i_frag
  *     if this_node.nchild > 1:             # <<<<<<<<<<<<<<
  *         child_index = tree_index(this_node.child)
- *         for i_frag in range(child_index,child_index+this_node.nchild-1):
+ *         print('child_index = ',child_index)
  */
   }
 
-  /* "classic_trees.pyx":312
- *             merger_tree[i_frag].sibling = merger_tree[i_frag+1]
+  /* "classic_trees.pyx":311
+ *             print('Siblings mass = ',merger_tree[i_frag].sibling.mhalo)
  * 
  *     return merger_tree             # <<<<<<<<<<<<<<
  * 
@@ -5832,7 +5720,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_associ
   __pyx_r = __pyx_v_merger_tree;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":304
+  /* "classic_trees.pyx":299
  *     return merger_tree
  * '''
  * cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree):             # <<<<<<<<<<<<<<
@@ -5841,17 +5729,22 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_associ
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_WriteUnraisable("classic_trees.associated_siblings", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":314
+/* "classic_trees.pyx":313
  *     return merger_tree
  * 
  * cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):             # <<<<<<<<<<<<<<
+ *     cdef int i
  *     for i in range(n_frag_tot):
- *         merger_tree = associated_siblings(merger_tree[i],merger_tree)
  */
 
 static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_build_sibling(struct __pyx_t_13classic_trees_Tree_Node **__pyx_v_merger_tree, int __pyx_v_n_frag_tot) {
@@ -5864,20 +5757,20 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_build_
   __Pyx_RefNannySetupContext("build_sibling", 0);
 
   /* "classic_trees.pyx":315
- * 
  * cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
+ *     cdef int i
  *     for i in range(n_frag_tot):             # <<<<<<<<<<<<<<
+ *         #print(i,'. call of associated_siblings')
  *         merger_tree = associated_siblings(merger_tree[i],merger_tree)
- *     return merger_tree
  */
   __pyx_t_1 = __pyx_v_n_frag_tot;
   __pyx_t_2 = __pyx_t_1;
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "classic_trees.pyx":316
- * cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
+    /* "classic_trees.pyx":317
  *     for i in range(n_frag_tot):
+ *         #print(i,'. call of associated_siblings')
  *         merger_tree = associated_siblings(merger_tree[i],merger_tree)             # <<<<<<<<<<<<<<
  *     return merger_tree
  * 
@@ -5885,8 +5778,8 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_build_
     __pyx_v_merger_tree = __pyx_f_13classic_trees_associated_siblings((__pyx_v_merger_tree[__pyx_v_i]), __pyx_v_merger_tree);
   }
 
-  /* "classic_trees.pyx":317
- *     for i in range(n_frag_tot):
+  /* "classic_trees.pyx":318
+ *         #print(i,'. call of associated_siblings')
  *         merger_tree = associated_siblings(merger_tree[i],merger_tree)
  *     return merger_tree             # <<<<<<<<<<<<<<
  * 
@@ -5895,12 +5788,12 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_build_
   __pyx_r = __pyx_v_merger_tree;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":314
+  /* "classic_trees.pyx":313
  *     return merger_tree
  * 
  * cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):             # <<<<<<<<<<<<<<
+ *     cdef int i
  *     for i in range(n_frag_tot):
- *         merger_tree = associated_siblings(merger_tree[i],merger_tree)
  */
 
   /* function exit code */
@@ -5909,7 +5802,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_build_
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":324
+/* "classic_trees.pyx":325
  *     cdef float a, a_min, delta_c
  *     cdef np.ndarray data
  *     def __init__(self,str filename):             # <<<<<<<<<<<<<<
@@ -5946,7 +5839,7 @@ static int __pyx_pw_13classic_trees_9functions_1__init__(PyObject *__pyx_v_self,
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 324, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 325, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -5957,13 +5850,13 @@ static int __pyx_pw_13classic_trees_9functions_1__init__(PyObject *__pyx_v_self,
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 324, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 325, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("classic_trees.functions.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyUnicode_Type), 1, "filename", 1))) __PYX_ERR(0, 324, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyUnicode_Type), 1, "filename", 1))) __PYX_ERR(0, 325, __pyx_L1_error)
   __pyx_r = __pyx_pf_13classic_trees_9functions___init__(((struct __pyx_obj_13classic_trees_functions *)__pyx_v_self), __pyx_v_filename);
 
   /* function exit code */
@@ -5986,16 +5879,16 @@ static int __pyx_pf_13classic_trees_9functions___init__(struct __pyx_obj_13class
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "classic_trees.pyx":325
+  /* "classic_trees.pyx":326
  *     cdef np.ndarray data
  *     def __init__(self,str filename):
  *         self.data = np.loadtxt(filename)             # <<<<<<<<<<<<<<
  *     def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):
  *         cdef:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 325, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 326, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_loadtxt); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 325, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_loadtxt); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 326, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -6010,17 +5903,17 @@ static int __pyx_pf_13classic_trees_9functions___init__(struct __pyx_obj_13class
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_2, __pyx_v_filename) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_filename);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 325, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 326, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 325, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 326, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->data);
   __Pyx_DECREF(((PyObject *)__pyx_v_self->data));
   __pyx_v_self->data = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":324
+  /* "classic_trees.pyx":325
  *     cdef float a, a_min, delta_c
  *     cdef np.ndarray data
  *     def __init__(self,str filename):             # <<<<<<<<<<<<<<
@@ -6042,7 +5935,7 @@ static int __pyx_pf_13classic_trees_9functions___init__(struct __pyx_obj_13class
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":326
+/* "classic_trees.pyx":327
  *     def __init__(self,str filename):
  *         self.data = np.loadtxt(filename)
  *     def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):             # <<<<<<<<<<<<<<
@@ -6097,7 +5990,7 @@ static PyObject *__pyx_pw_13classic_trees_9functions_3delta_crit(PyObject *__pyx
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "delta_crit") < 0)) __PYX_ERR(0, 326, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "delta_crit") < 0)) __PYX_ERR(0, 327, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -6110,21 +6003,21 @@ static PyObject *__pyx_pw_13classic_trees_9functions_3delta_crit(PyObject *__pyx
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_a = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_a == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 326, __pyx_L3_error)
+    __pyx_v_a = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_a == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 327, __pyx_L3_error)
     if (values[1]) {
-      __pyx_v_l_0 = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_l_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 326, __pyx_L3_error)
+      __pyx_v_l_0 = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_l_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 327, __pyx_L3_error)
     } else {
       __pyx_v_l_0 = ((double)0.75);
     }
     if (values[2]) {
-      __pyx_v_omega_0 = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_omega_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 326, __pyx_L3_error)
+      __pyx_v_omega_0 = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_omega_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 327, __pyx_L3_error)
     } else {
       __pyx_v_omega_0 = ((double)0.25);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("delta_crit", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 326, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("delta_crit", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 327, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("classic_trees.functions.delta_crit", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6151,6 +6044,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   double __pyx_v_l_0_save;
   int __pyx_v_i_o;
   double __pyx_v_x_p;
+  double __pyx_v_summ;
   double __pyx_v_del_c0;
   PyObject *__pyx_v_delta_c = NULL;
   double __pyx_v_eta_0;
@@ -6163,16 +6057,15 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   double __pyx_v_sh;
   double __pyx_v_t;
   double __pyx_v_x_0;
-  PyObject *__pyx_v_summ = NULL;
   double __pyx_v_dxp;
   PyObject *__pyx_v_i_s = NULL;
-  PyObject *__pyx_v_dlin_0 = NULL;
+  double __pyx_v_dlin_0;
   PyObject *__pyx_v_i = NULL;
   double __pyx_v_aa;
   double __pyx_v_l;
   double __pyx_v_omega;
   double __pyx_v_x;
-  PyObject *__pyx_v_dlin = NULL;
+  double __pyx_v_dlin;
   PyObject *__pyx_v_h = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -6185,10 +6078,10 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   PyObject *__pyx_t_7 = NULL;
   Py_ssize_t __pyx_t_8;
   PyObject *(*__pyx_t_9)(PyObject *);
-  PyObject *__pyx_t_10 = NULL;
-  Py_ssize_t __pyx_t_11;
+  Py_ssize_t __pyx_t_10;
+  double __pyx_t_11;
   double __pyx_t_12;
-  double __pyx_t_13;
+  PyObject *__pyx_t_13 = NULL;
   PyObject *(*__pyx_t_14)(PyObject *);
   PyObject *__pyx_t_15 = NULL;
   PyObject *__pyx_t_16 = NULL;
@@ -6203,37 +6096,37 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("delta_crit", 0);
 
-  /* "classic_trees.pyx":328
+  /* "classic_trees.pyx":329
  *     def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):
  *         cdef:
  *             double[:] omega_flat= self.data[:,0]             # <<<<<<<<<<<<<<
  *             double[:] delflat   = self.data[:,-1]
  *             int n_table = 200
  */
-  __pyx_t_1 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_self->data), __pyx_tuple__5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 328, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_self->data), __pyx_tuple__6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 329, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_2.memview)) __PYX_ERR(0, 328, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_2.memview)) __PYX_ERR(0, 329, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_omega_flat = __pyx_t_2;
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "classic_trees.pyx":329
+  /* "classic_trees.pyx":330
  *         cdef:
  *             double[:] omega_flat= self.data[:,0]
  *             double[:] delflat   = self.data[:,-1]             # <<<<<<<<<<<<<<
  *             int n_table = 200
  *             int n_v = 1000
  */
-  __pyx_t_1 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_self->data), __pyx_tuple__6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 329, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_self->data), __pyx_tuple__7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 330, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_2.memview)) __PYX_ERR(0, 329, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_2.memview)) __PYX_ERR(0, 330, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_delflat = __pyx_t_2;
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "classic_trees.pyx":330
+  /* "classic_trees.pyx":331
  *             double[:] omega_flat= self.data[:,0]
  *             double[:] delflat   = self.data[:,-1]
  *             int n_table = 200             # <<<<<<<<<<<<<<
@@ -6242,7 +6135,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_n_table = 0xC8;
 
-  /* "classic_trees.pyx":331
+  /* "classic_trees.pyx":332
  *             double[:] delflat   = self.data[:,-1]
  *             int n_table = 200
  *             int n_v = 1000             # <<<<<<<<<<<<<<
@@ -6251,7 +6144,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_n_v = 0x3E8;
 
-  /* "classic_trees.pyx":332
+  /* "classic_trees.pyx":333
  *             int n_table = 200
  *             int n_v = 1000
  *             double a_min = 0.1             # <<<<<<<<<<<<<<
@@ -6260,7 +6153,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_a_min = 0.1;
 
-  /* "classic_trees.pyx":333
+  /* "classic_trees.pyx":334
  *             int n_v = 1000
  *             double a_min = 0.1
  *             double eps_om = 1e-5             # <<<<<<<<<<<<<<
@@ -6269,7 +6162,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_eps_om = 1e-5;
 
-  /* "classic_trees.pyx":334
+  /* "classic_trees.pyx":335
  *             double a_min = 0.1
  *             double eps_om = 1e-5
  *             int n_sum = 2000             # <<<<<<<<<<<<<<
@@ -6278,7 +6171,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_n_sum = 0x7D0;
 
-  /* "classic_trees.pyx":335
+  /* "classic_trees.pyx":336
  *             double eps_om = 1e-5
  *             int n_sum = 2000
  *             double* delta_flat = <double*>malloc(n_table*sizeof(double))             # <<<<<<<<<<<<<<
@@ -6287,7 +6180,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_delta_flat = ((double *)malloc((__pyx_v_n_table * (sizeof(double)))));
 
-  /* "classic_trees.pyx":336
+  /* "classic_trees.pyx":337
  *             int n_sum = 2000
  *             double* delta_flat = <double*>malloc(n_table*sizeof(double))
  *             double* a_flat = <double*>malloc(n_table*sizeof(double))             # <<<<<<<<<<<<<<
@@ -6296,7 +6189,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_a_flat = ((double *)malloc((__pyx_v_n_table * (sizeof(double)))));
 
-  /* "classic_trees.pyx":337
+  /* "classic_trees.pyx":338
  *             double* delta_flat = <double*>malloc(n_table*sizeof(double))
  *             double* a_flat = <double*>malloc(n_table*sizeof(double))
  *             double omega_0_save = 0             # <<<<<<<<<<<<<<
@@ -6305,18 +6198,18 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
   __pyx_v_omega_0_save = 0.0;
 
-  /* "classic_trees.pyx":338
+  /* "classic_trees.pyx":339
  *             double* a_flat = <double*>malloc(n_table*sizeof(double))
  *             double omega_0_save = 0
  *             double l_0_save = 0             # <<<<<<<<<<<<<<
  *             int i_o
- *             double x_p
+ *             double x_p, summ
  */
   __pyx_v_l_0_save = 0.0;
 
-  /* "classic_trees.pyx":341
+  /* "classic_trees.pyx":342
  *             int i_o
- *             double x_p
+ *             double x_p, summ
  *         if fabs(1-omega_0) <= eps_om:             # <<<<<<<<<<<<<<
  *             del_c0 = 3*(12*pi)**(2/3)/20
  *             delta_c = del_c0/a
@@ -6324,8 +6217,8 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   __pyx_t_3 = ((fabs((1.0 - __pyx_v_omega_0)) <= __pyx_v_eps_om) != 0);
   if (__pyx_t_3) {
 
-    /* "classic_trees.pyx":342
- *             double x_p
+    /* "classic_trees.pyx":343
+ *             double x_p, summ
  *         if fabs(1-omega_0) <= eps_om:
  *             del_c0 = 3*(12*pi)**(2/3)/20             # <<<<<<<<<<<<<<
  *             delta_c = del_c0/a
@@ -6333,7 +6226,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     __pyx_v_del_c0 = ((3.0 * pow((12.0 * M_PI), (2.0 / 3.0))) / 20.0);
 
-    /* "classic_trees.pyx":343
+    /* "classic_trees.pyx":344
  *         if fabs(1-omega_0) <= eps_om:
  *             del_c0 = 3*(12*pi)**(2/3)/20
  *             delta_c = del_c0/a             # <<<<<<<<<<<<<<
@@ -6342,16 +6235,16 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     if (unlikely(__pyx_v_a == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 343, __pyx_L1_error)
+      __PYX_ERR(0, 344, __pyx_L1_error)
     }
-    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_del_c0 / __pyx_v_a)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 343, __pyx_L1_error)
+    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_del_c0 / __pyx_v_a)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 344, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_v_delta_c = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "classic_trees.pyx":341
+    /* "classic_trees.pyx":342
  *             int i_o
- *             double x_p
+ *             double x_p, summ
  *         if fabs(1-omega_0) <= eps_om:             # <<<<<<<<<<<<<<
  *             del_c0 = 3*(12*pi)**(2/3)/20
  *             delta_c = del_c0/a
@@ -6359,7 +6252,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     goto __pyx_L3;
   }
 
-  /* "classic_trees.pyx":344
+  /* "classic_trees.pyx":345
  *             del_c0 = 3*(12*pi)**(2/3)/20
  *             delta_c = del_c0/a
  *         elif (1-omega_0) > eps_om and l_0 < eps_om:             # <<<<<<<<<<<<<<
@@ -6377,7 +6270,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_3) {
 
-    /* "classic_trees.pyx":345
+    /* "classic_trees.pyx":346
  *             delta_c = del_c0/a
  *         elif (1-omega_0) > eps_om and l_0 < eps_om:
  *             eta_0 = acosh(2/omega_0-1)             # <<<<<<<<<<<<<<
@@ -6386,11 +6279,11 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     if (unlikely(__pyx_v_omega_0 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 345, __pyx_L1_error)
+      __PYX_ERR(0, 346, __pyx_L1_error)
     }
     __pyx_v_eta_0 = acosh(((2.0 / __pyx_v_omega_0) - 1.0));
 
-    /* "classic_trees.pyx":346
+    /* "classic_trees.pyx":347
  *         elif (1-omega_0) > eps_om and l_0 < eps_om:
  *             eta_0 = acosh(2/omega_0-1)
  *             sh_0  = sinh(eta_0)             # <<<<<<<<<<<<<<
@@ -6399,7 +6292,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     __pyx_v_sh_0 = sinh(__pyx_v_eta_0);
 
-    /* "classic_trees.pyx":347
+    /* "classic_trees.pyx":348
  *             eta_0 = acosh(2/omega_0-1)
  *             sh_0  = sinh(eta_0)
  *             ch_0  = sinh(eta_0)             # <<<<<<<<<<<<<<
@@ -6408,7 +6301,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     __pyx_v_ch_0 = sinh(__pyx_v_eta_0);
 
-    /* "classic_trees.pyx":348
+    /* "classic_trees.pyx":349
  *             sh_0  = sinh(eta_0)
  *             ch_0  = sinh(eta_0)
  *             t_omega = 2*pi/(sh_0-eta_0)             # <<<<<<<<<<<<<<
@@ -6419,11 +6312,11 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     __pyx_t_6 = (__pyx_v_sh_0 - __pyx_v_eta_0);
     if (unlikely(__pyx_t_6 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 348, __pyx_L1_error)
+      __PYX_ERR(0, 349, __pyx_L1_error)
     }
     __pyx_v_t_omega = (__pyx_t_5 / __pyx_t_6);
 
-    /* "classic_trees.pyx":349
+    /* "classic_trees.pyx":350
  *             ch_0  = sinh(eta_0)
  *             t_omega = 2*pi/(sh_0-eta_0)
  *             d_0   = 3*sh_0*(sh_0-eta_0)/(ch_0-1)**2-2             # <<<<<<<<<<<<<<
@@ -6434,11 +6327,11 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     __pyx_t_5 = pow((__pyx_v_ch_0 - 1.0), 2.0);
     if (unlikely(__pyx_t_5 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 349, __pyx_L1_error)
+      __PYX_ERR(0, 350, __pyx_L1_error)
     }
     __pyx_v_d_0 = ((__pyx_t_6 / __pyx_t_5) - 2.0);
 
-    /* "classic_trees.pyx":351
+    /* "classic_trees.pyx":352
  *             d_0   = 3*sh_0*(sh_0-eta_0)/(ch_0-1)**2-2
  * 
  *             ch = a*(ch_0-1)+1             # <<<<<<<<<<<<<<
@@ -6447,7 +6340,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     __pyx_v_ch = ((__pyx_v_a * (__pyx_v_ch_0 - 1.0)) + 1.0);
 
-    /* "classic_trees.pyx":352
+    /* "classic_trees.pyx":353
  * 
  *             ch = a*(ch_0-1)+1
  *             eta= acosh(ch)             # <<<<<<<<<<<<<<
@@ -6456,7 +6349,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     __pyx_v_eta = acosh(__pyx_v_ch);
 
-    /* "classic_trees.pyx":353
+    /* "classic_trees.pyx":354
  *             ch = a*(ch_0-1)+1
  *             eta= acosh(ch)
  *             sh = sinh(eta)             # <<<<<<<<<<<<<<
@@ -6465,7 +6358,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     __pyx_v_sh = sinh(__pyx_v_eta);
 
-    /* "classic_trees.pyx":354
+    /* "classic_trees.pyx":355
  *             eta= acosh(ch)
  *             sh = sinh(eta)
  *             t  = (sh-eta)/(sh_0-eta_0)             # <<<<<<<<<<<<<<
@@ -6476,11 +6369,11 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     __pyx_t_6 = (__pyx_v_sh_0 - __pyx_v_eta_0);
     if (unlikely(__pyx_t_6 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 354, __pyx_L1_error)
+      __PYX_ERR(0, 355, __pyx_L1_error)
     }
     __pyx_v_t = (__pyx_t_5 / __pyx_t_6);
 
-    /* "classic_trees.pyx":355
+    /* "classic_trees.pyx":356
  *             sh = sinh(eta)
  *             t  = (sh-eta)/(sh_0-eta_0)
  *             delta_c = 1.5*d_0*(1+(t_omega/t)**(2/3))             # <<<<<<<<<<<<<<
@@ -6489,14 +6382,14 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     if (unlikely(__pyx_v_t == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 355, __pyx_L1_error)
+      __PYX_ERR(0, 356, __pyx_L1_error)
     }
-    __pyx_t_1 = PyFloat_FromDouble(((1.5 * __pyx_v_d_0) * (1.0 + pow((__pyx_v_t_omega / __pyx_v_t), (2.0 / 3.0))))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 355, __pyx_L1_error)
+    __pyx_t_1 = PyFloat_FromDouble(((1.5 * __pyx_v_d_0) * (1.0 + pow((__pyx_v_t_omega / __pyx_v_t), (2.0 / 3.0))))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 356, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_v_delta_c = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "classic_trees.pyx":344
+    /* "classic_trees.pyx":345
  *             del_c0 = 3*(12*pi)**(2/3)/20
  *             delta_c = del_c0/a
  *         elif (1-omega_0) > eps_om and l_0 < eps_om:             # <<<<<<<<<<<<<<
@@ -6506,7 +6399,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     goto __pyx_L3;
   }
 
-  /* "classic_trees.pyx":358
+  /* "classic_trees.pyx":359
  * 
  *         else:
  *             if omega_0 != omega_0_save or l_0 != l_0_save:             # <<<<<<<<<<<<<<
@@ -6525,7 +6418,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     __pyx_L7_bool_binop_done:;
     if (__pyx_t_3) {
 
-      /* "classic_trees.pyx":359
+      /* "classic_trees.pyx":360
  *         else:
  *             if omega_0 != omega_0_save or l_0 != l_0_save:
  *                 omega_0_save = omega_0             # <<<<<<<<<<<<<<
@@ -6534,7 +6427,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
       __pyx_v_omega_0_save = __pyx_v_omega_0;
 
-      /* "classic_trees.pyx":360
+      /* "classic_trees.pyx":361
  *             if omega_0 != omega_0_save or l_0 != l_0_save:
  *                 omega_0_save = omega_0
  *                 l_0_save = l_0             # <<<<<<<<<<<<<<
@@ -6543,7 +6436,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
       __pyx_v_l_0_save = __pyx_v_l_0;
 
-      /* "classic_trees.pyx":361
+      /* "classic_trees.pyx":362
  *                 omega_0_save = omega_0
  *                 l_0_save = l_0
  *                 if fabs(omega_0+l_0-1) > eps_om:             # <<<<<<<<<<<<<<
@@ -6553,20 +6446,20 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
       __pyx_t_3 = ((fabs(((__pyx_v_omega_0 + __pyx_v_l_0) - 1.0)) > __pyx_v_eps_om) != 0);
       if (unlikely(__pyx_t_3)) {
 
-        /* "classic_trees.pyx":362
+        /* "classic_trees.pyx":363
  *                 l_0_save = l_0
  *                 if fabs(omega_0+l_0-1) > eps_om:
  *                     raise ValueError('ERROR: omega_0+l_0+1 != 1')             # <<<<<<<<<<<<<<
  *                 x_0 = (2*(1/omega_0-1))**0.333333
  *                 summ= 0
  */
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 362, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 363, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_Raise(__pyx_t_1, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __PYX_ERR(0, 362, __pyx_L1_error)
+        __PYX_ERR(0, 363, __pyx_L1_error)
 
-        /* "classic_trees.pyx":361
+        /* "classic_trees.pyx":362
  *                 omega_0_save = omega_0
  *                 l_0_save = l_0
  *                 if fabs(omega_0+l_0-1) > eps_om:             # <<<<<<<<<<<<<<
@@ -6575,7 +6468,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
       }
 
-      /* "classic_trees.pyx":363
+      /* "classic_trees.pyx":364
  *                 if fabs(omega_0+l_0-1) > eps_om:
  *                     raise ValueError('ERROR: omega_0+l_0+1 != 1')
  *                 x_0 = (2*(1/omega_0-1))**0.333333             # <<<<<<<<<<<<<<
@@ -6584,21 +6477,20 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
       if (unlikely(__pyx_v_omega_0 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 363, __pyx_L1_error)
+        __PYX_ERR(0, 364, __pyx_L1_error)
       }
       __pyx_v_x_0 = pow((2.0 * ((1.0 / __pyx_v_omega_0) - 1.0)), 0.333333);
 
-      /* "classic_trees.pyx":364
+      /* "classic_trees.pyx":365
  *                     raise ValueError('ERROR: omega_0+l_0+1 != 1')
  *                 x_0 = (2*(1/omega_0-1))**0.333333
  *                 summ= 0             # <<<<<<<<<<<<<<
  *                 dxp = x_0/float(n_sum)
  *                 for i_s in range(1,n_sum+1):
  */
-      __Pyx_INCREF(__pyx_int_0);
-      __pyx_v_summ = __pyx_int_0;
+      __pyx_v_summ = 0.0;
 
-      /* "classic_trees.pyx":365
+      /* "classic_trees.pyx":366
  *                 x_0 = (2*(1/omega_0-1))**0.333333
  *                 summ= 0
  *                 dxp = x_0/float(n_sum)             # <<<<<<<<<<<<<<
@@ -6607,20 +6499,20 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
       if (unlikely(((double)__pyx_v_n_sum) == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 365, __pyx_L1_error)
+        __PYX_ERR(0, 366, __pyx_L1_error)
       }
       __pyx_v_dxp = (__pyx_v_x_0 / ((double)__pyx_v_n_sum));
 
-      /* "classic_trees.pyx":366
+      /* "classic_trees.pyx":367
  *                 summ= 0
  *                 dxp = x_0/float(n_sum)
  *                 for i_s in range(1,n_sum+1):             # <<<<<<<<<<<<<<
  *                     x_p = x_0*(float(i_s)-0.5)/float(n_sum)
  *                     if x_p < 0:
  */
-      __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_n_sum + 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 366, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_n_sum + 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 367, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 366, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 367, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_INCREF(__pyx_int_1);
       __Pyx_GIVEREF(__pyx_int_1);
@@ -6628,16 +6520,16 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
       __Pyx_GIVEREF(__pyx_t_1);
       PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_1);
       __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 366, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 367, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
         __pyx_t_7 = __pyx_t_1; __Pyx_INCREF(__pyx_t_7); __pyx_t_8 = 0;
         __pyx_t_9 = NULL;
       } else {
-        __pyx_t_8 = -1; __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 366, __pyx_L1_error)
+        __pyx_t_8 = -1; __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 367, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
-        __pyx_t_9 = Py_TYPE(__pyx_t_7)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 366, __pyx_L1_error)
+        __pyx_t_9 = Py_TYPE(__pyx_t_7)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 367, __pyx_L1_error)
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       for (;;) {
@@ -6645,17 +6537,17 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           if (likely(PyList_CheckExact(__pyx_t_7))) {
             if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_7)) break;
             #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_1 = PyList_GET_ITEM(__pyx_t_7, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 366, __pyx_L1_error)
+            __pyx_t_1 = PyList_GET_ITEM(__pyx_t_7, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 367, __pyx_L1_error)
             #else
-            __pyx_t_1 = PySequence_ITEM(__pyx_t_7, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 366, __pyx_L1_error)
+            __pyx_t_1 = PySequence_ITEM(__pyx_t_7, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 367, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_1);
             #endif
           } else {
             if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_7)) break;
             #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_7, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 366, __pyx_L1_error)
+            __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_7, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 367, __pyx_L1_error)
             #else
-            __pyx_t_1 = PySequence_ITEM(__pyx_t_7, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 366, __pyx_L1_error)
+            __pyx_t_1 = PySequence_ITEM(__pyx_t_7, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 367, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_1);
             #endif
           }
@@ -6665,7 +6557,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
             PyObject* exc_type = PyErr_Occurred();
             if (exc_type) {
               if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-              else __PYX_ERR(0, 366, __pyx_L1_error)
+              else __PYX_ERR(0, 367, __pyx_L1_error)
             }
             break;
           }
@@ -6674,22 +6566,22 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
         __Pyx_XDECREF_SET(__pyx_v_i_s, __pyx_t_1);
         __pyx_t_1 = 0;
 
-        /* "classic_trees.pyx":367
+        /* "classic_trees.pyx":368
  *                 dxp = x_0/float(n_sum)
  *                 for i_s in range(1,n_sum+1):
  *                     x_p = x_0*(float(i_s)-0.5)/float(n_sum)             # <<<<<<<<<<<<<<
  *                     if x_p < 0:
  *                         x_p = 0
  */
-        __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_v_i_s); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 367, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_v_i_s); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 368, __pyx_L1_error)
         __pyx_t_5 = (__pyx_v_x_0 * (__pyx_t_6 - 0.5));
         if (unlikely(((double)__pyx_v_n_sum) == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 367, __pyx_L1_error)
+          __PYX_ERR(0, 368, __pyx_L1_error)
         }
         __pyx_v_x_p = (__pyx_t_5 / ((double)__pyx_v_n_sum));
 
-        /* "classic_trees.pyx":368
+        /* "classic_trees.pyx":369
  *                 for i_s in range(1,n_sum+1):
  *                     x_p = x_0*(float(i_s)-0.5)/float(n_sum)
  *                     if x_p < 0:             # <<<<<<<<<<<<<<
@@ -6699,7 +6591,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
         __pyx_t_3 = ((__pyx_v_x_p < 0.0) != 0);
         if (__pyx_t_3) {
 
-          /* "classic_trees.pyx":369
+          /* "classic_trees.pyx":370
  *                     x_p = x_0*(float(i_s)-0.5)/float(n_sum)
  *                     if x_p < 0:
  *                         x_p = 0             # <<<<<<<<<<<<<<
@@ -6708,7 +6600,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
           __pyx_v_x_p = 0.0;
 
-          /* "classic_trees.pyx":368
+          /* "classic_trees.pyx":369
  *                 for i_s in range(1,n_sum+1):
  *                     x_p = x_0*(float(i_s)-0.5)/float(n_sum)
  *                     if x_p < 0:             # <<<<<<<<<<<<<<
@@ -6717,7 +6609,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
         }
 
-        /* "classic_trees.pyx":370
+        /* "classic_trees.pyx":371
  *                     if x_p < 0:
  *                         x_p = 0
  *                     summ += ((x_p/(x_p**3+2))**1.5)*dxp             # <<<<<<<<<<<<<<
@@ -6727,17 +6619,11 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
         __pyx_t_5 = (pow(__pyx_v_x_p, 3.0) + 2.0);
         if (unlikely(__pyx_t_5 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 370, __pyx_L1_error)
+          __PYX_ERR(0, 371, __pyx_L1_error)
         }
-        __pyx_t_1 = PyFloat_FromDouble((pow((__pyx_v_x_p / __pyx_t_5), 1.5) * __pyx_v_dxp)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 370, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_10 = PyNumber_InPlaceAdd(__pyx_v_summ, __pyx_t_1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 370, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_10);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_DECREF_SET(__pyx_v_summ, __pyx_t_10);
-        __pyx_t_10 = 0;
+        __pyx_v_summ = (__pyx_v_summ + (pow((__pyx_v_x_p / __pyx_t_5), 1.5) * __pyx_v_dxp));
 
-        /* "classic_trees.pyx":366
+        /* "classic_trees.pyx":367
  *                 summ= 0
  *                 dxp = x_0/float(n_sum)
  *                 for i_s in range(1,n_sum+1):             # <<<<<<<<<<<<<<
@@ -6747,162 +6633,156 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
       }
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "classic_trees.pyx":371
+      /* "classic_trees.pyx":372
  *                         x_p = 0
  *                     summ += ((x_p/(x_p**3+2))**1.5)*dxp
  *                 dlin_0 = summ*sqrt(x_0**3+2)/sqrt(x_0**3)             # <<<<<<<<<<<<<<
  * 
  *                 for i in range(1,n_table+1):
  */
-      __pyx_t_7 = PyFloat_FromDouble(sqrt((pow(__pyx_v_x_0, 3.0) + 2.0))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 371, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_10 = PyNumber_Multiply(__pyx_v_summ, __pyx_t_7); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 371, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_10);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = PyFloat_FromDouble(sqrt(pow(__pyx_v_x_0, 3.0))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 371, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_10, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 371, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_v_dlin_0 = __pyx_t_1;
-      __pyx_t_1 = 0;
+      __pyx_t_5 = (__pyx_v_summ * sqrt((pow(__pyx_v_x_0, 3.0) + 2.0)));
+      __pyx_t_6 = sqrt(pow(__pyx_v_x_0, 3.0));
+      if (unlikely(__pyx_t_6 == 0)) {
+        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+        __PYX_ERR(0, 372, __pyx_L1_error)
+      }
+      __pyx_v_dlin_0 = (__pyx_t_5 / __pyx_t_6);
 
-      /* "classic_trees.pyx":373
+      /* "classic_trees.pyx":374
  *                 dlin_0 = summ*sqrt(x_0**3+2)/sqrt(x_0**3)
  * 
  *                 for i in range(1,n_table+1):             # <<<<<<<<<<<<<<
  *                     aa = a_min+(1-a_min)*float(i-1)/float(n_table-1)
  *                     a_flat[i-1] = aa
  */
-      __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_n_table + 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 373, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 373, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyInt_From_long((__pyx_v_n_table + 1)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 374, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
+      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 374, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
       __Pyx_INCREF(__pyx_int_1);
       __Pyx_GIVEREF(__pyx_int_1);
-      PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_int_1);
-      __Pyx_GIVEREF(__pyx_t_1);
-      PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_1);
-      __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 373, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
-        __pyx_t_7 = __pyx_t_1; __Pyx_INCREF(__pyx_t_7); __pyx_t_8 = 0;
+      PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_int_1);
+      __Pyx_GIVEREF(__pyx_t_7);
+      PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_7);
+      __pyx_t_7 = 0;
+      __pyx_t_7 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_1, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 374, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
+        __pyx_t_1 = __pyx_t_7; __Pyx_INCREF(__pyx_t_1); __pyx_t_8 = 0;
         __pyx_t_9 = NULL;
       } else {
-        __pyx_t_8 = -1; __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 373, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-        __pyx_t_9 = Py_TYPE(__pyx_t_7)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 373, __pyx_L1_error)
+        __pyx_t_8 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 374, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_9 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 374, __pyx_L1_error)
       }
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       for (;;) {
         if (likely(!__pyx_t_9)) {
-          if (likely(PyList_CheckExact(__pyx_t_7))) {
-            if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_7)) break;
+          if (likely(PyList_CheckExact(__pyx_t_1))) {
+            if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_1)) break;
             #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_1 = PyList_GET_ITEM(__pyx_t_7, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 373, __pyx_L1_error)
+            __pyx_t_7 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 374, __pyx_L1_error)
             #else
-            __pyx_t_1 = PySequence_ITEM(__pyx_t_7, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 373, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_1);
+            __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 374, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_7);
             #endif
           } else {
-            if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_7)) break;
+            if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
             #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-            __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_7, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 373, __pyx_L1_error)
+            __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 374, __pyx_L1_error)
             #else
-            __pyx_t_1 = PySequence_ITEM(__pyx_t_7, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 373, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_1);
+            __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 374, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_7);
             #endif
           }
         } else {
-          __pyx_t_1 = __pyx_t_9(__pyx_t_7);
-          if (unlikely(!__pyx_t_1)) {
+          __pyx_t_7 = __pyx_t_9(__pyx_t_1);
+          if (unlikely(!__pyx_t_7)) {
             PyObject* exc_type = PyErr_Occurred();
             if (exc_type) {
               if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-              else __PYX_ERR(0, 373, __pyx_L1_error)
+              else __PYX_ERR(0, 374, __pyx_L1_error)
             }
             break;
           }
-          __Pyx_GOTREF(__pyx_t_1);
+          __Pyx_GOTREF(__pyx_t_7);
         }
-        __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
-        __pyx_t_1 = 0;
+        __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_7);
+        __pyx_t_7 = 0;
 
-        /* "classic_trees.pyx":374
+        /* "classic_trees.pyx":375
  * 
  *                 for i in range(1,n_table+1):
  *                     aa = a_min+(1-a_min)*float(i-1)/float(n_table-1)             # <<<<<<<<<<<<<<
  *                     a_flat[i-1] = aa
  *                     l = l_0/(l_0+(1-omega_0-l_0)/aa**2+omega_0/aa**3)
  */
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 374, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_5 = __Pyx_PyObject_AsDouble(__pyx_t_1); if (unlikely(__pyx_t_5 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 374, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_6 = ((1.0 - __pyx_v_a_min) * __pyx_t_5);
+        __pyx_t_7 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 375, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_7); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 375, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+        __pyx_t_5 = ((1.0 - __pyx_v_a_min) * __pyx_t_6);
         if (unlikely(((double)(__pyx_v_n_table - 1)) == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 374, __pyx_L1_error)
+          __PYX_ERR(0, 375, __pyx_L1_error)
         }
-        __pyx_v_aa = (__pyx_v_a_min + (__pyx_t_6 / ((double)(__pyx_v_n_table - 1))));
+        __pyx_v_aa = (__pyx_v_a_min + (__pyx_t_5 / ((double)(__pyx_v_n_table - 1))));
 
-        /* "classic_trees.pyx":375
+        /* "classic_trees.pyx":376
  *                 for i in range(1,n_table+1):
  *                     aa = a_min+(1-a_min)*float(i-1)/float(n_table-1)
  *                     a_flat[i-1] = aa             # <<<<<<<<<<<<<<
  *                     l = l_0/(l_0+(1-omega_0-l_0)/aa**2+omega_0/aa**3)
  *                     omega = omega_0*l/(l_0*aa**3)
  */
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 375, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 375, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        (__pyx_v_a_flat[__pyx_t_11]) = __pyx_v_aa;
+        __pyx_t_7 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 376, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_7); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 376, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+        (__pyx_v_a_flat[__pyx_t_10]) = __pyx_v_aa;
 
-        /* "classic_trees.pyx":376
+        /* "classic_trees.pyx":377
  *                     aa = a_min+(1-a_min)*float(i-1)/float(n_table-1)
  *                     a_flat[i-1] = aa
  *                     l = l_0/(l_0+(1-omega_0-l_0)/aa**2+omega_0/aa**3)             # <<<<<<<<<<<<<<
  *                     omega = omega_0*l/(l_0*aa**3)
  *                     x = x_0*aa
  */
-        __pyx_t_6 = ((1.0 - __pyx_v_omega_0) - __pyx_v_l_0);
-        __pyx_t_5 = pow(__pyx_v_aa, 2.0);
-        if (unlikely(__pyx_t_5 == 0)) {
+        __pyx_t_5 = ((1.0 - __pyx_v_omega_0) - __pyx_v_l_0);
+        __pyx_t_6 = pow(__pyx_v_aa, 2.0);
+        if (unlikely(__pyx_t_6 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 376, __pyx_L1_error)
+          __PYX_ERR(0, 377, __pyx_L1_error)
         }
-        __pyx_t_12 = pow(__pyx_v_aa, 3.0);
+        __pyx_t_11 = pow(__pyx_v_aa, 3.0);
+        if (unlikely(__pyx_t_11 == 0)) {
+          PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+          __PYX_ERR(0, 377, __pyx_L1_error)
+        }
+        __pyx_t_12 = ((__pyx_v_l_0 + (__pyx_t_5 / __pyx_t_6)) + (__pyx_v_omega_0 / __pyx_t_11));
         if (unlikely(__pyx_t_12 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 376, __pyx_L1_error)
+          __PYX_ERR(0, 377, __pyx_L1_error)
         }
-        __pyx_t_13 = ((__pyx_v_l_0 + (__pyx_t_6 / __pyx_t_5)) + (__pyx_v_omega_0 / __pyx_t_12));
-        if (unlikely(__pyx_t_13 == 0)) {
-          PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 376, __pyx_L1_error)
-        }
-        __pyx_v_l = (__pyx_v_l_0 / __pyx_t_13);
+        __pyx_v_l = (__pyx_v_l_0 / __pyx_t_12);
 
-        /* "classic_trees.pyx":377
+        /* "classic_trees.pyx":378
  *                     a_flat[i-1] = aa
  *                     l = l_0/(l_0+(1-omega_0-l_0)/aa**2+omega_0/aa**3)
  *                     omega = omega_0*l/(l_0*aa**3)             # <<<<<<<<<<<<<<
  *                     x = x_0*aa
  *                     summ = 0
  */
-        __pyx_t_13 = (__pyx_v_omega_0 * __pyx_v_l);
-        __pyx_t_12 = (__pyx_v_l_0 * pow(__pyx_v_aa, 3.0));
-        if (unlikely(__pyx_t_12 == 0)) {
+        __pyx_t_12 = (__pyx_v_omega_0 * __pyx_v_l);
+        __pyx_t_11 = (__pyx_v_l_0 * pow(__pyx_v_aa, 3.0));
+        if (unlikely(__pyx_t_11 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 377, __pyx_L1_error)
+          __PYX_ERR(0, 378, __pyx_L1_error)
         }
-        __pyx_v_omega = (__pyx_t_13 / __pyx_t_12);
+        __pyx_v_omega = (__pyx_t_12 / __pyx_t_11);
 
-        /* "classic_trees.pyx":378
+        /* "classic_trees.pyx":379
  *                     l = l_0/(l_0+(1-omega_0-l_0)/aa**2+omega_0/aa**3)
  *                     omega = omega_0*l/(l_0*aa**3)
  *                     x = x_0*aa             # <<<<<<<<<<<<<<
@@ -6911,17 +6791,16 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
         __pyx_v_x = (__pyx_v_x_0 * __pyx_v_aa);
 
-        /* "classic_trees.pyx":379
+        /* "classic_trees.pyx":380
  *                     omega = omega_0*l/(l_0*aa**3)
  *                     x = x_0*aa
  *                     summ = 0             # <<<<<<<<<<<<<<
  *                     dxp = x/float(n_sum)
  *                     for i_s in range(1,n_sum+1):
  */
-        __Pyx_INCREF(__pyx_int_0);
-        __Pyx_DECREF_SET(__pyx_v_summ, __pyx_int_0);
+        __pyx_v_summ = 0.0;
 
-        /* "classic_trees.pyx":380
+        /* "classic_trees.pyx":381
  *                     x = x_0*aa
  *                     summ = 0
  *                     dxp = x/float(n_sum)             # <<<<<<<<<<<<<<
@@ -6930,89 +6809,89 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
         if (unlikely(((double)__pyx_v_n_sum) == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 380, __pyx_L1_error)
+          __PYX_ERR(0, 381, __pyx_L1_error)
         }
         __pyx_v_dxp = (__pyx_v_x / ((double)__pyx_v_n_sum));
 
-        /* "classic_trees.pyx":381
+        /* "classic_trees.pyx":382
  *                     summ = 0
  *                     dxp = x/float(n_sum)
  *                     for i_s in range(1,n_sum+1):             # <<<<<<<<<<<<<<
  *                         x_p = x*(float(i_s)-0.5)/float(n_sum)
  *                         if x_p<0:
  */
-        __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_n_sum + 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 381, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_10 = PyTuple_New(2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 381, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_10);
+        __pyx_t_7 = __Pyx_PyInt_From_long((__pyx_v_n_sum + 1)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 382, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __pyx_t_13 = PyTuple_New(2); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 382, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_13);
         __Pyx_INCREF(__pyx_int_1);
         __Pyx_GIVEREF(__pyx_int_1);
-        PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_int_1);
-        __Pyx_GIVEREF(__pyx_t_1);
-        PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_1);
-        __pyx_t_1 = 0;
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 381, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-        if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
-          __pyx_t_10 = __pyx_t_1; __Pyx_INCREF(__pyx_t_10); __pyx_t_11 = 0;
+        PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_int_1);
+        __Pyx_GIVEREF(__pyx_t_7);
+        PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_t_7);
+        __pyx_t_7 = 0;
+        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_13, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 382, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
+          __pyx_t_13 = __pyx_t_7; __Pyx_INCREF(__pyx_t_13); __pyx_t_10 = 0;
           __pyx_t_14 = NULL;
         } else {
-          __pyx_t_11 = -1; __pyx_t_10 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 381, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_10);
-          __pyx_t_14 = Py_TYPE(__pyx_t_10)->tp_iternext; if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 381, __pyx_L1_error)
+          __pyx_t_10 = -1; __pyx_t_13 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 382, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_13);
+          __pyx_t_14 = Py_TYPE(__pyx_t_13)->tp_iternext; if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 382, __pyx_L1_error)
         }
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         for (;;) {
           if (likely(!__pyx_t_14)) {
-            if (likely(PyList_CheckExact(__pyx_t_10))) {
-              if (__pyx_t_11 >= PyList_GET_SIZE(__pyx_t_10)) break;
+            if (likely(PyList_CheckExact(__pyx_t_13))) {
+              if (__pyx_t_10 >= PyList_GET_SIZE(__pyx_t_13)) break;
               #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_1 = PyList_GET_ITEM(__pyx_t_10, __pyx_t_11); __Pyx_INCREF(__pyx_t_1); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 381, __pyx_L1_error)
+              __pyx_t_7 = PyList_GET_ITEM(__pyx_t_13, __pyx_t_10); __Pyx_INCREF(__pyx_t_7); __pyx_t_10++; if (unlikely(0 < 0)) __PYX_ERR(0, 382, __pyx_L1_error)
               #else
-              __pyx_t_1 = PySequence_ITEM(__pyx_t_10, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 381, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_1);
+              __pyx_t_7 = PySequence_ITEM(__pyx_t_13, __pyx_t_10); __pyx_t_10++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 382, __pyx_L1_error)
+              __Pyx_GOTREF(__pyx_t_7);
               #endif
             } else {
-              if (__pyx_t_11 >= PyTuple_GET_SIZE(__pyx_t_10)) break;
+              if (__pyx_t_10 >= PyTuple_GET_SIZE(__pyx_t_13)) break;
               #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_10, __pyx_t_11); __Pyx_INCREF(__pyx_t_1); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 381, __pyx_L1_error)
+              __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_13, __pyx_t_10); __Pyx_INCREF(__pyx_t_7); __pyx_t_10++; if (unlikely(0 < 0)) __PYX_ERR(0, 382, __pyx_L1_error)
               #else
-              __pyx_t_1 = PySequence_ITEM(__pyx_t_10, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 381, __pyx_L1_error)
-              __Pyx_GOTREF(__pyx_t_1);
+              __pyx_t_7 = PySequence_ITEM(__pyx_t_13, __pyx_t_10); __pyx_t_10++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 382, __pyx_L1_error)
+              __Pyx_GOTREF(__pyx_t_7);
               #endif
             }
           } else {
-            __pyx_t_1 = __pyx_t_14(__pyx_t_10);
-            if (unlikely(!__pyx_t_1)) {
+            __pyx_t_7 = __pyx_t_14(__pyx_t_13);
+            if (unlikely(!__pyx_t_7)) {
               PyObject* exc_type = PyErr_Occurred();
               if (exc_type) {
                 if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 381, __pyx_L1_error)
+                else __PYX_ERR(0, 382, __pyx_L1_error)
               }
               break;
             }
-            __Pyx_GOTREF(__pyx_t_1);
+            __Pyx_GOTREF(__pyx_t_7);
           }
-          __Pyx_XDECREF_SET(__pyx_v_i_s, __pyx_t_1);
-          __pyx_t_1 = 0;
+          __Pyx_XDECREF_SET(__pyx_v_i_s, __pyx_t_7);
+          __pyx_t_7 = 0;
 
-          /* "classic_trees.pyx":382
+          /* "classic_trees.pyx":383
  *                     dxp = x/float(n_sum)
  *                     for i_s in range(1,n_sum+1):
  *                         x_p = x*(float(i_s)-0.5)/float(n_sum)             # <<<<<<<<<<<<<<
  *                         if x_p<0:
  *                             x_p = 0
  */
-          __pyx_t_12 = __Pyx_PyObject_AsDouble(__pyx_v_i_s); if (unlikely(__pyx_t_12 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 382, __pyx_L1_error)
-          __pyx_t_13 = (__pyx_v_x * (__pyx_t_12 - 0.5));
+          __pyx_t_11 = __Pyx_PyObject_AsDouble(__pyx_v_i_s); if (unlikely(__pyx_t_11 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 383, __pyx_L1_error)
+          __pyx_t_12 = (__pyx_v_x * (__pyx_t_11 - 0.5));
           if (unlikely(((double)__pyx_v_n_sum) == 0)) {
             PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-            __PYX_ERR(0, 382, __pyx_L1_error)
+            __PYX_ERR(0, 383, __pyx_L1_error)
           }
-          __pyx_v_x_p = (__pyx_t_13 / ((double)__pyx_v_n_sum));
+          __pyx_v_x_p = (__pyx_t_12 / ((double)__pyx_v_n_sum));
 
-          /* "classic_trees.pyx":383
+          /* "classic_trees.pyx":384
  *                     for i_s in range(1,n_sum+1):
  *                         x_p = x*(float(i_s)-0.5)/float(n_sum)
  *                         if x_p<0:             # <<<<<<<<<<<<<<
@@ -7022,7 +6901,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           __pyx_t_3 = ((__pyx_v_x_p < 0.0) != 0);
           if (__pyx_t_3) {
 
-            /* "classic_trees.pyx":384
+            /* "classic_trees.pyx":385
  *                         x_p = x*(float(i_s)-0.5)/float(n_sum)
  *                         if x_p<0:
  *                             x_p = 0             # <<<<<<<<<<<<<<
@@ -7031,7 +6910,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
             __pyx_v_x_p = 0.0;
 
-            /* "classic_trees.pyx":383
+            /* "classic_trees.pyx":384
  *                     for i_s in range(1,n_sum+1):
  *                         x_p = x*(float(i_s)-0.5)/float(n_sum)
  *                         if x_p<0:             # <<<<<<<<<<<<<<
@@ -7040,27 +6919,21 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
           }
 
-          /* "classic_trees.pyx":385
+          /* "classic_trees.pyx":386
  *                         if x_p<0:
  *                             x_p = 0
  *                         summ += ((x_p/(x_p**3+2))**1.5)*dxp             # <<<<<<<<<<<<<<
  *                     dlin = (summ*sqrt(x**3+2)/sqrt(x**3))/dlin_0
  *                     i_o = bisect.bisect_left(omega_flat,omega)
  */
-          __pyx_t_13 = (pow(__pyx_v_x_p, 3.0) + 2.0);
-          if (unlikely(__pyx_t_13 == 0)) {
+          __pyx_t_12 = (pow(__pyx_v_x_p, 3.0) + 2.0);
+          if (unlikely(__pyx_t_12 == 0)) {
             PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-            __PYX_ERR(0, 385, __pyx_L1_error)
+            __PYX_ERR(0, 386, __pyx_L1_error)
           }
-          __pyx_t_1 = PyFloat_FromDouble((pow((__pyx_v_x_p / __pyx_t_13), 1.5) * __pyx_v_dxp)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 385, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_15 = PyNumber_InPlaceAdd(__pyx_v_summ, __pyx_t_1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 385, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_15);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __Pyx_DECREF_SET(__pyx_v_summ, __pyx_t_15);
-          __pyx_t_15 = 0;
+          __pyx_v_summ = (__pyx_v_summ + (pow((__pyx_v_x_p / __pyx_t_12), 1.5) * __pyx_v_dxp));
 
-          /* "classic_trees.pyx":381
+          /* "classic_trees.pyx":382
  *                     summ = 0
  *                     dxp = x/float(n_sum)
  *                     for i_s in range(1,n_sum+1):             # <<<<<<<<<<<<<<
@@ -7068,47 +6941,43 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  *                         if x_p<0:
  */
         }
-        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-        /* "classic_trees.pyx":386
+        /* "classic_trees.pyx":387
  *                             x_p = 0
  *                         summ += ((x_p/(x_p**3+2))**1.5)*dxp
  *                     dlin = (summ*sqrt(x**3+2)/sqrt(x**3))/dlin_0             # <<<<<<<<<<<<<<
  *                     i_o = bisect.bisect_left(omega_flat,omega)
  *                     if i_o < n_v:
  */
-        __pyx_t_10 = PyFloat_FromDouble(sqrt((pow(__pyx_v_x, 3.0) + 2.0))); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 386, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_10);
-        __pyx_t_15 = PyNumber_Multiply(__pyx_v_summ, __pyx_t_10); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 386, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_15);
-        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-        __pyx_t_10 = PyFloat_FromDouble(sqrt(pow(__pyx_v_x, 3.0))); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 386, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_10);
-        __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_15, __pyx_t_10); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 386, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-        __pyx_t_10 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_v_dlin_0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 386, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_10);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_XDECREF_SET(__pyx_v_dlin, __pyx_t_10);
-        __pyx_t_10 = 0;
+        __pyx_t_12 = (__pyx_v_summ * sqrt((pow(__pyx_v_x, 3.0) + 2.0)));
+        __pyx_t_11 = sqrt(pow(__pyx_v_x, 3.0));
+        if (unlikely(__pyx_t_11 == 0)) {
+          PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+          __PYX_ERR(0, 387, __pyx_L1_error)
+        }
+        __pyx_t_6 = (__pyx_t_12 / __pyx_t_11);
+        if (unlikely(__pyx_v_dlin_0 == 0)) {
+          PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+          __PYX_ERR(0, 387, __pyx_L1_error)
+        }
+        __pyx_v_dlin = (__pyx_t_6 / __pyx_v_dlin_0);
 
-        /* "classic_trees.pyx":387
+        /* "classic_trees.pyx":388
  *                         summ += ((x_p/(x_p**3+2))**1.5)*dxp
  *                     dlin = (summ*sqrt(x**3+2)/sqrt(x**3))/dlin_0
  *                     i_o = bisect.bisect_left(omega_flat,omega)             # <<<<<<<<<<<<<<
  *                     if i_o < n_v:
  *                         h = (omega_flat[i_o]-omega)/(omega_flat[i_o]-omega_flat[i_o-1])
  */
-        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_bisect); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 387, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_bisect_left); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 387, __pyx_L1_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_bisect); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 388, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_bisect_left); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 388, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_omega_flat, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 387, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_16 = PyFloat_FromDouble(__pyx_v_omega); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 387, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+        __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_omega_flat, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 388, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __pyx_t_16 = PyFloat_FromDouble(__pyx_v_omega); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 388, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_16);
         __pyx_t_17 = NULL;
         __pyx_t_18 = 0;
@@ -7124,46 +6993,46 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
         }
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_15)) {
-          PyObject *__pyx_temp[3] = {__pyx_t_17, __pyx_t_1, __pyx_t_16};
-          __pyx_t_10 = __Pyx_PyFunction_FastCall(__pyx_t_15, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 387, __pyx_L1_error)
+          PyObject *__pyx_temp[3] = {__pyx_t_17, __pyx_t_7, __pyx_t_16};
+          __pyx_t_13 = __Pyx_PyFunction_FastCall(__pyx_t_15, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 388, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
-          __Pyx_GOTREF(__pyx_t_10);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+          __Pyx_GOTREF(__pyx_t_13);
+          __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
         } else
         #endif
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_15)) {
-          PyObject *__pyx_temp[3] = {__pyx_t_17, __pyx_t_1, __pyx_t_16};
-          __pyx_t_10 = __Pyx_PyCFunction_FastCall(__pyx_t_15, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 387, __pyx_L1_error)
+          PyObject *__pyx_temp[3] = {__pyx_t_17, __pyx_t_7, __pyx_t_16};
+          __pyx_t_13 = __Pyx_PyCFunction_FastCall(__pyx_t_15, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 388, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
-          __Pyx_GOTREF(__pyx_t_10);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+          __Pyx_GOTREF(__pyx_t_13);
+          __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
         } else
         #endif
         {
-          __pyx_t_19 = PyTuple_New(2+__pyx_t_18); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 387, __pyx_L1_error)
+          __pyx_t_19 = PyTuple_New(2+__pyx_t_18); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 388, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           if (__pyx_t_17) {
             __Pyx_GIVEREF(__pyx_t_17); PyTuple_SET_ITEM(__pyx_t_19, 0, __pyx_t_17); __pyx_t_17 = NULL;
           }
-          __Pyx_GIVEREF(__pyx_t_1);
-          PyTuple_SET_ITEM(__pyx_t_19, 0+__pyx_t_18, __pyx_t_1);
+          __Pyx_GIVEREF(__pyx_t_7);
+          PyTuple_SET_ITEM(__pyx_t_19, 0+__pyx_t_18, __pyx_t_7);
           __Pyx_GIVEREF(__pyx_t_16);
           PyTuple_SET_ITEM(__pyx_t_19, 1+__pyx_t_18, __pyx_t_16);
-          __pyx_t_1 = 0;
+          __pyx_t_7 = 0;
           __pyx_t_16 = 0;
-          __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_15, __pyx_t_19, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 387, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_10);
+          __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_15, __pyx_t_19, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 388, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
         }
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-        __pyx_t_18 = __Pyx_PyInt_As_int(__pyx_t_10); if (unlikely((__pyx_t_18 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 387, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+        __pyx_t_18 = __Pyx_PyInt_As_int(__pyx_t_13); if (unlikely((__pyx_t_18 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 388, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         __pyx_v_i_o = __pyx_t_18;
 
-        /* "classic_trees.pyx":388
+        /* "classic_trees.pyx":389
  *                     dlin = (summ*sqrt(x**3+2)/sqrt(x**3))/dlin_0
  *                     i_o = bisect.bisect_left(omega_flat,omega)
  *                     if i_o < n_v:             # <<<<<<<<<<<<<<
@@ -7173,7 +7042,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
         __pyx_t_3 = ((__pyx_v_i_o < __pyx_v_n_v) != 0);
         if (__pyx_t_3) {
 
-          /* "classic_trees.pyx":389
+          /* "classic_trees.pyx":390
  *                     i_o = bisect.bisect_left(omega_flat,omega)
  *                     if i_o < n_v:
  *                         h = (omega_flat[i_o]-omega)/(omega_flat[i_o]-omega_flat[i_o-1])             # <<<<<<<<<<<<<<
@@ -7188,9 +7057,9 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           } else if (unlikely(__pyx_t_20 >= __pyx_v_omega_flat.shape[0])) __pyx_t_18 = 0;
           if (unlikely(__pyx_t_18 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_18);
-            __PYX_ERR(0, 389, __pyx_L1_error)
+            __PYX_ERR(0, 390, __pyx_L1_error)
           }
-          __pyx_t_13 = ((*((double *) ( /* dim=0 */ (__pyx_v_omega_flat.data + __pyx_t_20 * __pyx_v_omega_flat.strides[0]) ))) - __pyx_v_omega);
+          __pyx_t_6 = ((*((double *) ( /* dim=0 */ (__pyx_v_omega_flat.data + __pyx_t_20 * __pyx_v_omega_flat.strides[0]) ))) - __pyx_v_omega);
           __pyx_t_20 = __pyx_v_i_o;
           __pyx_t_18 = -1;
           if (__pyx_t_20 < 0) {
@@ -7199,7 +7068,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           } else if (unlikely(__pyx_t_20 >= __pyx_v_omega_flat.shape[0])) __pyx_t_18 = 0;
           if (unlikely(__pyx_t_18 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_18);
-            __PYX_ERR(0, 389, __pyx_L1_error)
+            __PYX_ERR(0, 390, __pyx_L1_error)
           }
           __pyx_t_21 = (__pyx_v_i_o - 1);
           __pyx_t_18 = -1;
@@ -7209,19 +7078,19 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           } else if (unlikely(__pyx_t_21 >= __pyx_v_omega_flat.shape[0])) __pyx_t_18 = 0;
           if (unlikely(__pyx_t_18 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_18);
-            __PYX_ERR(0, 389, __pyx_L1_error)
+            __PYX_ERR(0, 390, __pyx_L1_error)
           }
-          __pyx_t_12 = ((*((double *) ( /* dim=0 */ (__pyx_v_omega_flat.data + __pyx_t_20 * __pyx_v_omega_flat.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_omega_flat.data + __pyx_t_21 * __pyx_v_omega_flat.strides[0]) ))));
-          if (unlikely(__pyx_t_12 == 0)) {
+          __pyx_t_11 = ((*((double *) ( /* dim=0 */ (__pyx_v_omega_flat.data + __pyx_t_20 * __pyx_v_omega_flat.strides[0]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_omega_flat.data + __pyx_t_21 * __pyx_v_omega_flat.strides[0]) ))));
+          if (unlikely(__pyx_t_11 == 0)) {
             PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-            __PYX_ERR(0, 389, __pyx_L1_error)
+            __PYX_ERR(0, 390, __pyx_L1_error)
           }
-          __pyx_t_10 = PyFloat_FromDouble((__pyx_t_13 / __pyx_t_12)); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 389, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_10);
-          __Pyx_XDECREF_SET(__pyx_v_h, __pyx_t_10);
-          __pyx_t_10 = 0;
+          __pyx_t_13 = PyFloat_FromDouble((__pyx_t_6 / __pyx_t_11)); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 390, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_13);
+          __Pyx_XDECREF_SET(__pyx_v_h, __pyx_t_13);
+          __pyx_t_13 = 0;
 
-          /* "classic_trees.pyx":390
+          /* "classic_trees.pyx":391
  *                     if i_o < n_v:
  *                         h = (omega_flat[i_o]-omega)/(omega_flat[i_o]-omega_flat[i_o-1])
  *                         delta_flat[i-1]=(delflat[i_o-1]*h+delflat[i_o]*(1-h))/dlin             # <<<<<<<<<<<<<<
@@ -7236,13 +7105,13 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           } else if (unlikely(__pyx_t_21 >= __pyx_v_delflat.shape[0])) __pyx_t_18 = 0;
           if (unlikely(__pyx_t_18 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_18);
-            __PYX_ERR(0, 390, __pyx_L1_error)
+            __PYX_ERR(0, 391, __pyx_L1_error)
           }
-          __pyx_t_10 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_delflat.data + __pyx_t_21 * __pyx_v_delflat.strides[0]) )))); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 390, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_10);
-          __pyx_t_15 = PyNumber_Multiply(__pyx_t_10, __pyx_v_h); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 390, __pyx_L1_error)
+          __pyx_t_13 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_delflat.data + __pyx_t_21 * __pyx_v_delflat.strides[0]) )))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 391, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_13);
+          __pyx_t_15 = PyNumber_Multiply(__pyx_t_13, __pyx_v_h); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 391, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_15);
-          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+          __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
           __pyx_t_21 = __pyx_v_i_o;
           __pyx_t_18 = -1;
           if (__pyx_t_21 < 0) {
@@ -7251,32 +7120,35 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           } else if (unlikely(__pyx_t_21 >= __pyx_v_delflat.shape[0])) __pyx_t_18 = 0;
           if (unlikely(__pyx_t_18 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_18);
-            __PYX_ERR(0, 390, __pyx_L1_error)
+            __PYX_ERR(0, 391, __pyx_L1_error)
           }
-          __pyx_t_10 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_delflat.data + __pyx_t_21 * __pyx_v_delflat.strides[0]) )))); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 390, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_10);
-          __pyx_t_19 = __Pyx_PyInt_SubtractCObj(__pyx_int_1, __pyx_v_h, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 390, __pyx_L1_error)
+          __pyx_t_13 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_delflat.data + __pyx_t_21 * __pyx_v_delflat.strides[0]) )))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 391, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_13);
+          __pyx_t_19 = __Pyx_PyInt_SubtractCObj(__pyx_int_1, __pyx_v_h, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 391, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
-          __pyx_t_16 = PyNumber_Multiply(__pyx_t_10, __pyx_t_19); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 390, __pyx_L1_error)
+          __pyx_t_16 = PyNumber_Multiply(__pyx_t_13, __pyx_t_19); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 391, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_16);
-          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+          __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = PyNumber_Add(__pyx_t_15, __pyx_t_16); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 390, __pyx_L1_error)
+          __pyx_t_19 = PyNumber_Add(__pyx_t_15, __pyx_t_16); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 391, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-          __pyx_t_16 = __Pyx_PyNumber_Divide(__pyx_t_19, __pyx_v_dlin); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 390, __pyx_L1_error)
+          __pyx_t_16 = PyFloat_FromDouble(__pyx_v_dlin); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 391, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_16);
+          __pyx_t_15 = __Pyx_PyNumber_Divide(__pyx_t_19, __pyx_t_16); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 391, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_12 = __pyx_PyFloat_AsDouble(__pyx_t_16); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 390, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-          __pyx_t_16 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 390, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_16);
-          __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_t_16); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 390, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-          (__pyx_v_delta_flat[__pyx_t_11]) = __pyx_t_12;
+          __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_15); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 391, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+          __pyx_t_15 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 391, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_15);
+          __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_15); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 391, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+          (__pyx_v_delta_flat[__pyx_t_10]) = __pyx_t_11;
 
-          /* "classic_trees.pyx":388
+          /* "classic_trees.pyx":389
  *                     dlin = (summ*sqrt(x**3+2)/sqrt(x**3))/dlin_0
  *                     i_o = bisect.bisect_left(omega_flat,omega)
  *                     if i_o < n_v:             # <<<<<<<<<<<<<<
@@ -7286,7 +7158,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           goto __pyx_L18;
         }
 
-        /* "classic_trees.pyx":392
+        /* "classic_trees.pyx":393
  *                         delta_flat[i-1]=(delflat[i_o-1]*h+delflat[i_o]*(1-h))/dlin
  *                     else:
  *                         delta_flat[i-1]=delflat[n_v-1]/dlin             # <<<<<<<<<<<<<<
@@ -7302,24 +7174,22 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
           } else if (unlikely(__pyx_t_21 >= __pyx_v_delflat.shape[0])) __pyx_t_18 = 0;
           if (unlikely(__pyx_t_18 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_18);
-            __PYX_ERR(0, 392, __pyx_L1_error)
+            __PYX_ERR(0, 393, __pyx_L1_error)
           }
-          __pyx_t_16 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_delflat.data + __pyx_t_21 * __pyx_v_delflat.strides[0]) )))); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 392, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_16);
-          __pyx_t_19 = __Pyx_PyNumber_Divide(__pyx_t_16, __pyx_v_dlin); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 392, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_19);
-          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-          __pyx_t_12 = __pyx_PyFloat_AsDouble(__pyx_t_19); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 392, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_19);
-          __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_t_19); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          (__pyx_v_delta_flat[__pyx_t_11]) = __pyx_t_12;
+          __pyx_t_11 = (*((double *) ( /* dim=0 */ (__pyx_v_delflat.data + __pyx_t_21 * __pyx_v_delflat.strides[0]) )));
+          if (unlikely(__pyx_v_dlin == 0)) {
+            PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+            __PYX_ERR(0, 393, __pyx_L1_error)
+          }
+          __pyx_t_15 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 393, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_15);
+          __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_15); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 393, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+          (__pyx_v_delta_flat[__pyx_t_10]) = (__pyx_t_11 / __pyx_v_dlin);
         }
         __pyx_L18:;
 
-        /* "classic_trees.pyx":373
+        /* "classic_trees.pyx":374
  *                 dlin_0 = summ*sqrt(x_0**3+2)/sqrt(x_0**3)
  * 
  *                 for i in range(1,n_table+1):             # <<<<<<<<<<<<<<
@@ -7327,9 +7197,9 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  *                     a_flat[i-1] = aa
  */
       }
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "classic_trees.pyx":358
+      /* "classic_trees.pyx":359
  * 
  *         else:
  *             if omega_0 != omega_0_save or l_0 != l_0_save:             # <<<<<<<<<<<<<<
@@ -7338,7 +7208,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  */
     }
 
-    /* "classic_trees.pyx":393
+    /* "classic_trees.pyx":394
  *                     else:
  *                         delta_flat[i-1]=delflat[n_v-1]/dlin
  *             if a > a_min and a <= 1.001:             # <<<<<<<<<<<<<<
@@ -7356,28 +7226,28 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     __pyx_L20_bool_binop_done:;
     if (__pyx_t_3) {
 
-      /* "classic_trees.pyx":394
+      /* "classic_trees.pyx":395
  *                         delta_flat[i-1]=delflat[n_v-1]/dlin
  *             if a > a_min and a <= 1.001:
  *                 i = 1+int((a-a_min)*float(n_table-1)/(1-a_min))             # <<<<<<<<<<<<<<
  *                 i = min(n_table-2,i)-1
  *                 h = (a_flat[i+1]-a)/(a_flat[i+1]-a_flat[i])
  */
-      __pyx_t_12 = ((__pyx_v_a - __pyx_v_a_min) * ((double)(__pyx_v_n_table - 1)));
-      __pyx_t_13 = (1.0 - __pyx_v_a_min);
-      if (unlikely(__pyx_t_13 == 0)) {
+      __pyx_t_11 = ((__pyx_v_a - __pyx_v_a_min) * ((double)(__pyx_v_n_table - 1)));
+      __pyx_t_6 = (1.0 - __pyx_v_a_min);
+      if (unlikely(__pyx_t_6 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 394, __pyx_L1_error)
+        __PYX_ERR(0, 395, __pyx_L1_error)
       }
-      __pyx_t_7 = __Pyx_PyInt_FromDouble((__pyx_t_12 / __pyx_t_13)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 394, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_19 = __Pyx_PyInt_AddCObj(__pyx_int_1, __pyx_t_7, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 394, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_19);
-      __pyx_t_19 = 0;
+      __pyx_t_1 = __Pyx_PyInt_FromDouble((__pyx_t_11 / __pyx_t_6)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_15 = __Pyx_PyInt_AddCObj(__pyx_int_1, __pyx_t_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 395, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_15);
+      __pyx_t_15 = 0;
 
-      /* "classic_trees.pyx":395
+      /* "classic_trees.pyx":396
  *             if a > a_min and a <= 1.001:
  *                 i = 1+int((a-a_min)*float(n_table-1)/(1-a_min))
  *                 i = min(n_table-2,i)-1             # <<<<<<<<<<<<<<
@@ -7385,90 +7255,90 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  *                 delta_c = delta_flat[i]*h+delta_flat[i+1]*(1-h)
  */
       __Pyx_INCREF(__pyx_v_i);
-      __pyx_t_19 = __pyx_v_i;
+      __pyx_t_15 = __pyx_v_i;
       __pyx_t_22 = (__pyx_v_n_table - 2);
-      __pyx_t_16 = __Pyx_PyInt_From_long(__pyx_t_22); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 395, __pyx_L1_error)
+      __pyx_t_16 = __Pyx_PyInt_From_long(__pyx_t_22); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 396, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      __pyx_t_15 = PyObject_RichCompare(__pyx_t_19, __pyx_t_16, Py_LT); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 395, __pyx_L1_error)
+      __pyx_t_19 = PyObject_RichCompare(__pyx_t_15, __pyx_t_16, Py_LT); __Pyx_XGOTREF(__pyx_t_19); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_15); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 395, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-      if (__pyx_t_3) {
-        __Pyx_INCREF(__pyx_t_19);
-        __pyx_t_7 = __pyx_t_19;
-      } else {
-        __pyx_t_15 = __Pyx_PyInt_From_long(__pyx_t_22); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 395, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_7 = __pyx_t_15;
-        __pyx_t_15 = 0;
-      }
+      __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_19); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 396, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-      __pyx_t_19 = __Pyx_PyInt_SubtractObjC(__pyx_t_7, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 395, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_DECREF_SET(__pyx_v_i, __pyx_t_19);
-      __pyx_t_19 = 0;
+      if (__pyx_t_3) {
+        __Pyx_INCREF(__pyx_t_15);
+        __pyx_t_1 = __pyx_t_15;
+      } else {
+        __pyx_t_19 = __Pyx_PyInt_From_long(__pyx_t_22); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_19);
+        __pyx_t_1 = __pyx_t_19;
+        __pyx_t_19 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __pyx_t_15 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 396, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF_SET(__pyx_v_i, __pyx_t_15);
+      __pyx_t_15 = 0;
 
-      /* "classic_trees.pyx":396
+      /* "classic_trees.pyx":397
  *                 i = 1+int((a-a_min)*float(n_table-1)/(1-a_min))
  *                 i = min(n_table-2,i)-1
  *                 h = (a_flat[i+1]-a)/(a_flat[i+1]-a_flat[i])             # <<<<<<<<<<<<<<
  *                 delta_c = delta_flat[i]*h+delta_flat[i+1]*(1-h)
  *             elif a <= a_min:
  */
-      __pyx_t_19 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_t_19); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 396, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-      __pyx_t_13 = ((__pyx_v_a_flat[__pyx_t_8]) - __pyx_v_a);
-      __pyx_t_19 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_t_19); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 396, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 396, __pyx_L1_error)
-      __pyx_t_12 = ((__pyx_v_a_flat[__pyx_t_8]) - (__pyx_v_a_flat[__pyx_t_11]));
-      if (unlikely(__pyx_t_12 == 0)) {
+      __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 397, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_t_15); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 397, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __pyx_t_6 = ((__pyx_v_a_flat[__pyx_t_8]) - __pyx_v_a);
+      __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 397, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_t_15); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 397, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 397, __pyx_L1_error)
+      __pyx_t_11 = ((__pyx_v_a_flat[__pyx_t_8]) - (__pyx_v_a_flat[__pyx_t_10]));
+      if (unlikely(__pyx_t_11 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 396, __pyx_L1_error)
+        __PYX_ERR(0, 397, __pyx_L1_error)
       }
-      __pyx_t_19 = PyFloat_FromDouble((__pyx_t_13 / __pyx_t_12)); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __Pyx_XDECREF_SET(__pyx_v_h, __pyx_t_19);
-      __pyx_t_19 = 0;
+      __pyx_t_15 = PyFloat_FromDouble((__pyx_t_6 / __pyx_t_11)); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 397, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __Pyx_XDECREF_SET(__pyx_v_h, __pyx_t_15);
+      __pyx_t_15 = 0;
 
-      /* "classic_trees.pyx":397
+      /* "classic_trees.pyx":398
  *                 i = min(n_table-2,i)-1
  *                 h = (a_flat[i+1]-a)/(a_flat[i+1]-a_flat[i])
  *                 delta_c = delta_flat[i]*h+delta_flat[i+1]*(1-h)             # <<<<<<<<<<<<<<
  *             elif a <= a_min:
  *                 delta_c = delta_flat[0]*a_min/a
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 397, __pyx_L1_error)
-      __pyx_t_19 = PyFloat_FromDouble((__pyx_v_delta_flat[__pyx_t_11])); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 397, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __pyx_t_7 = PyNumber_Multiply(__pyx_t_19, __pyx_v_h); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 397, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-      __pyx_t_19 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 397, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_t_19); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 397, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-      __pyx_t_19 = PyFloat_FromDouble((__pyx_v_delta_flat[__pyx_t_11])); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 397, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_19);
-      __pyx_t_15 = __Pyx_PyInt_SubtractCObj(__pyx_int_1, __pyx_v_h, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 397, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 398, __pyx_L1_error)
+      __pyx_t_15 = PyFloat_FromDouble((__pyx_v_delta_flat[__pyx_t_10])); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 398, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_15);
-      __pyx_t_16 = PyNumber_Multiply(__pyx_t_19, __pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 397, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_16);
-      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __pyx_t_1 = PyNumber_Multiply(__pyx_t_15, __pyx_v_h); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 398, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-      __pyx_t_15 = PyNumber_Add(__pyx_t_7, __pyx_t_16); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 397, __pyx_L1_error)
+      __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 398, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_15);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_15); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 398, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __pyx_t_15 = PyFloat_FromDouble((__pyx_v_delta_flat[__pyx_t_10])); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 398, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __pyx_t_19 = __Pyx_PyInt_SubtractCObj(__pyx_int_1, __pyx_v_h, 1, 0, 0); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 398, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
+      __pyx_t_16 = PyNumber_Multiply(__pyx_t_15, __pyx_t_19); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 398, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_16);
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __pyx_t_19 = PyNumber_Add(__pyx_t_1, __pyx_t_16); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 398, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __pyx_v_delta_c = __pyx_t_15;
-      __pyx_t_15 = 0;
+      __pyx_v_delta_c = __pyx_t_19;
+      __pyx_t_19 = 0;
 
-      /* "classic_trees.pyx":393
+      /* "classic_trees.pyx":394
  *                     else:
  *                         delta_flat[i-1]=delflat[n_v-1]/dlin
  *             if a > a_min and a <= 1.001:             # <<<<<<<<<<<<<<
@@ -7478,7 +7348,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
       goto __pyx_L19;
     }
 
-    /* "classic_trees.pyx":398
+    /* "classic_trees.pyx":399
  *                 h = (a_flat[i+1]-a)/(a_flat[i+1]-a_flat[i])
  *                 delta_c = delta_flat[i]*h+delta_flat[i+1]*(1-h)
  *             elif a <= a_min:             # <<<<<<<<<<<<<<
@@ -7488,24 +7358,24 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
     __pyx_t_3 = ((__pyx_v_a <= __pyx_v_a_min) != 0);
     if (likely(__pyx_t_3)) {
 
-      /* "classic_trees.pyx":399
+      /* "classic_trees.pyx":400
  *                 delta_c = delta_flat[i]*h+delta_flat[i+1]*(1-h)
  *             elif a <= a_min:
  *                 delta_c = delta_flat[0]*a_min/a             # <<<<<<<<<<<<<<
  *             else:
  *                 raise ValueError('delta_crit(): FATAL - look up tale only for a<1 \n a=',a)
  */
-      __pyx_t_12 = ((__pyx_v_delta_flat[0]) * __pyx_v_a_min);
+      __pyx_t_11 = ((__pyx_v_delta_flat[0]) * __pyx_v_a_min);
       if (unlikely(__pyx_v_a == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 399, __pyx_L1_error)
+        __PYX_ERR(0, 400, __pyx_L1_error)
       }
-      __pyx_t_15 = PyFloat_FromDouble((__pyx_t_12 / __pyx_v_a)); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 399, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_15);
-      __pyx_v_delta_c = __pyx_t_15;
-      __pyx_t_15 = 0;
+      __pyx_t_19 = PyFloat_FromDouble((__pyx_t_11 / __pyx_v_a)); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 400, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
+      __pyx_v_delta_c = __pyx_t_19;
+      __pyx_t_19 = 0;
 
-      /* "classic_trees.pyx":398
+      /* "classic_trees.pyx":399
  *                 h = (a_flat[i+1]-a)/(a_flat[i+1]-a_flat[i])
  *                 delta_c = delta_flat[i]*h+delta_flat[i+1]*(1-h)
  *             elif a <= a_min:             # <<<<<<<<<<<<<<
@@ -7515,7 +7385,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
       goto __pyx_L19;
     }
 
-    /* "classic_trees.pyx":401
+    /* "classic_trees.pyx":402
  *                 delta_c = delta_flat[0]*a_min/a
  *             else:
  *                 raise ValueError('delta_crit(): FATAL - look up tale only for a<1 \n a=',a)             # <<<<<<<<<<<<<<
@@ -7523,28 +7393,28 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
  *         #free(a_flat)
  */
     /*else*/ {
-      __pyx_t_15 = PyFloat_FromDouble(__pyx_v_a); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 401, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_15);
-      __pyx_t_16 = PyTuple_New(2); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 401, __pyx_L1_error)
+      __pyx_t_19 = PyFloat_FromDouble(__pyx_v_a); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 402, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
+      __pyx_t_16 = PyTuple_New(2); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 402, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_INCREF(__pyx_kp_u_delta_crit_FATAL_look_up_tale_on);
       __Pyx_GIVEREF(__pyx_kp_u_delta_crit_FATAL_look_up_tale_on);
       PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_kp_u_delta_crit_FATAL_look_up_tale_on);
-      __Pyx_GIVEREF(__pyx_t_15);
-      PyTuple_SET_ITEM(__pyx_t_16, 1, __pyx_t_15);
-      __pyx_t_15 = 0;
-      __pyx_t_15 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_t_16, NULL); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 401, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_15);
+      __Pyx_GIVEREF(__pyx_t_19);
+      PyTuple_SET_ITEM(__pyx_t_16, 1, __pyx_t_19);
+      __pyx_t_19 = 0;
+      __pyx_t_19 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_t_16, NULL); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 402, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __Pyx_Raise(__pyx_t_15, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-      __PYX_ERR(0, 401, __pyx_L1_error)
+      __Pyx_Raise(__pyx_t_19, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __PYX_ERR(0, 402, __pyx_L1_error)
     }
     __pyx_L19:;
   }
   __pyx_L3:;
 
-  /* "classic_trees.pyx":404
+  /* "classic_trees.pyx":405
  *         #free(delta_flat)
  *         #free(a_flat)
  *         return delta_c             # <<<<<<<<<<<<<<
@@ -7556,7 +7426,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   __pyx_r = __pyx_v_delta_c;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":326
+  /* "classic_trees.pyx":327
  *     def __init__(self,str filename):
  *         self.data = np.loadtxt(filename)
  *     def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):             # <<<<<<<<<<<<<<
@@ -7569,7 +7439,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   __Pyx_XDECREF(__pyx_t_1);
   __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_10);
+  __Pyx_XDECREF(__pyx_t_13);
   __Pyx_XDECREF(__pyx_t_15);
   __Pyx_XDECREF(__pyx_t_16);
   __Pyx_XDECREF(__pyx_t_17);
@@ -7580,11 +7450,8 @@ static PyObject *__pyx_pf_13classic_trees_9functions_2delta_crit(struct __pyx_ob
   __PYX_XDEC_MEMVIEW(&__pyx_v_omega_flat, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_delflat, 1);
   __Pyx_XDECREF(__pyx_v_delta_c);
-  __Pyx_XDECREF(__pyx_v_summ);
   __Pyx_XDECREF(__pyx_v_i_s);
-  __Pyx_XDECREF(__pyx_v_dlin_0);
   __Pyx_XDECREF(__pyx_v_i);
-  __Pyx_XDECREF(__pyx_v_dlin);
   __Pyx_XDECREF(__pyx_v_h);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
@@ -7922,7 +7789,7 @@ static PyObject *__pyx_pf_13classic_trees_9functions_6__setstate_cython__(struct
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":428
+/* "classic_trees.pyx":429
  * 
  * # Helper function for integrand calculation
  * cdef double my_int(double R, double k, double Pk) nogil:             # <<<<<<<<<<<<<<
@@ -7939,7 +7806,7 @@ static double __pyx_f_13classic_trees_my_int(double __pyx_v_R, double __pyx_v_k,
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "classic_trees.pyx":429
+  /* "classic_trees.pyx":430
  * # Helper function for integrand calculation
  * cdef double my_int(double R, double k, double Pk) nogil:
  *     return 9.0 * (k * R * cos(k * R) - sin(k * R))**2.0 * Pk / k**4.0 / R**6.0 / (2.0 * pi**2.0)             # <<<<<<<<<<<<<<
@@ -7956,7 +7823,7 @@ static double __pyx_f_13classic_trees_my_int(double __pyx_v_R, double __pyx_v_k,
     #ifdef WITH_THREAD
     __Pyx_PyGILState_Release(__pyx_gilstate_save);
     #endif
-    __PYX_ERR(0, 429, __pyx_L1_error)
+    __PYX_ERR(0, 430, __pyx_L1_error)
   }
   __pyx_t_3 = (__pyx_t_1 / __pyx_t_2);
   __pyx_t_2 = pow(__pyx_v_R, 6.0);
@@ -7968,7 +7835,7 @@ static double __pyx_f_13classic_trees_my_int(double __pyx_v_R, double __pyx_v_k,
     #ifdef WITH_THREAD
     __Pyx_PyGILState_Release(__pyx_gilstate_save);
     #endif
-    __PYX_ERR(0, 429, __pyx_L1_error)
+    __PYX_ERR(0, 430, __pyx_L1_error)
   }
   __pyx_t_1 = (__pyx_t_3 / __pyx_t_2);
   __pyx_t_2 = (2.0 * pow(((double)M_PI), 2.0));
@@ -7980,12 +7847,12 @@ static double __pyx_f_13classic_trees_my_int(double __pyx_v_R, double __pyx_v_k,
     #ifdef WITH_THREAD
     __Pyx_PyGILState_Release(__pyx_gilstate_save);
     #endif
-    __PYX_ERR(0, 429, __pyx_L1_error)
+    __PYX_ERR(0, 430, __pyx_L1_error)
   }
   __pyx_r = (__pyx_t_1 / __pyx_t_2);
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":428
+  /* "classic_trees.pyx":429
  * 
  * # Helper function for integrand calculation
  * cdef double my_int(double R, double k, double Pk) nogil:             # <<<<<<<<<<<<<<
@@ -8001,7 +7868,7 @@ static double __pyx_f_13classic_trees_my_int(double __pyx_v_R, double __pyx_v_k,
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":432
+/* "classic_trees.pyx":433
  * 
  * 
  * def sig_int(double m):             # <<<<<<<<<<<<<<
@@ -8021,7 +7888,7 @@ static PyObject *__pyx_pw_13classic_trees_1sig_int(PyObject *__pyx_self, PyObjec
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("sig_int (wrapper)", 0);
   assert(__pyx_arg_m); {
-    __pyx_v_m = __pyx_PyFloat_AsDouble(__pyx_arg_m); if (unlikely((__pyx_v_m == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 432, __pyx_L3_error)
+    __pyx_v_m = __pyx_PyFloat_AsDouble(__pyx_arg_m); if (unlikely((__pyx_v_m == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 433, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8068,7 +7935,7 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   __pyx_pybuffernd_my_integrand.data = NULL;
   __pyx_pybuffernd_my_integrand.rcbuffer = &__pyx_pybuffer_my_integrand;
 
-  /* "classic_trees.pyx":433
+  /* "classic_trees.pyx":434
  * 
  * def sig_int(double m):
  *     cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)             # <<<<<<<<<<<<<<
@@ -8079,24 +7946,24 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_2 = ((4.0 * M_PI) * __pyx_v_13classic_trees_rho_crit);
   if (unlikely(__pyx_t_2 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 433, __pyx_L1_error)
+    __PYX_ERR(0, 434, __pyx_L1_error)
   }
   __pyx_v_R = pow((__pyx_t_1 / __pyx_t_2), (1.0 / 3.0));
 
-  /* "classic_trees.pyx":434
+  /* "classic_trees.pyx":435
  * def sig_int(double m):
  *     cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
  *     cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)             # <<<<<<<<<<<<<<
  *     cdef int i
  *     for i in range(k_0.shape[0]):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 434, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 434, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 434, __pyx_L1_error) }
-  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_13classic_trees_k_0, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 434, __pyx_L1_error)
+  if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 435, __pyx_L1_error) }
+  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_13classic_trees_k_0, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_6 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -8111,16 +7978,16 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_6, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 434, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 434, __pyx_L1_error)
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 435, __pyx_L1_error)
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_3);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_my_integrand.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_my_integrand = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_my_integrand.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 434, __pyx_L1_error)
+      __PYX_ERR(0, 435, __pyx_L1_error)
     } else {__pyx_pybuffernd_my_integrand.diminfo[0].strides = __pyx_pybuffernd_my_integrand.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_my_integrand.diminfo[0].shape = __pyx_pybuffernd_my_integrand.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -8128,27 +7995,27 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_my_integrand = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "classic_trees.pyx":436
+  /* "classic_trees.pyx":437
  *     cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
  *     cdef int i
  *     for i in range(k_0.shape[0]):             # <<<<<<<<<<<<<<
  *         my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
  *     return sqrt(simpson(my_integrand, k_0))
  */
-  if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 436, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 437, __pyx_L1_error) }
   __pyx_t_8 = (__pyx_v_13classic_trees_k_0.shape[0]);
   __pyx_t_9 = __pyx_t_8;
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_i = __pyx_t_10;
 
-    /* "classic_trees.pyx":437
+    /* "classic_trees.pyx":438
  *     cdef int i
  *     for i in range(k_0.shape[0]):
  *         my_integrand[i] = my_int(R, k_0[i], Pk_0[i])             # <<<<<<<<<<<<<<
  *     return sqrt(simpson(my_integrand, k_0))
  * 
  */
-    if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 437, __pyx_L1_error) }
+    if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 438, __pyx_L1_error) }
     __pyx_t_11 = __pyx_v_i;
     __pyx_t_12 = -1;
     if (__pyx_t_11 < 0) {
@@ -8157,9 +8024,9 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
     } else if (unlikely(__pyx_t_11 >= __pyx_v_13classic_trees_k_0.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 437, __pyx_L1_error)
+      __PYX_ERR(0, 438, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_13classic_trees_Pk_0.memview)) { __Pyx_RaiseUnboundLocalError("Pk_0"); __PYX_ERR(0, 437, __pyx_L1_error) }
+    if (unlikely(!__pyx_v_13classic_trees_Pk_0.memview)) { __Pyx_RaiseUnboundLocalError("Pk_0"); __PYX_ERR(0, 438, __pyx_L1_error) }
     __pyx_t_13 = __pyx_v_i;
     __pyx_t_12 = -1;
     if (__pyx_t_13 < 0) {
@@ -8168,7 +8035,7 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
     } else if (unlikely(__pyx_t_13 >= __pyx_v_13classic_trees_Pk_0.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 437, __pyx_L1_error)
+      __PYX_ERR(0, 438, __pyx_L1_error)
     }
     __pyx_t_14 = __pyx_v_i;
     __pyx_t_12 = -1;
@@ -8178,12 +8045,12 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
     } else if (unlikely(__pyx_t_14 >= __pyx_pybuffernd_my_integrand.diminfo[0].shape)) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 437, __pyx_L1_error)
+      __PYX_ERR(0, 438, __pyx_L1_error)
     }
     *__Pyx_BufPtrStrided1d(double *, __pyx_pybuffernd_my_integrand.rcbuffer->pybuffer.buf, __pyx_t_14, __pyx_pybuffernd_my_integrand.diminfo[0].strides) = __pyx_f_13classic_trees_my_int(__pyx_v_R, (*((double *) ( /* dim=0 */ (__pyx_v_13classic_trees_k_0.data + __pyx_t_11 * __pyx_v_13classic_trees_k_0.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_13classic_trees_Pk_0.data + __pyx_t_13 * __pyx_v_13classic_trees_Pk_0.strides[0]) ))));
   }
 
-  /* "classic_trees.pyx":438
+  /* "classic_trees.pyx":439
  *     for i in range(k_0.shape[0]):
  *         my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
  *     return sqrt(simpson(my_integrand, k_0))             # <<<<<<<<<<<<<<
@@ -8191,10 +8058,10 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
  * # Sigma function
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_simpson); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 438, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_simpson); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 438, __pyx_L1_error) }
-  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_13classic_trees_k_0, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 438, __pyx_L1_error)
+  if (unlikely(!__pyx_v_13classic_trees_k_0.memview)) { __Pyx_RaiseUnboundLocalError("k_0"); __PYX_ERR(0, 439, __pyx_L1_error) }
+  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_13classic_trees_k_0, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_6 = NULL;
   __pyx_t_10 = 0;
@@ -8211,7 +8078,7 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[3] = {__pyx_t_6, ((PyObject *)__pyx_v_my_integrand), __pyx_t_4};
-    __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 438, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 439, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -8220,14 +8087,14 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[3] = {__pyx_t_6, ((PyObject *)__pyx_v_my_integrand), __pyx_t_4};
-    __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 438, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 439, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   {
-    __pyx_t_15 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 438, __pyx_L1_error)
+    __pyx_t_15 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 439, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
     if (__pyx_t_6) {
       __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_15, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -8238,20 +8105,20 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_15, 1+__pyx_t_10, __pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 438, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 439, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_2 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 438, __pyx_L1_error)
+  __pyx_t_2 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyFloat_FromDouble(sqrt(__pyx_t_2)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 438, __pyx_L1_error)
+  __pyx_t_3 = PyFloat_FromDouble(sqrt(__pyx_t_2)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":432
+  /* "classic_trees.pyx":433
  * 
  * 
  * def sig_int(double m):             # <<<<<<<<<<<<<<
@@ -8284,7 +8151,7 @@ static PyObject *__pyx_pf_13classic_trees_sig_int(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":475
+/* "classic_trees.pyx":476
  * cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
  * # Interpolated sigma function
  * cdef double sigma_cdm(double m):             # <<<<<<<<<<<<<<
@@ -8297,7 +8164,7 @@ static double __pyx_f_13classic_trees_sigma_cdm(double __pyx_v_m) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("sigma_cdm", 0);
 
-  /* "classic_trees.pyx":476
+  /* "classic_trees.pyx":477
  * # Interpolated sigma function
  * cdef double sigma_cdm(double m):
  *     return cspline_eval(sigma_spline, log(m))#exp(np.interp(log(m),np.log(m_rough),np.log(Sig)))             # <<<<<<<<<<<<<<
@@ -8307,7 +8174,7 @@ static double __pyx_f_13classic_trees_sigma_cdm(double __pyx_v_m) {
   __pyx_r = __pyx_f_13classic_trees_cspline_eval(__pyx_v_13classic_trees_sigma_spline, log(__pyx_v_m));
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":475
+  /* "classic_trees.pyx":476
  * cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
  * # Interpolated sigma function
  * cdef double sigma_cdm(double m):             # <<<<<<<<<<<<<<
@@ -8321,7 +8188,7 @@ static double __pyx_f_13classic_trees_sigma_cdm(double __pyx_v_m) {
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":488
+/* "classic_trees.pyx":489
  * deriv = interp.derivative(n=1)
  * 
  * cdef compute_log_sig(np.ndarray m_array):             # <<<<<<<<<<<<<<
@@ -8348,7 +8215,7 @@ static PyObject *__pyx_f_13classic_trees_compute_log_sig(PyArrayObject *__pyx_v_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compute_log_sig", 0);
 
-  /* "classic_trees.pyx":490
+  /* "classic_trees.pyx":491
  * cdef compute_log_sig(np.ndarray m_array):
  *     cdef int i
  *     cdef int n = m_array.shape[0]             # <<<<<<<<<<<<<<
@@ -8357,7 +8224,7 @@ static PyObject *__pyx_f_13classic_trees_compute_log_sig(PyArrayObject *__pyx_v_
  */
   __pyx_v_n = (__pyx_v_m_array->dimensions[0]);
 
-  /* "classic_trees.pyx":493
+  /* "classic_trees.pyx":494
  *     cdef double log_sig[500]
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -8369,21 +8236,21 @@ static PyObject *__pyx_f_13classic_trees_compute_log_sig(PyArrayObject *__pyx_v_
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "classic_trees.pyx":494
+    /* "classic_trees.pyx":495
  * 
  *     for i in range(n):
  *         log_sig[i] = log(sigma_cdm(m_array[i]))             # <<<<<<<<<<<<<<
  *     return np.asarray(log_sig)
  * for i in range(m_rough.shape[0]):
  */
-    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_m_array), __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 494, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_m_array), __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 495, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 494, __pyx_L1_error)
+    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 495, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     (__pyx_v_log_sig[__pyx_v_i]) = log(__pyx_f_13classic_trees_sigma_cdm(__pyx_t_5));
   }
 
-  /* "classic_trees.pyx":495
+  /* "classic_trees.pyx":496
  *     for i in range(n):
  *         log_sig[i] = log(sigma_cdm(m_array[i]))
  *     return np.asarray(log_sig)             # <<<<<<<<<<<<<<
@@ -8391,12 +8258,12 @@ static PyObject *__pyx_f_13classic_trees_compute_log_sig(PyArrayObject *__pyx_v_
  *     alpha_temp[i] = interp(log(m_rough[i]))
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 495, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 496, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_asarray); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 495, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_asarray); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 496, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_carray_to_py_double(__pyx_v_log_sig, 0x1F4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 495, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_carray_to_py_double(__pyx_v_log_sig, 0x1F4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 496, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_t_8 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -8411,14 +8278,14 @@ static PyObject *__pyx_f_13classic_trees_compute_log_sig(PyArrayObject *__pyx_v_
   __pyx_t_4 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
   __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 495, __pyx_L1_error)
+  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 496, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":488
+  /* "classic_trees.pyx":489
  * deriv = interp.derivative(n=1)
  * 
  * cdef compute_log_sig(np.ndarray m_array):             # <<<<<<<<<<<<<<
@@ -8440,7 +8307,7 @@ static PyObject *__pyx_f_13classic_trees_compute_log_sig(PyArrayObject *__pyx_v_
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":499
+/* "classic_trees.pyx":500
  *     alpha_temp[i] = interp(log(m_rough[i]))
  * cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)
  * cdef double alpha(double m):             # <<<<<<<<<<<<<<
@@ -8453,7 +8320,7 @@ static double __pyx_f_13classic_trees_alpha(double __pyx_v_m) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("alpha", 0);
 
-  /* "classic_trees.pyx":500
+  /* "classic_trees.pyx":501
  * cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)
  * cdef double alpha(double m):
  *     return cspline_deriv(alpha_spline,log(m))#float(deriv(log(m)))             # <<<<<<<<<<<<<<
@@ -8463,7 +8330,7 @@ static double __pyx_f_13classic_trees_alpha(double __pyx_v_m) {
   __pyx_r = __pyx_f_13classic_trees_cspline_deriv(__pyx_v_13classic_trees_alpha_spline, log(__pyx_v_m));
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":499
+  /* "classic_trees.pyx":500
  *     alpha_temp[i] = interp(log(m_rough[i]))
  * cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)
  * cdef double alpha(double m):             # <<<<<<<<<<<<<<
@@ -8477,7 +8344,7 @@ static double __pyx_f_13classic_trees_alpha(double __pyx_v_m) {
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":508
+/* "classic_trees.pyx":509
  * cdef double gamma_1=0.38
  * 
  * cdef double J_pre(double z):             # <<<<<<<<<<<<<<
@@ -8511,7 +8378,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("J_pre", 0);
 
-  /* "classic_trees.pyx":511
+  /* "classic_trees.pyx":512
  *     cdef float J_tab[10000]
  *     cdef float z_tab[10000]
  *     cdef int i_first = 0             # <<<<<<<<<<<<<<
@@ -8520,7 +8387,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
   __pyx_v_i_first = 0;
 
-  /* "classic_trees.pyx":514
+  /* "classic_trees.pyx":515
  *     cdef double h, J_un
  *     cdef int i
  *     cdef double dz = z_max/N_TAB             # <<<<<<<<<<<<<<
@@ -8529,11 +8396,11 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
   if (unlikely(__pyx_v_13classic_trees_N_TAB == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 514, __pyx_L1_error)
+    __PYX_ERR(0, 515, __pyx_L1_error)
   }
   __pyx_v_dz = (__pyx_v_13classic_trees_z_max / ((double)__pyx_v_13classic_trees_N_TAB));
 
-  /* "classic_trees.pyx":515
+  /* "classic_trees.pyx":516
  *     cdef int i
  *     cdef double dz = z_max/N_TAB
  *     cdef double inv_dz = 1.0/dz             # <<<<<<<<<<<<<<
@@ -8542,11 +8409,11 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
   if (unlikely(__pyx_v_dz == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 515, __pyx_L1_error)
+    __PYX_ERR(0, 516, __pyx_L1_error)
   }
   __pyx_v_inv_dz = (1.0 / __pyx_v_dz);
 
-  /* "classic_trees.pyx":516
+  /* "classic_trees.pyx":517
  *     cdef double dz = z_max/N_TAB
  *     cdef double inv_dz = 1.0/dz
  *     if fabs(gamma_1) > eps:             # <<<<<<<<<<<<<<
@@ -8556,7 +8423,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
   __pyx_t_1 = ((fabs(__pyx_v_13classic_trees_gamma_1) > __pyx_v_13classic_trees_eps) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":517
+    /* "classic_trees.pyx":518
  *     cdef double inv_dz = 1.0/dz
  *     if fabs(gamma_1) > eps:
  *         if i_first == 0:             # <<<<<<<<<<<<<<
@@ -8566,7 +8433,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
     __pyx_t_1 = ((__pyx_v_i_first == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":518
+      /* "classic_trees.pyx":519
  *     if fabs(gamma_1) > eps:
  *         if i_first == 0:
  *             if fabs(1.0-gamma_1) > eps:             # <<<<<<<<<<<<<<
@@ -8576,7 +8443,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       __pyx_t_1 = ((fabs((1.0 - __pyx_v_13classic_trees_gamma_1)) > __pyx_v_13classic_trees_eps) != 0);
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":519
+        /* "classic_trees.pyx":520
  *         if i_first == 0:
  *             if fabs(1.0-gamma_1) > eps:
  *                 J_tab[0] = dz**(1.0-gamma_1)/(1.0-gamma_1)             # <<<<<<<<<<<<<<
@@ -8587,11 +8454,11 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         __pyx_t_3 = (1.0 - __pyx_v_13classic_trees_gamma_1);
         if (unlikely(__pyx_t_3 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 519, __pyx_L1_error)
+          __PYX_ERR(0, 520, __pyx_L1_error)
         }
         (__pyx_v_J_tab[0]) = (__pyx_t_2 / __pyx_t_3);
 
-        /* "classic_trees.pyx":518
+        /* "classic_trees.pyx":519
  *     if fabs(gamma_1) > eps:
  *         if i_first == 0:
  *             if fabs(1.0-gamma_1) > eps:             # <<<<<<<<<<<<<<
@@ -8601,7 +8468,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         goto __pyx_L5;
       }
 
-      /* "classic_trees.pyx":521
+      /* "classic_trees.pyx":522
  *                 J_tab[0] = dz**(1.0-gamma_1)/(1.0-gamma_1)
  *             else:
  *                 J_tab[0] = log(dz)             # <<<<<<<<<<<<<<
@@ -8613,7 +8480,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       }
       __pyx_L5:;
 
-      /* "classic_trees.pyx":522
+      /* "classic_trees.pyx":523
  *             else:
  *                 J_tab[0] = log(dz)
  *             z_tab[0] = dz             # <<<<<<<<<<<<<<
@@ -8622,7 +8489,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
       (__pyx_v_z_tab[0]) = __pyx_v_dz;
 
-      /* "classic_trees.pyx":523
+      /* "classic_trees.pyx":524
  *                 J_tab[0] = log(dz)
  *             z_tab[0] = dz
  *             for i in range(1,N_TAB):             # <<<<<<<<<<<<<<
@@ -8634,7 +8501,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       for (__pyx_t_6 = 1; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
         __pyx_v_i = __pyx_t_6;
 
-        /* "classic_trees.pyx":524
+        /* "classic_trees.pyx":525
  *             z_tab[0] = dz
  *             for i in range(1,N_TAB):
  *                 z_tab[i] = (i+1)*dz             # <<<<<<<<<<<<<<
@@ -8643,7 +8510,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
         (__pyx_v_z_tab[__pyx_v_i]) = ((__pyx_v_i + 1) * __pyx_v_dz);
 
-        /* "classic_trees.pyx":526
+        /* "classic_trees.pyx":527
  *                 z_tab[i] = (i+1)*dz
  *                 J_tab[i] = (J_tab[i-1]
  *                 +(1.0+1.0/z_tab[i]**2)**(0.5*gamma_1)*0.5*dz             # <<<<<<<<<<<<<<
@@ -8653,10 +8520,10 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         __pyx_t_7 = powf((__pyx_v_z_tab[__pyx_v_i]), 2.0);
         if (unlikely(__pyx_t_7 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 526, __pyx_L1_error)
+          __PYX_ERR(0, 527, __pyx_L1_error)
         }
 
-        /* "classic_trees.pyx":527
+        /* "classic_trees.pyx":528
  *                 J_tab[i] = (J_tab[i-1]
  *                 +(1.0+1.0/z_tab[i]**2)**(0.5*gamma_1)*0.5*dz
  *                 +(1.0+1.0/z_tab[i-1]**2)**(0.5*gamma_1)*0.5*dz)             # <<<<<<<<<<<<<<
@@ -8666,10 +8533,10 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         __pyx_t_8 = powf((__pyx_v_z_tab[(__pyx_v_i - 1)]), 2.0);
         if (unlikely(__pyx_t_8 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 527, __pyx_L1_error)
+          __PYX_ERR(0, 528, __pyx_L1_error)
         }
 
-        /* "classic_trees.pyx":525
+        /* "classic_trees.pyx":526
  *             for i in range(1,N_TAB):
  *                 z_tab[i] = (i+1)*dz
  *                 J_tab[i] = (J_tab[i-1]             # <<<<<<<<<<<<<<
@@ -8679,7 +8546,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         (__pyx_v_J_tab[__pyx_v_i]) = (((__pyx_v_J_tab[(__pyx_v_i - 1)]) + ((pow((1.0 + (1.0 / ((double)__pyx_t_7))), (0.5 * __pyx_v_13classic_trees_gamma_1)) * 0.5) * __pyx_v_dz)) + ((pow((1.0 + (1.0 / ((double)__pyx_t_8))), (0.5 * __pyx_v_13classic_trees_gamma_1)) * 0.5) * __pyx_v_dz));
       }
 
-      /* "classic_trees.pyx":528
+      /* "classic_trees.pyx":529
  *                 +(1.0+1.0/z_tab[i]**2)**(0.5*gamma_1)*0.5*dz
  *                 +(1.0+1.0/z_tab[i-1]**2)**(0.5*gamma_1)*0.5*dz)
  *             i_first = 1             # <<<<<<<<<<<<<<
@@ -8688,7 +8555,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
       __pyx_v_i_first = 1;
 
-      /* "classic_trees.pyx":517
+      /* "classic_trees.pyx":518
  *     cdef double inv_dz = 1.0/dz
  *     if fabs(gamma_1) > eps:
  *         if i_first == 0:             # <<<<<<<<<<<<<<
@@ -8697,23 +8564,23 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
     }
 
-    /* "classic_trees.pyx":529
+    /* "classic_trees.pyx":530
  *                 +(1.0+1.0/z_tab[i-1]**2)**(0.5*gamma_1)*0.5*dz)
  *             i_first = 1
  *         i = int(z*inv_dz) - 1             # <<<<<<<<<<<<<<
  *         if i < 1:
  *             if fabs(1.0-gamma_1) > eps:
  */
-    __pyx_t_9 = __Pyx_PyInt_FromDouble((__pyx_v_z * __pyx_v_inv_dz)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 529, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyInt_FromDouble((__pyx_v_z * __pyx_v_inv_dz)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 530, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_10 = __Pyx_PyInt_SubtractObjC(__pyx_t_9, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 529, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_SubtractObjC(__pyx_t_9, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 530, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_10); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 529, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_10); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 530, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __pyx_v_i = __pyx_t_4;
 
-    /* "classic_trees.pyx":530
+    /* "classic_trees.pyx":531
  *             i_first = 1
  *         i = int(z*inv_dz) - 1
  *         if i < 1:             # <<<<<<<<<<<<<<
@@ -8723,7 +8590,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
     __pyx_t_1 = ((__pyx_v_i < 1) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":531
+      /* "classic_trees.pyx":532
  *         i = int(z*inv_dz) - 1
  *         if i < 1:
  *             if fabs(1.0-gamma_1) > eps:             # <<<<<<<<<<<<<<
@@ -8733,7 +8600,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       __pyx_t_1 = ((fabs((1.0 - __pyx_v_13classic_trees_gamma_1)) > __pyx_v_13classic_trees_eps) != 0);
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":532
+        /* "classic_trees.pyx":533
  *         if i < 1:
  *             if fabs(1.0-gamma_1) > eps:
  *                 J_un = (z**(1.0-gamma_1))/(1.0-gamma_1)             # <<<<<<<<<<<<<<
@@ -8744,11 +8611,11 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         __pyx_t_2 = (1.0 - __pyx_v_13classic_trees_gamma_1);
         if (unlikely(__pyx_t_2 == 0)) {
           PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-          __PYX_ERR(0, 532, __pyx_L1_error)
+          __PYX_ERR(0, 533, __pyx_L1_error)
         }
         __pyx_v_J_un = (__pyx_t_3 / __pyx_t_2);
 
-        /* "classic_trees.pyx":531
+        /* "classic_trees.pyx":532
  *         i = int(z*inv_dz) - 1
  *         if i < 1:
  *             if fabs(1.0-gamma_1) > eps:             # <<<<<<<<<<<<<<
@@ -8758,7 +8625,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
         goto __pyx_L9;
       }
 
-      /* "classic_trees.pyx":534
+      /* "classic_trees.pyx":535
  *                 J_un = (z**(1.0-gamma_1))/(1.0-gamma_1)
  *             else:
  *                 J_un = log(z)             # <<<<<<<<<<<<<<
@@ -8770,7 +8637,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       }
       __pyx_L9:;
 
-      /* "classic_trees.pyx":530
+      /* "classic_trees.pyx":531
  *             i_first = 1
  *         i = int(z*inv_dz) - 1
  *         if i < 1:             # <<<<<<<<<<<<<<
@@ -8780,7 +8647,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       goto __pyx_L8;
     }
 
-    /* "classic_trees.pyx":535
+    /* "classic_trees.pyx":536
  *             else:
  *                 J_un = log(z)
  *         elif i >= N_TAB-1:             # <<<<<<<<<<<<<<
@@ -8790,7 +8657,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
     __pyx_t_1 = ((__pyx_v_i >= (__pyx_v_13classic_trees_N_TAB - 1)) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":536
+      /* "classic_trees.pyx":537
  *                 J_un = log(z)
  *         elif i >= N_TAB-1:
  *             J_un = J_tab[N_TAB-1]+z-z_tab[N_TAB-1]             # <<<<<<<<<<<<<<
@@ -8799,7 +8666,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
  */
       __pyx_v_J_un = (((__pyx_v_J_tab[(__pyx_v_13classic_trees_N_TAB - 1)]) + __pyx_v_z) - (__pyx_v_z_tab[(__pyx_v_13classic_trees_N_TAB - 1)]));
 
-      /* "classic_trees.pyx":535
+      /* "classic_trees.pyx":536
  *             else:
  *                 J_un = log(z)
  *         elif i >= N_TAB-1:             # <<<<<<<<<<<<<<
@@ -8809,7 +8676,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
       goto __pyx_L8;
     }
 
-    /* "classic_trees.pyx":538
+    /* "classic_trees.pyx":539
  *             J_un = J_tab[N_TAB-1]+z-z_tab[N_TAB-1]
  *         else:
  *             h = (z-z_tab[i])*inv_dz             # <<<<<<<<<<<<<<
@@ -8819,7 +8686,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
     /*else*/ {
       __pyx_v_h = ((__pyx_v_z - (__pyx_v_z_tab[__pyx_v_i])) * __pyx_v_inv_dz);
 
-      /* "classic_trees.pyx":539
+      /* "classic_trees.pyx":540
  *         else:
  *             h = (z-z_tab[i])*inv_dz
  *             J_un = J_tab[i]*(1.0-h)+J_tab[i+1]*h             # <<<<<<<<<<<<<<
@@ -8830,7 +8697,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
     }
     __pyx_L8:;
 
-    /* "classic_trees.pyx":516
+    /* "classic_trees.pyx":517
  *     cdef double dz = z_max/N_TAB
  *     cdef double inv_dz = 1.0/dz
  *     if fabs(gamma_1) > eps:             # <<<<<<<<<<<<<<
@@ -8840,7 +8707,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
     goto __pyx_L3;
   }
 
-  /* "classic_trees.pyx":541
+  /* "classic_trees.pyx":542
  *             J_un = J_tab[i]*(1.0-h)+J_tab[i+1]*h
  *     else:
  *         J_un = z             # <<<<<<<<<<<<<<
@@ -8852,7 +8719,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
   }
   __pyx_L3:;
 
-  /* "classic_trees.pyx":542
+  /* "classic_trees.pyx":543
  *     else:
  *         J_un = z
  *     return J_un             # <<<<<<<<<<<<<<
@@ -8862,7 +8729,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
   __pyx_r = __pyx_v_J_un;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":508
+  /* "classic_trees.pyx":509
  * cdef double gamma_1=0.38
  * 
  * cdef double J_pre(double z):             # <<<<<<<<<<<<<<
@@ -8881,7 +8748,7 @@ static double __pyx_f_13classic_trees_J_pre(double __pyx_v_z) {
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":545
+/* "classic_trees.pyx":546
  * 
  * cdef int n = 400
  * cdef double* compute_J_arr(double* z_arr):             # <<<<<<<<<<<<<<
@@ -8899,7 +8766,7 @@ static double *__pyx_f_13classic_trees_compute_J_arr(double *__pyx_v_z_arr) {
   int __pyx_t_3;
   __Pyx_RefNannySetupContext("compute_J_arr", 0);
 
-  /* "classic_trees.pyx":547
+  /* "classic_trees.pyx":548
  * cdef double* compute_J_arr(double* z_arr):
  *     cdef int i
  *     cdef double* J_arr = <double*>malloc(n*sizeof(double*))             # <<<<<<<<<<<<<<
@@ -8908,7 +8775,7 @@ static double *__pyx_f_13classic_trees_compute_J_arr(double *__pyx_v_z_arr) {
  */
   __pyx_v_J_arr = ((double *)malloc((__pyx_v_13classic_trees_n * (sizeof(double *)))));
 
-  /* "classic_trees.pyx":548
+  /* "classic_trees.pyx":549
  *     cdef int i
  *     cdef double* J_arr = <double*>malloc(n*sizeof(double*))
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -8920,7 +8787,7 @@ static double *__pyx_f_13classic_trees_compute_J_arr(double *__pyx_v_z_arr) {
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "classic_trees.pyx":549
+    /* "classic_trees.pyx":550
  *     cdef double* J_arr = <double*>malloc(n*sizeof(double*))
  *     for i in range(n):
  *         J_arr[i] = log(J_pre(z_arr[i]))             # <<<<<<<<<<<<<<
@@ -8930,7 +8797,7 @@ static double *__pyx_f_13classic_trees_compute_J_arr(double *__pyx_v_z_arr) {
     (__pyx_v_J_arr[__pyx_v_i]) = log(__pyx_f_13classic_trees_J_pre((__pyx_v_z_arr[__pyx_v_i])));
   }
 
-  /* "classic_trees.pyx":550
+  /* "classic_trees.pyx":551
  *     for i in range(n):
  *         J_arr[i] = log(J_pre(z_arr[i]))
  *     return J_arr             # <<<<<<<<<<<<<<
@@ -8940,7 +8807,7 @@ static double *__pyx_f_13classic_trees_compute_J_arr(double *__pyx_v_z_arr) {
   __pyx_r = __pyx_v_J_arr;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":545
+  /* "classic_trees.pyx":546
  * 
  * cdef int n = 400
  * cdef double* compute_J_arr(double* z_arr):             # <<<<<<<<<<<<<<
@@ -8954,7 +8821,7 @@ static double *__pyx_f_13classic_trees_compute_J_arr(double *__pyx_v_z_arr) {
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":560
+/* "classic_trees.pyx":561
  * #log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural')
  * cdef cspline* J_spline = cspline_alloc(n,log_z_arr,J_arr)
  * cdef double J_unresolved(double z):             # <<<<<<<<<<<<<<
@@ -8968,7 +8835,7 @@ static double __pyx_f_13classic_trees_J_unresolved(double __pyx_v_z) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("J_unresolved", 0);
 
-  /* "classic_trees.pyx":561
+  /* "classic_trees.pyx":562
  * cdef cspline* J_spline = cspline_alloc(n,log_z_arr,J_arr)
  * cdef double J_unresolved(double z):
  *     log_J_used = cspline_eval(J_spline,log(z))             # <<<<<<<<<<<<<<
@@ -8977,7 +8844,7 @@ static double __pyx_f_13classic_trees_J_unresolved(double __pyx_v_z) {
  */
   __pyx_v_log_J_used = __pyx_f_13classic_trees_cspline_eval(__pyx_v_13classic_trees_J_spline, log(__pyx_v_z));
 
-  /* "classic_trees.pyx":563
+  /* "classic_trees.pyx":564
  *     log_J_used = cspline_eval(J_spline,log(z))
  *     #return J_pre(z)
  *     return exp(log_J_used)             # <<<<<<<<<<<<<<
@@ -8987,7 +8854,7 @@ static double __pyx_f_13classic_trees_J_unresolved(double __pyx_v_z) {
   __pyx_r = exp(__pyx_v_log_J_used);
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":560
+  /* "classic_trees.pyx":561
  * #log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural')
  * cdef cspline* J_spline = cspline_alloc(n,log_z_arr,J_arr)
  * cdef double J_unresolved(double z):             # <<<<<<<<<<<<<<
@@ -9001,7 +8868,7 @@ static double __pyx_f_13classic_trees_J_unresolved(double __pyx_v_z) {
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":567
+/* "classic_trees.pyx":568
  * cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
  * 
  * cdef double min3(double a,double b,double c):             # <<<<<<<<<<<<<<
@@ -9016,7 +8883,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
   int __pyx_t_2;
   __Pyx_RefNannySetupContext("min3", 0);
 
-  /* "classic_trees.pyx":568
+  /* "classic_trees.pyx":569
  * 
  * cdef double min3(double a,double b,double c):
  *     if a<b and a<c:             # <<<<<<<<<<<<<<
@@ -9034,7 +8901,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":569
+    /* "classic_trees.pyx":570
  * cdef double min3(double a,double b,double c):
  *     if a<b and a<c:
  *         return a             # <<<<<<<<<<<<<<
@@ -9044,7 +8911,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
     __pyx_r = __pyx_v_a;
     goto __pyx_L0;
 
-    /* "classic_trees.pyx":568
+    /* "classic_trees.pyx":569
  * 
  * cdef double min3(double a,double b,double c):
  *     if a<b and a<c:             # <<<<<<<<<<<<<<
@@ -9053,7 +8920,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
  */
   }
 
-  /* "classic_trees.pyx":570
+  /* "classic_trees.pyx":571
  *     if a<b and a<c:
  *         return a
  *     elif b<a and b<c:             # <<<<<<<<<<<<<<
@@ -9071,7 +8938,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
   __pyx_L6_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":571
+    /* "classic_trees.pyx":572
  *         return a
  *     elif b<a and b<c:
  *         return b             # <<<<<<<<<<<<<<
@@ -9081,7 +8948,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
     __pyx_r = __pyx_v_b;
     goto __pyx_L0;
 
-    /* "classic_trees.pyx":570
+    /* "classic_trees.pyx":571
  *     if a<b and a<c:
  *         return a
  *     elif b<a and b<c:             # <<<<<<<<<<<<<<
@@ -9090,7 +8957,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
  */
   }
 
-  /* "classic_trees.pyx":573
+  /* "classic_trees.pyx":574
  *         return b
  *     else:
  *         return c             # <<<<<<<<<<<<<<
@@ -9102,7 +8969,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
     goto __pyx_L0;
   }
 
-  /* "classic_trees.pyx":567
+  /* "classic_trees.pyx":568
  * cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
  * 
  * cdef double min3(double a,double b,double c):             # <<<<<<<<<<<<<<
@@ -9116,7 +8983,7 @@ static double __pyx_f_13classic_trees_min3(double __pyx_v_a, double __pyx_v_b, d
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":574
+/* "classic_trees.pyx":575
  *     else:
  *         return c
  * cdef double min2(double a,double b):             # <<<<<<<<<<<<<<
@@ -9130,7 +8997,7 @@ static double __pyx_f_13classic_trees_min2(double __pyx_v_a, double __pyx_v_b) {
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("min2", 0);
 
-  /* "classic_trees.pyx":575
+  /* "classic_trees.pyx":576
  *         return c
  * cdef double min2(double a,double b):
  *     if a<b:             # <<<<<<<<<<<<<<
@@ -9140,7 +9007,7 @@ static double __pyx_f_13classic_trees_min2(double __pyx_v_a, double __pyx_v_b) {
   __pyx_t_1 = ((__pyx_v_a < __pyx_v_b) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":576
+    /* "classic_trees.pyx":577
  * cdef double min2(double a,double b):
  *     if a<b:
  *         return a             # <<<<<<<<<<<<<<
@@ -9150,7 +9017,7 @@ static double __pyx_f_13classic_trees_min2(double __pyx_v_a, double __pyx_v_b) {
     __pyx_r = __pyx_v_a;
     goto __pyx_L0;
 
-    /* "classic_trees.pyx":575
+    /* "classic_trees.pyx":576
  *         return c
  * cdef double min2(double a,double b):
  *     if a<b:             # <<<<<<<<<<<<<<
@@ -9159,19 +9026,19 @@ static double __pyx_f_13classic_trees_min2(double __pyx_v_a, double __pyx_v_b) {
  */
   }
 
-  /* "classic_trees.pyx":578
+  /* "classic_trees.pyx":579
  *         return a
  *     else:
  *         return b             # <<<<<<<<<<<<<<
  * 
- * cdef struct split_result:
+ * cdef extern from 'stdlib.h':
  */
   /*else*/ {
     __pyx_r = __pyx_v_b;
     goto __pyx_L0;
   }
 
-  /* "classic_trees.pyx":574
+  /* "classic_trees.pyx":575
  *     else:
  *         return c
  * cdef double min2(double a,double b):             # <<<<<<<<<<<<<<
@@ -9185,7 +9052,7 @@ static double __pyx_f_13classic_trees_min2(double __pyx_v_a, double __pyx_v_b) {
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":586
+/* "classic_trees.pyx":590
  *     double m_min_last
  * 
  * cdef split_result split(             # <<<<<<<<<<<<<<
@@ -9236,15 +9103,15 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   double __pyx_v_mu;
   int __pyx_v_n_prog;
   double __pyx_v_g_fac1;
-  PyObject *__pyx_v_randy = NULL;
-  PyObject *__pyx_v_q_pow_eta = NULL;
-  PyObject *__pyx_v_q = NULL;
+  double __pyx_v_randy;
+  double __pyx_v_q_pow_eta;
+  double __pyx_v_q;
   double __pyx_v_sig_q;
   double __pyx_v_sigsq_q;
   double __pyx_v_alpha_q;
   double __pyx_v_diff12_q;
   double __pyx_v_v_q;
-  PyObject *__pyx_v_R_q = NULL;
+  double __pyx_v_R_q;
   double __pyx_v_m_temp;
   struct __pyx_t_13classic_trees_split_result __pyx_r;
   __Pyx_RefNannyDeclarations
@@ -9252,16 +9119,13 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   double __pyx_t_2;
   double __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
-  PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
-  PyObject *__pyx_t_7 = NULL;
-  PyObject *__pyx_t_8 = NULL;
+  int __pyx_t_5;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("split", 0);
 
-  /* "classic_trees.pyx":597
+  /* "classic_trees.pyx":601
  *     cdef:
  *         split_result res
  *         double* m_prog = <double*>malloc(2*sizeof(double))             # <<<<<<<<<<<<<<
@@ -9270,7 +9134,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_m_prog = ((double *)malloc((2 * (sizeof(double)))));
 
-  /* "classic_trees.pyx":598
+  /* "classic_trees.pyx":602
  *         split_result res
  *         double* m_prog = <double*>malloc(2*sizeof(double))
  *         double eps_eta = 1e-6             # <<<<<<<<<<<<<<
@@ -9279,7 +9143,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_eps_eta = 1e-6;
 
-  /* "classic_trees.pyx":599
+  /* "classic_trees.pyx":603
  *         double* m_prog = <double*>malloc(2*sizeof(double))
  *         double eps_eta = 1e-6
  *         double eps_q = 6e-6             # <<<<<<<<<<<<<<
@@ -9288,7 +9152,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_eps_q = 6e-6;
 
-  /* "classic_trees.pyx":600
+  /* "classic_trees.pyx":604
  *         double eps_eta = 1e-6
  *         double eps_q = 6e-6
  *         double gamma_1 = 0.38             # <<<<<<<<<<<<<<
@@ -9297,7 +9161,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_gamma_1 = 0.38;
 
-  /* "classic_trees.pyx":601
+  /* "classic_trees.pyx":605
  *         double eps_q = 6e-6
  *         double gamma_1 = 0.38
  *         double gamma_2 = -0.01             # <<<<<<<<<<<<<<
@@ -9306,7 +9170,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_gamma_2 = -0.01;
 
-  /* "classic_trees.pyx":602
+  /* "classic_trees.pyx":606
  *         double gamma_1 = 0.38
  *         double gamma_2 = -0.01
  *         double G_0 = 0.57             # <<<<<<<<<<<<<<
@@ -9315,7 +9179,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_G_0 = 0.57;
 
-  /* "classic_trees.pyx":611
+  /* "classic_trees.pyx":615
  *         double eta_inv, q_min_exp, f_fac, dn_dw
  *         double dw_eps2, dw, n_av, z, f, mu
  *         int n_prog = 0             # <<<<<<<<<<<<<<
@@ -9324,7 +9188,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_n_prog = 0;
 
-  /* "classic_trees.pyx":613
+  /* "classic_trees.pyx":617
  *         int n_prog = 0
  * 
  *     if fabs(m_min - m_min_last) > eps_eta:             # <<<<<<<<<<<<<<
@@ -9334,7 +9198,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   __pyx_t_1 = ((fabs((__pyx_v_m_min - __pyx_v_m_min_last)) > __pyx_v_eps_eta) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":614
+    /* "classic_trees.pyx":618
  * 
  *     if fabs(m_min - m_min_last) > eps_eta:
  *         sig_q_min = sigma_cdm(m_min)             # <<<<<<<<<<<<<<
@@ -9343,7 +9207,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_sig_q_min = __pyx_f_13classic_trees_sigma_cdm(__pyx_v_m_min);
 
-    /* "classic_trees.pyx":615
+    /* "classic_trees.pyx":619
  *     if fabs(m_min - m_min_last) > eps_eta:
  *         sig_q_min = sigma_cdm(m_min)
  *         sigsq_q_min = sig_q_min**2             # <<<<<<<<<<<<<<
@@ -9352,7 +9216,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_sigsq_q_min = pow(__pyx_v_sig_q_min, 2.0);
 
-    /* "classic_trees.pyx":616
+    /* "classic_trees.pyx":620
  *         sig_q_min = sigma_cdm(m_min)
  *         sigsq_q_min = sig_q_min**2
  *         m_min_last = m_min             # <<<<<<<<<<<<<<
@@ -9361,7 +9225,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_m_min_last = __pyx_v_m_min;
 
-    /* "classic_trees.pyx":613
+    /* "classic_trees.pyx":617
  *         int n_prog = 0
  * 
  *     if fabs(m_min - m_min_last) > eps_eta:             # <<<<<<<<<<<<<<
@@ -9371,7 +9235,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     goto __pyx_L3;
   }
 
-  /* "classic_trees.pyx":618
+  /* "classic_trees.pyx":622
  *         m_min_last = m_min
  *     else:
  *         sig_q_min = sigma_cdm(m_min)             # <<<<<<<<<<<<<<
@@ -9381,7 +9245,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   /*else*/ {
     __pyx_v_sig_q_min = __pyx_f_13classic_trees_sigma_cdm(__pyx_v_m_min);
 
-    /* "classic_trees.pyx":619
+    /* "classic_trees.pyx":623
  *     else:
  *         sig_q_min = sigma_cdm(m_min)
  *         sigsq_q_min = sig_q_min**2             # <<<<<<<<<<<<<<
@@ -9392,7 +9256,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   }
   __pyx_L3:;
 
-  /* "classic_trees.pyx":621
+  /* "classic_trees.pyx":625
  *         sigsq_q_min = sig_q_min**2
  * 
  *     sigma_m2 = sigma_cdm(m_2)             # <<<<<<<<<<<<<<
@@ -9401,7 +9265,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_sigma_m2 = __pyx_f_13classic_trees_sigma_cdm(__pyx_v_m_2);
 
-  /* "classic_trees.pyx":622
+  /* "classic_trees.pyx":626
  * 
  *     sigma_m2 = sigma_cdm(m_2)
  *     sigsq_m2 = sigma_m2**2             # <<<<<<<<<<<<<<
@@ -9410,7 +9274,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_sigsq_m2 = pow(__pyx_v_sigma_m2, 2.0);
 
-  /* "classic_trees.pyx":623
+  /* "classic_trees.pyx":627
  *     sigma_m2 = sigma_cdm(m_2)
  *     sigsq_m2 = sigma_m2**2
  *     sig_hf = sigma_cdm(0.5*m_2)             # <<<<<<<<<<<<<<
@@ -9419,7 +9283,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_sig_hf = __pyx_f_13classic_trees_sigma_cdm((0.5 * __pyx_v_m_2));
 
-  /* "classic_trees.pyx":624
+  /* "classic_trees.pyx":628
  *     sigsq_m2 = sigma_m2**2
  *     sig_hf = sigma_cdm(0.5*m_2)
  *     sigsq_hf = sig_hf**2             # <<<<<<<<<<<<<<
@@ -9428,7 +9292,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_sigsq_hf = pow(__pyx_v_sig_hf, 2.0);
 
-  /* "classic_trees.pyx":625
+  /* "classic_trees.pyx":629
  *     sig_hf = sigma_cdm(0.5*m_2)
  *     sigsq_hf = sig_hf**2
  *     alpha_hf = -alpha(0.5*m_2)             # <<<<<<<<<<<<<<
@@ -9437,7 +9301,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_alpha_hf = (-__pyx_f_13classic_trees_alpha((0.5 * __pyx_v_m_2)));
 
-  /* "classic_trees.pyx":626
+  /* "classic_trees.pyx":630
  *     sigsq_hf = sig_hf**2
  *     alpha_hf = -alpha(0.5*m_2)
  *     q_min = m_min/m_2 # Minimum mass ratio             # <<<<<<<<<<<<<<
@@ -9446,11 +9310,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   if (unlikely(__pyx_v_m_2 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 626, __pyx_L1_error)
+    __PYX_ERR(0, 630, __pyx_L1_error)
   }
   __pyx_v_q_min = (__pyx_v_m_min / __pyx_v_m_2);
 
-  /* "classic_trees.pyx":628
+  /* "classic_trees.pyx":632
  *     q_min = m_min/m_2 # Minimum mass ratio
  * 
  *     g_fac0 = G_0*((w/sigma_m2)**gamma_2)             # <<<<<<<<<<<<<<
@@ -9459,11 +9323,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   if (unlikely(__pyx_v_sigma_m2 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 628, __pyx_L1_error)
+    __PYX_ERR(0, 632, __pyx_L1_error)
   }
   __pyx_v_g_fac0 = (__pyx_v_G_0 * pow((__pyx_v_w / __pyx_v_sigma_m2), __pyx_v_gamma_2));
 
-  /* "classic_trees.pyx":630
+  /* "classic_trees.pyx":634
  *     g_fac0 = G_0*((w/sigma_m2)**gamma_2)
  * 
  *     if q_min < (0.5-eps_q):             # <<<<<<<<<<<<<<
@@ -9473,7 +9337,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   __pyx_t_1 = ((__pyx_v_q_min < (0.5 - __pyx_v_eps_q)) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":631
+    /* "classic_trees.pyx":635
  * 
  *     if q_min < (0.5-eps_q):
  *         if gamma_1 <= 0:             # <<<<<<<<<<<<<<
@@ -9483,7 +9347,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = ((__pyx_v_gamma_1 <= 0.0) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":632
+      /* "classic_trees.pyx":636
  *     if q_min < (0.5-eps_q):
  *         if gamma_1 <= 0:
  *             mu = -log(sig_q_min/sig_hf)/log(2*q_min)             # <<<<<<<<<<<<<<
@@ -9492,17 +9356,17 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       if (unlikely(__pyx_v_sig_hf == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 632, __pyx_L1_error)
+        __PYX_ERR(0, 636, __pyx_L1_error)
       }
       __pyx_t_2 = (-log((__pyx_v_sig_q_min / __pyx_v_sig_hf)));
       __pyx_t_3 = log((2.0 * __pyx_v_q_min));
       if (unlikely(__pyx_t_3 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 632, __pyx_L1_error)
+        __PYX_ERR(0, 636, __pyx_L1_error)
       }
       __pyx_v_mu = (__pyx_t_2 / __pyx_t_3);
 
-      /* "classic_trees.pyx":631
+      /* "classic_trees.pyx":635
  * 
  *     if q_min < (0.5-eps_q):
  *         if gamma_1 <= 0:             # <<<<<<<<<<<<<<
@@ -9512,7 +9376,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L5;
     }
 
-    /* "classic_trees.pyx":634
+    /* "classic_trees.pyx":638
  *             mu = -log(sig_q_min/sig_hf)/log(2*q_min)
  *         else:
  *             mu = alpha_hf             # <<<<<<<<<<<<<<
@@ -9524,7 +9388,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L5:;
 
-    /* "classic_trees.pyx":635
+    /* "classic_trees.pyx":639
  *         else:
  *             mu = alpha_hf
  *         g_fac1 = g_fac0*((sig_hf/sigma_m2)**gamma_1)/(2**(mu*gamma_1))             # <<<<<<<<<<<<<<
@@ -9533,17 +9397,17 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     if (unlikely(__pyx_v_sigma_m2 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 635, __pyx_L1_error)
+      __PYX_ERR(0, 639, __pyx_L1_error)
     }
     __pyx_t_3 = (__pyx_v_g_fac0 * pow((__pyx_v_sig_hf / __pyx_v_sigma_m2), __pyx_v_gamma_1));
     __pyx_t_2 = pow(2.0, (__pyx_v_mu * __pyx_v_gamma_1));
     if (unlikely(__pyx_t_2 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 635, __pyx_L1_error)
+      __PYX_ERR(0, 639, __pyx_L1_error)
     }
     __pyx_v_g_fac1 = (__pyx_t_3 / __pyx_t_2);
 
-    /* "classic_trees.pyx":637
+    /* "classic_trees.pyx":641
  *         g_fac1 = g_fac0*((sig_hf/sigma_m2)**gamma_1)/(2**(mu*gamma_1))
  * 
  *         diff_q_min = sigsq_q_min - sigsq_m2             # <<<<<<<<<<<<<<
@@ -9552,7 +9416,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff_q_min = (__pyx_v_sigsq_q_min - __pyx_v_sigsq_m2);
 
-    /* "classic_trees.pyx":638
+    /* "classic_trees.pyx":642
  * 
  *         diff_q_min = sigsq_q_min - sigsq_m2
  *         diff12_q_min = sqrt(diff_q_min)             # <<<<<<<<<<<<<<
@@ -9561,7 +9425,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff12_q_min = sqrt(__pyx_v_diff_q_min);
 
-    /* "classic_trees.pyx":639
+    /* "classic_trees.pyx":643
  *         diff_q_min = sigsq_q_min - sigsq_m2
  *         diff12_q_min = sqrt(diff_q_min)
  *         diff32_q_min = diff_q_min*diff12_q_min             # <<<<<<<<<<<<<<
@@ -9570,7 +9434,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff32_q_min = (__pyx_v_diff_q_min * __pyx_v_diff12_q_min);
 
-    /* "classic_trees.pyx":641
+    /* "classic_trees.pyx":645
  *         diff32_q_min = diff_q_min*diff12_q_min
  * 
  *         v_q_min = sigsq_q_min/diff32_q_min             # <<<<<<<<<<<<<<
@@ -9579,11 +9443,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     if (unlikely(__pyx_v_diff32_q_min == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 641, __pyx_L1_error)
+      __PYX_ERR(0, 645, __pyx_L1_error)
     }
     __pyx_v_v_q_min = (__pyx_v_sigsq_q_min / __pyx_v_diff32_q_min);
 
-    /* "classic_trees.pyx":643
+    /* "classic_trees.pyx":647
  *         v_q_min = sigsq_q_min/diff32_q_min
  * 
  *         diff_hf = sigsq_hf - sigsq_m2             # <<<<<<<<<<<<<<
@@ -9592,7 +9456,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff_hf = (__pyx_v_sigsq_hf - __pyx_v_sigsq_m2);
 
-    /* "classic_trees.pyx":644
+    /* "classic_trees.pyx":648
  * 
  *         diff_hf = sigsq_hf - sigsq_m2
  *         diff12_hf = sqrt(diff_hf)             # <<<<<<<<<<<<<<
@@ -9601,7 +9465,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff12_hf = sqrt(__pyx_v_diff_hf);
 
-    /* "classic_trees.pyx":645
+    /* "classic_trees.pyx":649
  *         diff_hf = sigsq_hf - sigsq_m2
  *         diff12_hf = sqrt(diff_hf)
  *         diff32_hf = diff_hf*diff12_hf             # <<<<<<<<<<<<<<
@@ -9610,7 +9474,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff32_hf = (__pyx_v_diff_hf * __pyx_v_diff12_hf);
 
-    /* "classic_trees.pyx":647
+    /* "classic_trees.pyx":651
  *         diff32_hf = diff_hf*diff12_hf
  * 
  *         v_hf = sigsq_hf/diff32_hf             # <<<<<<<<<<<<<<
@@ -9619,11 +9483,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     if (unlikely(__pyx_v_diff32_hf == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 647, __pyx_L1_error)
+      __PYX_ERR(0, 651, __pyx_L1_error)
     }
     __pyx_v_v_hf = (__pyx_v_sigsq_hf / __pyx_v_diff32_hf);
 
-    /* "classic_trees.pyx":648
+    /* "classic_trees.pyx":652
  * 
  *         v_hf = sigsq_hf/diff32_hf
  *         s_fac = sqrt(2)*diff12_hf             # <<<<<<<<<<<<<<
@@ -9632,7 +9496,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_s_fac = (sqrt(2.0) * __pyx_v_diff12_hf);
 
-    /* "classic_trees.pyx":650
+    /* "classic_trees.pyx":654
  *         s_fac = sqrt(2)*diff12_hf
  * 
  *         beta = log(v_q_min/v_hf)/log(2*q_min)             # <<<<<<<<<<<<<<
@@ -9641,17 +9505,17 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     if (unlikely(__pyx_v_v_hf == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 650, __pyx_L1_error)
+      __PYX_ERR(0, 654, __pyx_L1_error)
     }
     __pyx_t_2 = log((__pyx_v_v_q_min / __pyx_v_v_hf));
     __pyx_t_3 = log((2.0 * __pyx_v_q_min));
     if (unlikely(__pyx_t_3 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 650, __pyx_L1_error)
+      __PYX_ERR(0, 654, __pyx_L1_error)
     }
     __pyx_v_beta = (__pyx_t_2 / __pyx_t_3);
 
-    /* "classic_trees.pyx":651
+    /* "classic_trees.pyx":655
  * 
  *         beta = log(v_q_min/v_hf)/log(2*q_min)
  *         if beta <= 0:             # <<<<<<<<<<<<<<
@@ -9661,20 +9525,20 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = ((__pyx_v_beta <= 0.0) != 0);
     if (unlikely(__pyx_t_1)) {
 
-      /* "classic_trees.pyx":652
+      /* "classic_trees.pyx":656
  *         beta = log(v_q_min/v_hf)/log(2*q_min)
  *         if beta <= 0:
  *             raise ValueError('split(): beta <= 0')             # <<<<<<<<<<<<<<
  * 
  *         two_pow_beta = 2**beta
  */
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 652, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 656, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_Raise(__pyx_t_4, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __PYX_ERR(0, 652, __pyx_L1_error)
+      __PYX_ERR(0, 656, __pyx_L1_error)
 
-      /* "classic_trees.pyx":651
+      /* "classic_trees.pyx":655
  * 
  *         beta = log(v_q_min/v_hf)/log(2*q_min)
  *         if beta <= 0:             # <<<<<<<<<<<<<<
@@ -9683,7 +9547,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     }
 
-    /* "classic_trees.pyx":654
+    /* "classic_trees.pyx":658
  *             raise ValueError('split(): beta <= 0')
  * 
  *         two_pow_beta = 2**beta             # <<<<<<<<<<<<<<
@@ -9692,7 +9556,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_two_pow_beta = pow(2.0, __pyx_v_beta);
 
-    /* "classic_trees.pyx":655
+    /* "classic_trees.pyx":659
  * 
  *         two_pow_beta = 2**beta
  *         b = v_hf*two_pow_beta             # <<<<<<<<<<<<<<
@@ -9701,7 +9565,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_b = (__pyx_v_v_hf * __pyx_v_two_pow_beta);
 
-    /* "classic_trees.pyx":656
+    /* "classic_trees.pyx":660
  *         two_pow_beta = 2**beta
  *         b = v_hf*two_pow_beta
  *         eta = beta - 1 - gamma_1*mu             # <<<<<<<<<<<<<<
@@ -9710,7 +9574,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_eta = ((__pyx_v_beta - 1.0) - (__pyx_v_gamma_1 * __pyx_v_mu));
 
-    /* "classic_trees.pyx":658
+    /* "classic_trees.pyx":662
  *         eta = beta - 1 - gamma_1*mu
  * 
  *         half_pow_eta = 2**(-eta)             # <<<<<<<<<<<<<<
@@ -9719,7 +9583,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_half_pow_eta = pow(2.0, (-__pyx_v_eta));
 
-    /* "classic_trees.pyx":659
+    /* "classic_trees.pyx":663
  * 
  *         half_pow_eta = 2**(-eta)
  *         if fabs(eta) > eps_eta:             # <<<<<<<<<<<<<<
@@ -9729,7 +9593,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = ((fabs(__pyx_v_eta) > __pyx_v_eps_eta) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":660
+      /* "classic_trees.pyx":664
  *         half_pow_eta = 2**(-eta)
  *         if fabs(eta) > eps_eta:
  *             eta_inv = 1/eta             # <<<<<<<<<<<<<<
@@ -9738,11 +9602,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       if (unlikely(__pyx_v_eta == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 660, __pyx_L1_error)
+        __PYX_ERR(0, 664, __pyx_L1_error)
       }
       __pyx_v_eta_inv = (1.0 / __pyx_v_eta);
 
-      /* "classic_trees.pyx":661
+      /* "classic_trees.pyx":665
  *         if fabs(eta) > eps_eta:
  *             eta_inv = 1/eta
  *             q_min_exp = q_min**eta             # <<<<<<<<<<<<<<
@@ -9751,7 +9615,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_q_min_exp = pow(__pyx_v_q_min, __pyx_v_eta);
 
-      /* "classic_trees.pyx":662
+      /* "classic_trees.pyx":666
  *             eta_inv = 1/eta
  *             q_min_exp = q_min**eta
  *             f_fac = half_pow_eta-q_min_exp             # <<<<<<<<<<<<<<
@@ -9760,7 +9624,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_f_fac = (__pyx_v_half_pow_eta - __pyx_v_q_min_exp);
 
-      /* "classic_trees.pyx":663
+      /* "classic_trees.pyx":667
  *             q_min_exp = q_min**eta
  *             f_fac = half_pow_eta-q_min_exp
  *             dn_dw = SQRT2OPI*alpha_hf*b*eta_inv*f_fac*g_fac1             # <<<<<<<<<<<<<<
@@ -9769,7 +9633,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_dn_dw = (((((__pyx_v_13classic_trees_SQRT2OPI * __pyx_v_alpha_hf) * __pyx_v_b) * __pyx_v_eta_inv) * __pyx_v_f_fac) * __pyx_v_g_fac1);
 
-      /* "classic_trees.pyx":659
+      /* "classic_trees.pyx":663
  * 
  *         half_pow_eta = 2**(-eta)
  *         if fabs(eta) > eps_eta:             # <<<<<<<<<<<<<<
@@ -9779,7 +9643,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L7;
     }
 
-    /* "classic_trees.pyx":665
+    /* "classic_trees.pyx":669
  *             dn_dw = SQRT2OPI*alpha_hf*b*eta_inv*f_fac*g_fac1
  *         else:
  *             dn_dw = -SQRT2OPI*alpha_hf*b*log(2*q_min)*g_fac1             # <<<<<<<<<<<<<<
@@ -9791,7 +9655,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L7:;
 
-    /* "classic_trees.pyx":667
+    /* "classic_trees.pyx":671
  *             dn_dw = -SQRT2OPI*alpha_hf*b*log(2*q_min)*g_fac1
  * 
  *         if dn_dw > 0:             # <<<<<<<<<<<<<<
@@ -9801,7 +9665,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = ((__pyx_v_dn_dw > 0.0) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":668
+      /* "classic_trees.pyx":672
  * 
  *         if dn_dw > 0:
  *             dw_eps2 = eps_2/dn_dw             # <<<<<<<<<<<<<<
@@ -9810,11 +9674,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       if (unlikely(__pyx_v_dn_dw == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 668, __pyx_L1_error)
+        __PYX_ERR(0, 672, __pyx_L1_error)
       }
       __pyx_v_dw_eps2 = (__pyx_v_eps_2 / __pyx_v_dn_dw);
 
-      /* "classic_trees.pyx":667
+      /* "classic_trees.pyx":671
  *             dn_dw = -SQRT2OPI*alpha_hf*b*log(2*q_min)*g_fac1
  * 
  *         if dn_dw > 0:             # <<<<<<<<<<<<<<
@@ -9824,7 +9688,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L8;
     }
 
-    /* "classic_trees.pyx":670
+    /* "classic_trees.pyx":674
  *             dw_eps2 = eps_2/dn_dw
  *         else:
  *             dw_eps2 = dw_max             # <<<<<<<<<<<<<<
@@ -9836,7 +9700,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L8:;
 
-    /* "classic_trees.pyx":671
+    /* "classic_trees.pyx":675
  *         else:
  *             dw_eps2 = dw_max
  *         dw = min3(eps_1*s_fac,dw_eps2,dw_max)             # <<<<<<<<<<<<<<
@@ -9845,7 +9709,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_dw = __pyx_f_13classic_trees_min3((__pyx_v_eps_1 * __pyx_v_s_fac), __pyx_v_dw_eps2, __pyx_v_dw_max);
 
-    /* "classic_trees.pyx":672
+    /* "classic_trees.pyx":676
  *             dw_eps2 = dw_max
  *         dw = min3(eps_1*s_fac,dw_eps2,dw_max)
  *         n_av = dn_dw*dw             # <<<<<<<<<<<<<<
@@ -9854,111 +9718,74 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_n_av = (__pyx_v_dn_dw * __pyx_v_dw);
 
-    /* "classic_trees.pyx":674
+    /* "classic_trees.pyx":678
  *         n_av = dn_dw*dw
  * 
  *         z = sigma_m2/diff12_q_min             # <<<<<<<<<<<<<<
  *         f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2
- *         randy = random.random()
+ *         randy = rand()/float(RAND_MAX)
  */
     if (unlikely(__pyx_v_diff12_q_min == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 674, __pyx_L1_error)
+      __PYX_ERR(0, 678, __pyx_L1_error)
     }
     __pyx_v_z = (__pyx_v_sigma_m2 / __pyx_v_diff12_q_min);
 
-    /* "classic_trees.pyx":675
+    /* "classic_trees.pyx":679
  * 
  *         z = sigma_m2/diff12_q_min
  *         f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2             # <<<<<<<<<<<<<<
- *         randy = random.random()
+ *         randy = rand()/float(RAND_MAX)
  *         if randy <= n_av:
  */
     __pyx_t_3 = (((__pyx_v_13classic_trees_SQRT2OPI * __pyx_v_dw) * __pyx_v_g_fac0) * __pyx_f_13classic_trees_J_unresolved(__pyx_v_z));
     if (unlikely(__pyx_v_sigma_m2 == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 675, __pyx_L1_error)
+      __PYX_ERR(0, 679, __pyx_L1_error)
     }
     __pyx_v_f = (__pyx_t_3 / __pyx_v_sigma_m2);
 
-    /* "classic_trees.pyx":676
+    /* "classic_trees.pyx":680
  *         z = sigma_m2/diff12_q_min
  *         f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2
- *         randy = random.random()             # <<<<<<<<<<<<<<
+ *         randy = rand()/float(RAND_MAX)             # <<<<<<<<<<<<<<
  *         if randy <= n_av:
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 676, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_random); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 676, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
-      if (likely(__pyx_t_5)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-        __Pyx_INCREF(__pyx_t_5);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_6, function);
-      }
+    __pyx_t_5 = rand();
+    if (unlikely(((double)RAND_MAX) == 0)) {
+      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+      __PYX_ERR(0, 680, __pyx_L1_error)
     }
-    __pyx_t_4 = (__pyx_t_5) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 676, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_v_randy = __pyx_t_4;
-    __pyx_t_4 = 0;
+    __pyx_v_randy = (((double)__pyx_t_5) / ((double)RAND_MAX));
 
-    /* "classic_trees.pyx":677
+    /* "classic_trees.pyx":681
  *         f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2
- *         randy = random.random()
+ *         randy = rand()/float(RAND_MAX)
  *         if randy <= n_av:             # <<<<<<<<<<<<<<
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if fabs(eta) > eps_eta:
  */
-    __pyx_t_4 = PyFloat_FromDouble(__pyx_v_n_av); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 677, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = PyObject_RichCompare(__pyx_v_randy, __pyx_t_4, Py_LE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 677, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 677, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_1 = ((__pyx_v_randy <= __pyx_v_n_av) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":678
- *         randy = random.random()
+      /* "classic_trees.pyx":682
+ *         randy = rand()/float(RAND_MAX)
  *         if randy <= n_av:
- *             randy = random.random()             # <<<<<<<<<<<<<<
+ *             randy = rand()/float(RAND_MAX)             # <<<<<<<<<<<<<<
  *             if fabs(eta) > eps_eta:
  *                 q_pow_eta = q_min_exp + randy*f_fac
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 678, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_random); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 678, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = NULL;
-      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
-        __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_5);
-        if (likely(__pyx_t_4)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
-          __Pyx_INCREF(__pyx_t_4);
-          __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_5, function);
-        }
+      __pyx_t_5 = rand();
+      if (unlikely(((double)RAND_MAX) == 0)) {
+        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+        __PYX_ERR(0, 682, __pyx_L1_error)
       }
-      __pyx_t_6 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_5);
-      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 678, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __Pyx_DECREF_SET(__pyx_v_randy, __pyx_t_6);
-      __pyx_t_6 = 0;
+      __pyx_v_randy = (((double)__pyx_t_5) / ((double)RAND_MAX));
 
-      /* "classic_trees.pyx":679
+      /* "classic_trees.pyx":683
  *         if randy <= n_av:
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if fabs(eta) > eps_eta:             # <<<<<<<<<<<<<<
  *                 q_pow_eta = q_min_exp + randy*f_fac
  *                 q = q_pow_eta**eta_inv
@@ -9966,45 +9793,27 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       __pyx_t_1 = ((fabs(__pyx_v_eta) > __pyx_v_eps_eta) != 0);
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":680
- *             randy = random.random()
+        /* "classic_trees.pyx":684
+ *             randy = rand()/float(RAND_MAX)
  *             if fabs(eta) > eps_eta:
  *                 q_pow_eta = q_min_exp + randy*f_fac             # <<<<<<<<<<<<<<
  *                 q = q_pow_eta**eta_inv
  *             else:
  */
-        __pyx_t_6 = PyFloat_FromDouble(__pyx_v_q_min_exp); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 680, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_5 = PyFloat_FromDouble(__pyx_v_f_fac); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 680, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_4 = PyNumber_Multiply(__pyx_v_randy, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 680, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_5 = PyNumber_Add(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 680, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_5);
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_v_q_pow_eta = __pyx_t_5;
-        __pyx_t_5 = 0;
+        __pyx_v_q_pow_eta = (__pyx_v_q_min_exp + (__pyx_v_randy * __pyx_v_f_fac));
 
-        /* "classic_trees.pyx":681
+        /* "classic_trees.pyx":685
  *             if fabs(eta) > eps_eta:
  *                 q_pow_eta = q_min_exp + randy*f_fac
  *                 q = q_pow_eta**eta_inv             # <<<<<<<<<<<<<<
  *             else:
  *                 q = q_min*(2*q_min)**(-randy)
  */
-        __pyx_t_5 = PyFloat_FromDouble(__pyx_v_eta_inv); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 681, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_4 = PyNumber_Power(__pyx_v_q_pow_eta, __pyx_t_5, Py_None); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 681, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_v_q = __pyx_t_4;
-        __pyx_t_4 = 0;
+        __pyx_v_q = pow(__pyx_v_q_pow_eta, __pyx_v_eta_inv);
 
-        /* "classic_trees.pyx":679
+        /* "classic_trees.pyx":683
  *         if randy <= n_av:
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if fabs(eta) > eps_eta:             # <<<<<<<<<<<<<<
  *                 q_pow_eta = q_min_exp + randy*f_fac
  *                 q = q_pow_eta**eta_inv
@@ -10012,7 +9821,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
         goto __pyx_L10;
       }
 
-      /* "classic_trees.pyx":683
+      /* "classic_trees.pyx":687
  *                 q = q_pow_eta**eta_inv
  *             else:
  *                 q = q_min*(2*q_min)**(-randy)             # <<<<<<<<<<<<<<
@@ -10020,42 +9829,20 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  *             sigsq_q = sig_q**2
  */
       /*else*/ {
-        __pyx_t_4 = PyFloat_FromDouble(__pyx_v_q_min); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 683, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_5 = PyFloat_FromDouble((2.0 * __pyx_v_q_min)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 683, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_6 = PyNumber_Negative(__pyx_v_randy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 683, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_7 = PyNumber_Power(__pyx_t_5, __pyx_t_6, Py_None); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 683, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = PyNumber_Multiply(__pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 683, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-        __pyx_v_q = __pyx_t_6;
-        __pyx_t_6 = 0;
+        __pyx_v_q = (__pyx_v_q_min * pow((2.0 * __pyx_v_q_min), (-__pyx_v_randy)));
       }
       __pyx_L10:;
 
-      /* "classic_trees.pyx":684
+      /* "classic_trees.pyx":688
  *             else:
  *                 q = q_min*(2*q_min)**(-randy)
  *             sig_q = sigma_cdm(q*m_2)             # <<<<<<<<<<<<<<
  *             sigsq_q = sig_q**2
  *             alpha_q = -alpha(q*m_2)
  */
-      __pyx_t_6 = PyFloat_FromDouble(__pyx_v_m_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 684, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = PyNumber_Multiply(__pyx_v_q, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 684, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 684, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_v_sig_q = __pyx_f_13classic_trees_sigma_cdm(__pyx_t_3);
+      __pyx_v_sig_q = __pyx_f_13classic_trees_sigma_cdm((__pyx_v_q * __pyx_v_m_2));
 
-      /* "classic_trees.pyx":685
+      /* "classic_trees.pyx":689
  *                 q = q_min*(2*q_min)**(-randy)
  *             sig_q = sigma_cdm(q*m_2)
  *             sigsq_q = sig_q**2             # <<<<<<<<<<<<<<
@@ -10064,23 +9851,16 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_sigsq_q = pow(__pyx_v_sig_q, 2.0);
 
-      /* "classic_trees.pyx":686
+      /* "classic_trees.pyx":690
  *             sig_q = sigma_cdm(q*m_2)
  *             sigsq_q = sig_q**2
  *             alpha_q = -alpha(q*m_2)             # <<<<<<<<<<<<<<
  *             diff12_q = sqrt(sigsq_q - sigsq_m2)
  *             v_q = sigsq_q/diff12_q**3
  */
-      __pyx_t_7 = PyFloat_FromDouble(__pyx_v_m_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 686, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_6 = PyNumber_Multiply(__pyx_v_q, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 686, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 686, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_v_alpha_q = (-__pyx_f_13classic_trees_alpha(__pyx_t_3));
+      __pyx_v_alpha_q = (-__pyx_f_13classic_trees_alpha((__pyx_v_q * __pyx_v_m_2)));
 
-      /* "classic_trees.pyx":687
+      /* "classic_trees.pyx":691
  *             sigsq_q = sig_q**2
  *             alpha_q = -alpha(q*m_2)
  *             diff12_q = sqrt(sigsq_q - sigsq_m2)             # <<<<<<<<<<<<<<
@@ -10089,7 +9869,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_diff12_q = sqrt((__pyx_v_sigsq_q - __pyx_v_sigsq_m2));
 
-      /* "classic_trees.pyx":688
+      /* "classic_trees.pyx":692
  *             alpha_q = -alpha(q*m_2)
  *             diff12_q = sqrt(sigsq_q - sigsq_m2)
  *             v_q = sigsq_q/diff12_q**3             # <<<<<<<<<<<<<<
@@ -10099,11 +9879,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       __pyx_t_3 = pow(__pyx_v_diff12_q, 3.0);
       if (unlikely(__pyx_t_3 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 688, __pyx_L1_error)
+        __PYX_ERR(0, 692, __pyx_L1_error)
       }
       __pyx_v_v_q = (__pyx_v_sigsq_q / __pyx_t_3);
 
-      /* "classic_trees.pyx":690
+      /* "classic_trees.pyx":694
  *             v_q = sigsq_q/diff12_q**3
  * 
  *             R_q = (alpha_q/alpha_hf)*((sig_q*(2*q)**mu/sig_hf)**gamma_1)*v_q/(b*q**beta)             # <<<<<<<<<<<<<<
@@ -10112,170 +9892,106 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       if (unlikely(__pyx_v_alpha_hf == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 690, __pyx_L1_error)
+        __PYX_ERR(0, 694, __pyx_L1_error)
       }
-      __pyx_t_6 = PyFloat_FromDouble((__pyx_v_alpha_q / __pyx_v_alpha_hf)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = PyFloat_FromDouble(__pyx_v_sig_q); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_4 = PyNumber_Multiply(__pyx_int_2, __pyx_v_q); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_5 = PyFloat_FromDouble(__pyx_v_mu); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_8 = PyNumber_Power(__pyx_t_4, __pyx_t_5, Py_None); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = PyNumber_Multiply(__pyx_t_7, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = PyFloat_FromDouble(__pyx_v_sig_hf); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_7 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = PyFloat_FromDouble(__pyx_v_gamma_1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_5 = PyNumber_Power(__pyx_t_7, __pyx_t_8, Py_None); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = PyNumber_Multiply(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = PyFloat_FromDouble(__pyx_v_v_q); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = PyNumber_Multiply(__pyx_t_8, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = PyFloat_FromDouble(__pyx_v_b); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_8 = PyFloat_FromDouble(__pyx_v_beta); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_7 = PyNumber_Power(__pyx_v_q, __pyx_t_8, Py_None); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = PyNumber_Multiply(__pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_PyNumber_Divide(__pyx_t_6, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 690, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_v_R_q = __pyx_t_7;
-      __pyx_t_7 = 0;
+      __pyx_t_3 = (__pyx_v_sig_q * pow((2.0 * __pyx_v_q), __pyx_v_mu));
+      if (unlikely(__pyx_v_sig_hf == 0)) {
+        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+        __PYX_ERR(0, 694, __pyx_L1_error)
+      }
+      __pyx_t_2 = (((__pyx_v_alpha_q / __pyx_v_alpha_hf) * pow((__pyx_t_3 / __pyx_v_sig_hf), __pyx_v_gamma_1)) * __pyx_v_v_q);
+      __pyx_t_3 = (__pyx_v_b * pow(__pyx_v_q, __pyx_v_beta));
+      if (unlikely(__pyx_t_3 == 0)) {
+        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+        __PYX_ERR(0, 694, __pyx_L1_error)
+      }
+      __pyx_v_R_q = (__pyx_t_2 / __pyx_t_3);
 
-      /* "classic_trees.pyx":692
+      /* "classic_trees.pyx":696
  *             R_q = (alpha_q/alpha_hf)*((sig_q*(2*q)**mu/sig_hf)**gamma_1)*v_q/(b*q**beta)
  * 
  *             if R_q > 1.00001:             # <<<<<<<<<<<<<<
  *                 raise ValueError('split(): R_q > 1')
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  */
-      __pyx_t_7 = PyObject_RichCompare(__pyx_v_R_q, __pyx_float_1_00001, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 692, __pyx_L1_error)
-      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 692, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __pyx_t_1 = ((__pyx_v_R_q > 1.00001) != 0);
       if (unlikely(__pyx_t_1)) {
 
-        /* "classic_trees.pyx":693
+        /* "classic_trees.pyx":697
  * 
  *             if R_q > 1.00001:
  *                 raise ValueError('split(): R_q > 1')             # <<<<<<<<<<<<<<
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if randy >= R_q:
  */
-        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 693, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-        __Pyx_Raise(__pyx_t_7, 0, 0, 0);
-        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-        __PYX_ERR(0, 693, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 697, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_Raise(__pyx_t_4, 0, 0, 0);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __PYX_ERR(0, 697, __pyx_L1_error)
 
-        /* "classic_trees.pyx":692
+        /* "classic_trees.pyx":696
  *             R_q = (alpha_q/alpha_hf)*((sig_q*(2*q)**mu/sig_hf)**gamma_1)*v_q/(b*q**beta)
  * 
  *             if R_q > 1.00001:             # <<<<<<<<<<<<<<
  *                 raise ValueError('split(): R_q > 1')
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  */
       }
 
-      /* "classic_trees.pyx":694
+      /* "classic_trees.pyx":698
  *             if R_q > 1.00001:
  *                 raise ValueError('split(): R_q > 1')
- *             randy = random.random()             # <<<<<<<<<<<<<<
+ *             randy = rand()/float(RAND_MAX)             # <<<<<<<<<<<<<<
  *             if randy >= R_q:
  *                 q = 0
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_random); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 694, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_random); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 694, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = NULL;
-      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
-        if (likely(__pyx_t_8)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-          __Pyx_INCREF(__pyx_t_8);
-          __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_6, function);
-        }
+      __pyx_t_5 = rand();
+      if (unlikely(((double)RAND_MAX) == 0)) {
+        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+        __PYX_ERR(0, 698, __pyx_L1_error)
       }
-      __pyx_t_7 = (__pyx_t_8) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_8) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
-      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 694, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_DECREF_SET(__pyx_v_randy, __pyx_t_7);
-      __pyx_t_7 = 0;
+      __pyx_v_randy = (((double)__pyx_t_5) / ((double)RAND_MAX));
 
-      /* "classic_trees.pyx":695
+      /* "classic_trees.pyx":699
  *                 raise ValueError('split(): R_q > 1')
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if randy >= R_q:             # <<<<<<<<<<<<<<
  *                 q = 0
  *         else:
  */
-      __pyx_t_7 = PyObject_RichCompare(__pyx_v_randy, __pyx_v_R_q, Py_GE); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 695, __pyx_L1_error)
-      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 695, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __pyx_t_1 = ((__pyx_v_randy >= __pyx_v_R_q) != 0);
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":696
- *             randy = random.random()
+        /* "classic_trees.pyx":700
+ *             randy = rand()/float(RAND_MAX)
  *             if randy >= R_q:
  *                 q = 0             # <<<<<<<<<<<<<<
  *         else:
  *             q = 0
  */
-        __Pyx_INCREF(__pyx_int_0);
-        __Pyx_DECREF_SET(__pyx_v_q, __pyx_int_0);
+        __pyx_v_q = 0.0;
 
-        /* "classic_trees.pyx":695
+        /* "classic_trees.pyx":699
  *                 raise ValueError('split(): R_q > 1')
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if randy >= R_q:             # <<<<<<<<<<<<<<
  *                 q = 0
  *         else:
  */
       }
 
-      /* "classic_trees.pyx":677
+      /* "classic_trees.pyx":681
  *         f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2
- *         randy = random.random()
+ *         randy = rand()/float(RAND_MAX)
  *         if randy <= n_av:             # <<<<<<<<<<<<<<
- *             randy = random.random()
+ *             randy = rand()/float(RAND_MAX)
  *             if fabs(eta) > eps_eta:
  */
       goto __pyx_L9;
     }
 
-    /* "classic_trees.pyx":698
+    /* "classic_trees.pyx":702
  *                 q = 0
  *         else:
  *             q = 0             # <<<<<<<<<<<<<<
@@ -10283,28 +9999,20 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  *         if m_prog[1] <= m_min:
  */
     /*else*/ {
-      __Pyx_INCREF(__pyx_int_0);
-      __pyx_v_q = __pyx_int_0;
+      __pyx_v_q = 0.0;
     }
     __pyx_L9:;
 
-    /* "classic_trees.pyx":699
+    /* "classic_trees.pyx":703
  *         else:
  *             q = 0
  *         m_prog[1] = q*m_2             # <<<<<<<<<<<<<<
  *         if m_prog[1] <= m_min:
  *             n_prog = 1
  */
-    __pyx_t_7 = PyFloat_FromDouble(__pyx_v_m_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 699, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_6 = PyNumber_Multiply(__pyx_v_q, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 699, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 699, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    (__pyx_v_m_prog[1]) = __pyx_t_3;
+    (__pyx_v_m_prog[1]) = (__pyx_v_q * __pyx_v_m_2);
 
-    /* "classic_trees.pyx":700
+    /* "classic_trees.pyx":704
  *             q = 0
  *         m_prog[1] = q*m_2
  *         if m_prog[1] <= m_min:             # <<<<<<<<<<<<<<
@@ -10314,7 +10022,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = (((__pyx_v_m_prog[1]) <= __pyx_v_m_min) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":701
+      /* "classic_trees.pyx":705
  *         m_prog[1] = q*m_2
  *         if m_prog[1] <= m_min:
  *             n_prog = 1             # <<<<<<<<<<<<<<
@@ -10323,7 +10031,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_n_prog = 1;
 
-      /* "classic_trees.pyx":700
+      /* "classic_trees.pyx":704
  *             q = 0
  *         m_prog[1] = q*m_2
  *         if m_prog[1] <= m_min:             # <<<<<<<<<<<<<<
@@ -10333,7 +10041,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L13;
     }
 
-    /* "classic_trees.pyx":703
+    /* "classic_trees.pyx":707
  *             n_prog = 1
  *         else:
  *             n_prog = 2             # <<<<<<<<<<<<<<
@@ -10345,32 +10053,16 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L13:;
 
-    /* "classic_trees.pyx":704
+    /* "classic_trees.pyx":708
  *         else:
  *             n_prog = 2
  *         m_prog[0] =(1-q-f)*m_2             # <<<<<<<<<<<<<<
  * 
  *         if m_prog[0] <= m_min:
  */
-    __pyx_t_6 = __Pyx_PyInt_SubtractCObj(__pyx_int_1, __pyx_v_q, 1, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 704, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyFloat_FromDouble(__pyx_v_f); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 704, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = PyNumber_Subtract(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 704, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyFloat_FromDouble(__pyx_v_m_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 704, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_6 = PyNumber_Multiply(__pyx_t_8, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 704, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 704, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    (__pyx_v_m_prog[0]) = __pyx_t_3;
+    (__pyx_v_m_prog[0]) = (((1.0 - __pyx_v_q) - __pyx_v_f) * __pyx_v_m_2);
 
-    /* "classic_trees.pyx":706
+    /* "classic_trees.pyx":710
  *         m_prog[0] =(1-q-f)*m_2
  * 
  *         if m_prog[0] <= m_min:             # <<<<<<<<<<<<<<
@@ -10380,7 +10072,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = (((__pyx_v_m_prog[0]) <= __pyx_v_m_min) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":707
+      /* "classic_trees.pyx":711
  * 
  *         if m_prog[0] <= m_min:
  *             n_prog -= 1             # <<<<<<<<<<<<<<
@@ -10389,7 +10081,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_n_prog = (__pyx_v_n_prog - 1);
 
-      /* "classic_trees.pyx":708
+      /* "classic_trees.pyx":712
  *         if m_prog[0] <= m_min:
  *             n_prog -= 1
  *             m_prog[0] = m_prog[1]             # <<<<<<<<<<<<<<
@@ -10398,7 +10090,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       (__pyx_v_m_prog[0]) = (__pyx_v_m_prog[1]);
 
-      /* "classic_trees.pyx":709
+      /* "classic_trees.pyx":713
  *             n_prog -= 1
  *             m_prog[0] = m_prog[1]
  *             m_prog[1] = 0             # <<<<<<<<<<<<<<
@@ -10407,7 +10099,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       (__pyx_v_m_prog[1]) = 0.0;
 
-      /* "classic_trees.pyx":706
+      /* "classic_trees.pyx":710
  *         m_prog[0] =(1-q-f)*m_2
  * 
  *         if m_prog[0] <= m_min:             # <<<<<<<<<<<<<<
@@ -10417,7 +10109,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L14;
     }
 
-    /* "classic_trees.pyx":710
+    /* "classic_trees.pyx":714
  *             m_prog[0] = m_prog[1]
  *             m_prog[1] = 0
  *         elif m_prog[0] < m_prog[1]:             # <<<<<<<<<<<<<<
@@ -10427,7 +10119,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = (((__pyx_v_m_prog[0]) < (__pyx_v_m_prog[1])) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":711
+      /* "classic_trees.pyx":715
  *             m_prog[1] = 0
  *         elif m_prog[0] < m_prog[1]:
  *             m_temp = m_prog[0]             # <<<<<<<<<<<<<<
@@ -10436,7 +10128,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_m_temp = (__pyx_v_m_prog[0]);
 
-      /* "classic_trees.pyx":712
+      /* "classic_trees.pyx":716
  *         elif m_prog[0] < m_prog[1]:
  *             m_temp = m_prog[0]
  *             m_prog[0] = m_prog[1]             # <<<<<<<<<<<<<<
@@ -10445,7 +10137,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       (__pyx_v_m_prog[0]) = (__pyx_v_m_prog[1]);
 
-      /* "classic_trees.pyx":713
+      /* "classic_trees.pyx":717
  *             m_temp = m_prog[0]
  *             m_prog[0] = m_prog[1]
  *             m_prog[1] = m_temp             # <<<<<<<<<<<<<<
@@ -10454,7 +10146,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       (__pyx_v_m_prog[1]) = __pyx_v_m_temp;
 
-      /* "classic_trees.pyx":710
+      /* "classic_trees.pyx":714
  *             m_prog[0] = m_prog[1]
  *             m_prog[1] = 0
  *         elif m_prog[0] < m_prog[1]:             # <<<<<<<<<<<<<<
@@ -10464,7 +10156,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L14:;
 
-    /* "classic_trees.pyx":630
+    /* "classic_trees.pyx":634
  *     g_fac0 = G_0*((w/sigma_m2)**gamma_2)
  * 
  *     if q_min < (0.5-eps_q):             # <<<<<<<<<<<<<<
@@ -10474,7 +10166,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     goto __pyx_L4;
   }
 
-  /* "classic_trees.pyx":716
+  /* "classic_trees.pyx":720
  * 
  *     else:
  *         diff_hf = sigsq_hf - sigsq_m2             # <<<<<<<<<<<<<<
@@ -10484,7 +10176,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   /*else*/ {
     __pyx_v_diff_hf = (__pyx_v_sigsq_hf - __pyx_v_sigsq_m2);
 
-    /* "classic_trees.pyx":717
+    /* "classic_trees.pyx":721
  *     else:
  *         diff_hf = sigsq_hf - sigsq_m2
  *         diff12_hf = sqrt(diff_hf)             # <<<<<<<<<<<<<<
@@ -10493,7 +10185,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff12_hf = sqrt(__pyx_v_diff_hf);
 
-    /* "classic_trees.pyx":718
+    /* "classic_trees.pyx":722
  *         diff_hf = sigsq_hf - sigsq_m2
  *         diff12_hf = sqrt(diff_hf)
  *         s_fac = sqrt(2)*diff12_hf             # <<<<<<<<<<<<<<
@@ -10502,7 +10194,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_s_fac = (sqrt(2.0) * __pyx_v_diff12_hf);
 
-    /* "classic_trees.pyx":719
+    /* "classic_trees.pyx":723
  *         diff12_hf = sqrt(diff_hf)
  *         s_fac = sqrt(2)*diff12_hf
  *         dw = min2(eps_1*s_fac,dw_max)             # <<<<<<<<<<<<<<
@@ -10511,7 +10203,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_dw = __pyx_f_13classic_trees_min2((__pyx_v_eps_1 * __pyx_v_s_fac), __pyx_v_dw_max);
 
-    /* "classic_trees.pyx":721
+    /* "classic_trees.pyx":725
  *         dw = min2(eps_1*s_fac,dw_max)
  * 
  *         diff_q_min = sigsq_q_min - sigsq_m2             # <<<<<<<<<<<<<<
@@ -10520,7 +10212,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff_q_min = (__pyx_v_sigsq_q_min - __pyx_v_sigsq_m2);
 
-    /* "classic_trees.pyx":722
+    /* "classic_trees.pyx":726
  * 
  *         diff_q_min = sigsq_q_min - sigsq_m2
  *         if diff_q_min < 0:             # <<<<<<<<<<<<<<
@@ -10530,7 +10222,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = ((__pyx_v_diff_q_min < 0.0) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":723
+      /* "classic_trees.pyx":727
  *         diff_q_min = sigsq_q_min - sigsq_m2
  *         if diff_q_min < 0:
  *             diff_q_min = 0             # <<<<<<<<<<<<<<
@@ -10539,7 +10231,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_diff_q_min = 0.0;
 
-      /* "classic_trees.pyx":722
+      /* "classic_trees.pyx":726
  * 
  *         diff_q_min = sigsq_q_min - sigsq_m2
  *         if diff_q_min < 0:             # <<<<<<<<<<<<<<
@@ -10548,7 +10240,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     }
 
-    /* "classic_trees.pyx":724
+    /* "classic_trees.pyx":728
  *         if diff_q_min < 0:
  *             diff_q_min = 0
  *         diff12_q_min = sqrt(diff_q_min)             # <<<<<<<<<<<<<<
@@ -10557,7 +10249,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     __pyx_v_diff12_q_min = sqrt(__pyx_v_diff_q_min);
 
-    /* "classic_trees.pyx":725
+    /* "classic_trees.pyx":729
  *             diff_q_min = 0
  *         diff12_q_min = sqrt(diff_q_min)
  *         if diff12_q_min > SQRT2OPI*dw:             # <<<<<<<<<<<<<<
@@ -10567,7 +10259,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = ((__pyx_v_diff12_q_min > (__pyx_v_13classic_trees_SQRT2OPI * __pyx_v_dw)) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":726
+      /* "classic_trees.pyx":730
  *         diff12_q_min = sqrt(diff_q_min)
  *         if diff12_q_min > SQRT2OPI*dw:
  *             z = sigma_m2/diff12_q_min             # <<<<<<<<<<<<<<
@@ -10576,11 +10268,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       if (unlikely(__pyx_v_diff12_q_min == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 726, __pyx_L1_error)
+        __PYX_ERR(0, 730, __pyx_L1_error)
       }
       __pyx_v_z = (__pyx_v_sigma_m2 / __pyx_v_diff12_q_min);
 
-      /* "classic_trees.pyx":727
+      /* "classic_trees.pyx":731
  *         if diff12_q_min > SQRT2OPI*dw:
  *             z = sigma_m2/diff12_q_min
  *             f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2             # <<<<<<<<<<<<<<
@@ -10590,11 +10282,11 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       __pyx_t_3 = (((__pyx_v_13classic_trees_SQRT2OPI * __pyx_v_dw) * __pyx_v_g_fac0) * __pyx_f_13classic_trees_J_unresolved(__pyx_v_z));
       if (unlikely(__pyx_v_sigma_m2 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 727, __pyx_L1_error)
+        __PYX_ERR(0, 731, __pyx_L1_error)
       }
       __pyx_v_f = (__pyx_t_3 / __pyx_v_sigma_m2);
 
-      /* "classic_trees.pyx":725
+      /* "classic_trees.pyx":729
  *             diff_q_min = 0
  *         diff12_q_min = sqrt(diff_q_min)
  *         if diff12_q_min > SQRT2OPI*dw:             # <<<<<<<<<<<<<<
@@ -10604,7 +10296,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L16;
     }
 
-    /* "classic_trees.pyx":729
+    /* "classic_trees.pyx":733
  *             f = SQRT2OPI*dw*g_fac0*J_unresolved(z)/sigma_m2
  *         else:
  *             f = 1             # <<<<<<<<<<<<<<
@@ -10616,7 +10308,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L16:;
 
-    /* "classic_trees.pyx":730
+    /* "classic_trees.pyx":734
  *         else:
  *             f = 1
  *         m_prog[0] = (1-f)*m_2             # <<<<<<<<<<<<<<
@@ -10625,7 +10317,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
     (__pyx_v_m_prog[0]) = ((1.0 - __pyx_v_f) * __pyx_v_m_2);
 
-    /* "classic_trees.pyx":731
+    /* "classic_trees.pyx":735
  *             f = 1
  *         m_prog[0] = (1-f)*m_2
  *         if m_prog[0] > m_min:             # <<<<<<<<<<<<<<
@@ -10635,7 +10327,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     __pyx_t_1 = (((__pyx_v_m_prog[0]) > __pyx_v_m_min) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":732
+      /* "classic_trees.pyx":736
  *         m_prog[0] = (1-f)*m_2
  *         if m_prog[0] > m_min:
  *             n_prog = 1             # <<<<<<<<<<<<<<
@@ -10644,7 +10336,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
       __pyx_v_n_prog = 1;
 
-      /* "classic_trees.pyx":731
+      /* "classic_trees.pyx":735
  *             f = 1
  *         m_prog[0] = (1-f)*m_2
  *         if m_prog[0] > m_min:             # <<<<<<<<<<<<<<
@@ -10654,7 +10346,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
       goto __pyx_L17;
     }
 
-    /* "classic_trees.pyx":734
+    /* "classic_trees.pyx":738
  *             n_prog = 1
  *         else:
  *             n_prog = 0             # <<<<<<<<<<<<<<
@@ -10664,7 +10356,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     /*else*/ {
       __pyx_v_n_prog = 0;
 
-      /* "classic_trees.pyx":735
+      /* "classic_trees.pyx":739
  *         else:
  *             n_prog = 0
  *             m_prog[0] = 0             # <<<<<<<<<<<<<<
@@ -10675,7 +10367,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
     }
     __pyx_L17:;
 
-    /* "classic_trees.pyx":736
+    /* "classic_trees.pyx":740
  *             n_prog = 0
  *             m_prog[0] = 0
  *         m_prog[1] = 0             # <<<<<<<<<<<<<<
@@ -10686,7 +10378,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   }
   __pyx_L4:;
 
-  /* "classic_trees.pyx":737
+  /* "classic_trees.pyx":741
  *             m_prog[0] = 0
  *         m_prog[1] = 0
  *     res.dw = dw             # <<<<<<<<<<<<<<
@@ -10695,7 +10387,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_res.dw = __pyx_v_dw;
 
-  /* "classic_trees.pyx":738
+  /* "classic_trees.pyx":742
  *         m_prog[1] = 0
  *     res.dw = dw
  *     res.n_prog = n_prog             # <<<<<<<<<<<<<<
@@ -10704,7 +10396,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_res.n_prog = __pyx_v_n_prog;
 
-  /* "classic_trees.pyx":739
+  /* "classic_trees.pyx":743
  *     res.dw = dw
  *     res.n_prog = n_prog
  *     res.m_prog = m_prog             # <<<<<<<<<<<<<<
@@ -10713,7 +10405,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_res.m_prog = __pyx_v_m_prog;
 
-  /* "classic_trees.pyx":740
+  /* "classic_trees.pyx":744
  *     res.n_prog = n_prog
  *     res.m_prog = m_prog
  *     res.m_min_last = m_min_last             # <<<<<<<<<<<<<<
@@ -10722,7 +10414,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
  */
   __pyx_v_res.m_min_last = __pyx_v_m_min_last;
 
-  /* "classic_trees.pyx":741
+  /* "classic_trees.pyx":745
  *     res.m_prog = m_prog
  *     res.m_min_last = m_min_last
  *     return res             # <<<<<<<<<<<<<<
@@ -10732,7 +10424,7 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":586
+  /* "classic_trees.pyx":590
  *     double m_min_last
  * 
  * cdef split_result split(             # <<<<<<<<<<<<<<
@@ -10743,22 +10435,14 @@ static struct __pyx_t_13classic_trees_split_result __pyx_f_13classic_trees_split
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_WriteUnraisable("classic_trees.split", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __Pyx_pretend_to_initialize(&__pyx_r);
   __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_randy);
-  __Pyx_XDECREF(__pyx_v_q_pow_eta);
-  __Pyx_XDECREF(__pyx_v_q);
-  __Pyx_XDECREF(__pyx_v_R_q);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":744
+/* "classic_trees.pyx":748
  * 
  * 
  * cdef locate(double* xx,int n,double x):             # <<<<<<<<<<<<<<
@@ -10782,7 +10466,7 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("locate", 0);
 
-  /* "classic_trees.pyx":745
+  /* "classic_trees.pyx":749
  * 
  * cdef locate(double* xx,int n,double x):
  *     cdef int jl = 0             # <<<<<<<<<<<<<<
@@ -10791,7 +10475,7 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
  */
   __pyx_v_jl = 0;
 
-  /* "classic_trees.pyx":746
+  /* "classic_trees.pyx":750
  * cdef locate(double* xx,int n,double x):
  *     cdef int jl = 0
  *     cdef int ju = n+1             # <<<<<<<<<<<<<<
@@ -10800,7 +10484,7 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
  */
   __pyx_v_ju = (__pyx_v_n + 1);
 
-  /* "classic_trees.pyx":747
+  /* "classic_trees.pyx":751
  *     cdef int jl = 0
  *     cdef int ju = n+1
  *     while ju-jl > 1:             # <<<<<<<<<<<<<<
@@ -10811,43 +10495,43 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
     __pyx_t_1 = (((__pyx_v_ju - __pyx_v_jl) > 1) != 0);
     if (!__pyx_t_1) break;
 
-    /* "classic_trees.pyx":748
+    /* "classic_trees.pyx":752
  *     cdef int ju = n+1
  *     while ju-jl > 1:
  *         jm = (ju+jl)//2             # <<<<<<<<<<<<<<
  *         if ((xx[n-1] > xx[0]) == (x > xx[jm-1])):
  *             jl = jm
  */
-    __pyx_t_2 = __Pyx_PyInt_From_long(__Pyx_div_long((__pyx_v_ju + __pyx_v_jl), 2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 748, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_long(__Pyx_div_long((__pyx_v_ju + __pyx_v_jl), 2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 752, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_XDECREF_SET(__pyx_v_jm, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "classic_trees.pyx":749
+    /* "classic_trees.pyx":753
  *     while ju-jl > 1:
  *         jm = (ju+jl)//2
  *         if ((xx[n-1] > xx[0]) == (x > xx[jm-1])):             # <<<<<<<<<<<<<<
  *             jl = jm
  *         else:
  */
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_jm, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 749, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_jm, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 753, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyIndex_AsSsize_t(__pyx_t_2); if (unlikely((__pyx_t_3 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 749, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyIndex_AsSsize_t(__pyx_t_2); if (unlikely((__pyx_t_3 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 753, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_1 = ((((__pyx_v_xx[(__pyx_v_n - 1)]) > (__pyx_v_xx[0])) == (__pyx_v_x > (__pyx_v_xx[__pyx_t_3]))) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":750
+      /* "classic_trees.pyx":754
  *         jm = (ju+jl)//2
  *         if ((xx[n-1] > xx[0]) == (x > xx[jm-1])):
  *             jl = jm             # <<<<<<<<<<<<<<
  *         else:
  *             ju = jm
  */
-      __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_jm); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 750, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_jm); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 754, __pyx_L1_error)
       __pyx_v_jl = __pyx_t_4;
 
-      /* "classic_trees.pyx":749
+      /* "classic_trees.pyx":753
  *     while ju-jl > 1:
  *         jm = (ju+jl)//2
  *         if ((xx[n-1] > xx[0]) == (x > xx[jm-1])):             # <<<<<<<<<<<<<<
@@ -10857,7 +10541,7 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
       goto __pyx_L5;
     }
 
-    /* "classic_trees.pyx":752
+    /* "classic_trees.pyx":756
  *             jl = jm
  *         else:
  *             ju = jm             # <<<<<<<<<<<<<<
@@ -10865,13 +10549,13 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
  * cdef int n_switch = 60
  */
     /*else*/ {
-      __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_jm); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 752, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_jm); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 756, __pyx_L1_error)
       __pyx_v_ju = __pyx_t_4;
     }
     __pyx_L5:;
   }
 
-  /* "classic_trees.pyx":753
+  /* "classic_trees.pyx":757
  *         else:
  *             ju = jm
  *     return int(jl-1)             # <<<<<<<<<<<<<<
@@ -10879,16 +10563,16 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
  * cdef double tiny = 1e-5
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyInt_From_long((__pyx_v_jl - 1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 753, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_long((__pyx_v_jl - 1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 757, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyInt_Type)), __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 753, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyInt_Type)), __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 757, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":744
+  /* "classic_trees.pyx":748
  * 
  * 
  * cdef locate(double* xx,int n,double x):             # <<<<<<<<<<<<<<
@@ -10909,7 +10593,7 @@ static PyObject *__pyx_f_13classic_trees_locate(double *__pyx_v_xx, int __pyx_v_
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":758
+/* "classic_trees.pyx":762
  * cdef double aln2I = 1.0/log(2.0)
  * 
  * cdef int* indexxx(int n,double[:] arr,int* indx):             # <<<<<<<<<<<<<<
@@ -10923,7 +10607,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("indexxx", 0);
 
-  /* "classic_trees.pyx":759
+  /* "classic_trees.pyx":763
  * 
  * cdef int* indexxx(int n,double[:] arr,int* indx):
  *     if n > n_switch:             # <<<<<<<<<<<<<<
@@ -10933,7 +10617,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
   __pyx_t_1 = ((__pyx_v_n > __pyx_v_13classic_trees_n_switch) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":760
+    /* "classic_trees.pyx":764
  * cdef int* indexxx(int n,double[:] arr,int* indx):
  *     if n > n_switch:
  *         indx = indexx(n, arr, indx)             # <<<<<<<<<<<<<<
@@ -10942,7 +10626,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
  */
     __pyx_v_indx = __pyx_f_13classic_trees_indexx(__pyx_v_n, __pyx_v_arr, __pyx_v_indx);
 
-    /* "classic_trees.pyx":759
+    /* "classic_trees.pyx":763
  * 
  * cdef int* indexxx(int n,double[:] arr,int* indx):
  *     if n > n_switch:             # <<<<<<<<<<<<<<
@@ -10952,7 +10636,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
     goto __pyx_L3;
   }
 
-  /* "classic_trees.pyx":762
+  /* "classic_trees.pyx":766
  *         indx = indexx(n, arr, indx)
  *     else:
  *         indx = indexsh(n, arr, indx)             # <<<<<<<<<<<<<<
@@ -10964,7 +10648,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
   }
   __pyx_L3:;
 
-  /* "classic_trees.pyx":763
+  /* "classic_trees.pyx":767
  *     else:
  *         indx = indexsh(n, arr, indx)
  *     return indx             # <<<<<<<<<<<<<<
@@ -10974,7 +10658,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
   __pyx_r = __pyx_v_indx;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":758
+  /* "classic_trees.pyx":762
  * cdef double aln2I = 1.0/log(2.0)
  * 
  * cdef int* indexxx(int n,double[:] arr,int* indx):             # <<<<<<<<<<<<<<
@@ -10988,7 +10672,7 @@ static int *__pyx_f_13classic_trees_indexxx(int __pyx_v_n, __Pyx_memviewslice __
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":765
+/* "classic_trees.pyx":769
  *     return indx
  * 
  * cdef int* indexx(int n,double[:] arr,int* indx):             # <<<<<<<<<<<<<<
@@ -11019,7 +10703,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("indexx", 0);
 
-  /* "classic_trees.pyx":771
+  /* "classic_trees.pyx":775
  *     cdef int l,ir,idnxt
  *     cdef double q
  *     if n <= 1:             # <<<<<<<<<<<<<<
@@ -11029,7 +10713,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
   __pyx_t_1 = ((__pyx_v_n <= 1) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":772
+    /* "classic_trees.pyx":776
  *     cdef double q
  *     if n <= 1:
  *         return indx             # <<<<<<<<<<<<<<
@@ -11039,7 +10723,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
     __pyx_r = __pyx_v_indx;
     goto __pyx_L0;
 
-    /* "classic_trees.pyx":771
+    /* "classic_trees.pyx":775
  *     cdef int l,ir,idnxt
  *     cdef double q
  *     if n <= 1:             # <<<<<<<<<<<<<<
@@ -11048,7 +10732,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
   }
 
-  /* "classic_trees.pyx":773
+  /* "classic_trees.pyx":777
  *     if n <= 1:
  *         return indx
  *     l = n//2             # <<<<<<<<<<<<<<
@@ -11057,7 +10741,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
   __pyx_v_l = __Pyx_div_long(__pyx_v_n, 2);
 
-  /* "classic_trees.pyx":774
+  /* "classic_trees.pyx":778
  *         return indx
  *     l = n//2
  *     ir = n-1             # <<<<<<<<<<<<<<
@@ -11066,7 +10750,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
   __pyx_v_ir = (__pyx_v_n - 1);
 
-  /* "classic_trees.pyx":775
+  /* "classic_trees.pyx":779
  *     l = n//2
  *     ir = n-1
  *     while True:             # <<<<<<<<<<<<<<
@@ -11075,7 +10759,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
   while (1) {
 
-    /* "classic_trees.pyx":776
+    /* "classic_trees.pyx":780
  *     ir = n-1
  *     while True:
  *         if l > 0:             # <<<<<<<<<<<<<<
@@ -11085,7 +10769,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
     __pyx_t_1 = ((__pyx_v_l > 0) != 0);
     if (__pyx_t_1) {
 
-      /* "classic_trees.pyx":777
+      /* "classic_trees.pyx":781
  *     while True:
  *         if l > 0:
  *             l -= 1             # <<<<<<<<<<<<<<
@@ -11094,7 +10778,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
       __pyx_v_l = (__pyx_v_l - 1);
 
-      /* "classic_trees.pyx":778
+      /* "classic_trees.pyx":782
  *         if l > 0:
  *             l -= 1
  *             indxt = indx[l]             # <<<<<<<<<<<<<<
@@ -11103,7 +10787,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
       __pyx_v_indxt = (__pyx_v_indx[__pyx_v_l]);
 
-      /* "classic_trees.pyx":779
+      /* "classic_trees.pyx":783
  *             l -= 1
  *             indxt = indx[l]
  *             q = arr[indxt]             # <<<<<<<<<<<<<<
@@ -11118,11 +10802,11 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       } else if (unlikely(__pyx_t_2 >= __pyx_v_arr.shape[0])) __pyx_t_3 = 0;
       if (unlikely(__pyx_t_3 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_3);
-        __PYX_ERR(0, 779, __pyx_L1_error)
+        __PYX_ERR(0, 783, __pyx_L1_error)
       }
       __pyx_v_q = (*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_2 * __pyx_v_arr.strides[0]) )));
 
-      /* "classic_trees.pyx":776
+      /* "classic_trees.pyx":780
  *     ir = n-1
  *     while True:
  *         if l > 0:             # <<<<<<<<<<<<<<
@@ -11132,7 +10816,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       goto __pyx_L6;
     }
 
-    /* "classic_trees.pyx":781
+    /* "classic_trees.pyx":785
  *             q = arr[indxt]
  *         else:
  *             indxt = indx[ir]             # <<<<<<<<<<<<<<
@@ -11142,7 +10826,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
     /*else*/ {
       __pyx_v_indxt = (__pyx_v_indx[__pyx_v_ir]);
 
-      /* "classic_trees.pyx":782
+      /* "classic_trees.pyx":786
  *         else:
  *             indxt = indx[ir]
  *             q = arr[indxt]             # <<<<<<<<<<<<<<
@@ -11157,11 +10841,11 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       } else if (unlikely(__pyx_t_2 >= __pyx_v_arr.shape[0])) __pyx_t_3 = 0;
       if (unlikely(__pyx_t_3 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_3);
-        __PYX_ERR(0, 782, __pyx_L1_error)
+        __PYX_ERR(0, 786, __pyx_L1_error)
       }
       __pyx_v_q = (*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_2 * __pyx_v_arr.strides[0]) )));
 
-      /* "classic_trees.pyx":783
+      /* "classic_trees.pyx":787
  *             indxt = indx[ir]
  *             q = arr[indxt]
  *             indx[ir] = indx[0]             # <<<<<<<<<<<<<<
@@ -11170,7 +10854,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
       (__pyx_v_indx[__pyx_v_ir]) = (__pyx_v_indx[0]);
 
-      /* "classic_trees.pyx":784
+      /* "classic_trees.pyx":788
  *             q = arr[indxt]
  *             indx[ir] = indx[0]
  *             ir -= 1             # <<<<<<<<<<<<<<
@@ -11179,7 +10863,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
       __pyx_v_ir = (__pyx_v_ir - 1);
 
-      /* "classic_trees.pyx":785
+      /* "classic_trees.pyx":789
  *             indx[ir] = indx[0]
  *             ir -= 1
  *             if ir == 0:             # <<<<<<<<<<<<<<
@@ -11189,7 +10873,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       __pyx_t_1 = ((__pyx_v_ir == 0) != 0);
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":786
+        /* "classic_trees.pyx":790
  *             ir -= 1
  *             if ir == 0:
  *                 indx[0] = indxt             # <<<<<<<<<<<<<<
@@ -11198,7 +10882,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
         (__pyx_v_indx[0]) = __pyx_v_indxt;
 
-        /* "classic_trees.pyx":787
+        /* "classic_trees.pyx":791
  *             if ir == 0:
  *                 indx[0] = indxt
  *                 break             # <<<<<<<<<<<<<<
@@ -11207,7 +10891,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
         goto __pyx_L5_break;
 
-        /* "classic_trees.pyx":785
+        /* "classic_trees.pyx":789
  *             indx[ir] = indx[0]
  *             ir -= 1
  *             if ir == 0:             # <<<<<<<<<<<<<<
@@ -11218,31 +10902,31 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
     }
     __pyx_L6:;
 
-    /* "classic_trees.pyx":788
+    /* "classic_trees.pyx":792
  *                 indx[0] = indxt
  *                 break
  *         i = l             # <<<<<<<<<<<<<<
  *         j = 2*l + 1
  *         while j <= ir:
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_l); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_l); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 792, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "classic_trees.pyx":789
+    /* "classic_trees.pyx":793
  *                 break
  *         i = l
  *         j = 2*l + 1             # <<<<<<<<<<<<<<
  *         while j <= ir:
  *             if j < ir and arr[indx[j]] < arr[indx[j+1]]:
  */
-    __pyx_t_4 = __Pyx_PyInt_From_long(((2 * __pyx_v_l) + 1)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 789, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_long(((2 * __pyx_v_l) + 1)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 793, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "classic_trees.pyx":790
+    /* "classic_trees.pyx":794
  *         i = l
  *         j = 2*l + 1
  *         while j <= ir:             # <<<<<<<<<<<<<<
@@ -11250,33 +10934,33 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  *                 j += 1
  */
     while (1) {
-      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_ir); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 790, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_ir); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 794, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_5 = PyObject_RichCompare(__pyx_v_j, __pyx_t_4, Py_LE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 790, __pyx_L1_error)
+      __pyx_t_5 = PyObject_RichCompare(__pyx_v_j, __pyx_t_4, Py_LE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 794, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 790, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 794, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       if (!__pyx_t_1) break;
 
-      /* "classic_trees.pyx":791
+      /* "classic_trees.pyx":795
  *         j = 2*l + 1
  *         while j <= ir:
  *             if j < ir and arr[indx[j]] < arr[indx[j+1]]:             # <<<<<<<<<<<<<<
  *                 j += 1
  *             if q < arr[indx[j]]:
  */
-      __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_ir); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 791, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_ir); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 795, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_4 = PyObject_RichCompare(__pyx_v_j, __pyx_t_5, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 791, __pyx_L1_error)
+      __pyx_t_4 = PyObject_RichCompare(__pyx_v_j, __pyx_t_5, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 795, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 791, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 795, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       if (__pyx_t_6) {
       } else {
         __pyx_t_1 = __pyx_t_6;
         goto __pyx_L11_bool_binop_done;
       }
-      __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_j); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 791, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_j); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 795, __pyx_L1_error)
       __pyx_t_2 = (__pyx_v_indx[__pyx_t_7]);
       __pyx_t_3 = -1;
       if (__pyx_t_2 < 0) {
@@ -11285,11 +10969,11 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       } else if (unlikely(__pyx_t_2 >= __pyx_v_arr.shape[0])) __pyx_t_3 = 0;
       if (unlikely(__pyx_t_3 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_3);
-        __PYX_ERR(0, 791, __pyx_L1_error)
+        __PYX_ERR(0, 795, __pyx_L1_error)
       }
-      __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_j, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 791, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_j, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 795, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_t_4); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 791, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_t_4); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 795, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_9 = (__pyx_v_indx[__pyx_t_8]);
       __pyx_t_3 = -1;
@@ -11299,26 +10983,26 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       } else if (unlikely(__pyx_t_9 >= __pyx_v_arr.shape[0])) __pyx_t_3 = 0;
       if (unlikely(__pyx_t_3 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_3);
-        __PYX_ERR(0, 791, __pyx_L1_error)
+        __PYX_ERR(0, 795, __pyx_L1_error)
       }
       __pyx_t_6 = (((*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_2 * __pyx_v_arr.strides[0]) ))) < (*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_9 * __pyx_v_arr.strides[0]) )))) != 0);
       __pyx_t_1 = __pyx_t_6;
       __pyx_L11_bool_binop_done:;
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":792
+        /* "classic_trees.pyx":796
  *         while j <= ir:
  *             if j < ir and arr[indx[j]] < arr[indx[j+1]]:
  *                 j += 1             # <<<<<<<<<<<<<<
  *             if q < arr[indx[j]]:
  *                 indx[i] = indx[j]
  */
-        __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_j, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 792, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_j, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 796, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF_SET(__pyx_v_j, __pyx_t_4);
         __pyx_t_4 = 0;
 
-        /* "classic_trees.pyx":791
+        /* "classic_trees.pyx":795
  *         j = 2*l + 1
  *         while j <= ir:
  *             if j < ir and arr[indx[j]] < arr[indx[j+1]]:             # <<<<<<<<<<<<<<
@@ -11327,14 +11011,14 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
  */
       }
 
-      /* "classic_trees.pyx":793
+      /* "classic_trees.pyx":797
  *             if j < ir and arr[indx[j]] < arr[indx[j+1]]:
  *                 j += 1
  *             if q < arr[indx[j]]:             # <<<<<<<<<<<<<<
  *                 indx[i] = indx[j]
  *                 i = j
  */
-      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_v_j); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 793, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_v_j); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 797, __pyx_L1_error)
       __pyx_t_9 = (__pyx_v_indx[__pyx_t_8]);
       __pyx_t_3 = -1;
       if (__pyx_t_9 < 0) {
@@ -11343,23 +11027,23 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
       } else if (unlikely(__pyx_t_9 >= __pyx_v_arr.shape[0])) __pyx_t_3 = 0;
       if (unlikely(__pyx_t_3 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_3);
-        __PYX_ERR(0, 793, __pyx_L1_error)
+        __PYX_ERR(0, 797, __pyx_L1_error)
       }
       __pyx_t_1 = ((__pyx_v_q < (*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_9 * __pyx_v_arr.strides[0]) )))) != 0);
       if (__pyx_t_1) {
 
-        /* "classic_trees.pyx":794
+        /* "classic_trees.pyx":798
  *                 j += 1
  *             if q < arr[indx[j]]:
  *                 indx[i] = indx[j]             # <<<<<<<<<<<<<<
  *                 i = j
  *                 j = 2*j+1
  */
-        __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_v_j); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 794, __pyx_L1_error)
-        __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 794, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_v_j); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 798, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 798, __pyx_L1_error)
         (__pyx_v_indx[__pyx_t_7]) = (__pyx_v_indx[__pyx_t_8]);
 
-        /* "classic_trees.pyx":795
+        /* "classic_trees.pyx":799
  *             if q < arr[indx[j]]:
  *                 indx[i] = indx[j]
  *                 i = j             # <<<<<<<<<<<<<<
@@ -11369,22 +11053,22 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
         __Pyx_INCREF(__pyx_v_j);
         __Pyx_DECREF_SET(__pyx_v_i, __pyx_v_j);
 
-        /* "classic_trees.pyx":796
+        /* "classic_trees.pyx":800
  *                 indx[i] = indx[j]
  *                 i = j
  *                 j = 2*j+1             # <<<<<<<<<<<<<<
  *             else:
  *                 break
  */
-        __pyx_t_4 = PyNumber_Multiply(__pyx_int_2, __pyx_v_j); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 796, __pyx_L1_error)
+        __pyx_t_4 = PyNumber_Multiply(__pyx_int_2, __pyx_v_j); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 800, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_5 = __Pyx_PyInt_AddObjC(__pyx_t_4, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 796, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyInt_AddObjC(__pyx_t_4, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 800, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF_SET(__pyx_v_j, __pyx_t_5);
         __pyx_t_5 = 0;
 
-        /* "classic_trees.pyx":793
+        /* "classic_trees.pyx":797
  *             if j < ir and arr[indx[j]] < arr[indx[j+1]]:
  *                 j += 1
  *             if q < arr[indx[j]]:             # <<<<<<<<<<<<<<
@@ -11394,7 +11078,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
         goto __pyx_L13;
       }
 
-      /* "classic_trees.pyx":798
+      /* "classic_trees.pyx":802
  *                 j = 2*j+1
  *             else:
  *                 break             # <<<<<<<<<<<<<<
@@ -11408,19 +11092,19 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
     }
     __pyx_L9_break:;
 
-    /* "classic_trees.pyx":799
+    /* "classic_trees.pyx":803
  *             else:
  *                 break
  *         indx[i] = indxt             # <<<<<<<<<<<<<<
  *     return indx
  * 
  */
-    __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 799, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_8 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 803, __pyx_L1_error)
     (__pyx_v_indx[__pyx_t_8]) = __pyx_v_indxt;
   }
   __pyx_L5_break:;
 
-  /* "classic_trees.pyx":800
+  /* "classic_trees.pyx":804
  *                 break
  *         indx[i] = indxt
  *     return indx             # <<<<<<<<<<<<<<
@@ -11430,7 +11114,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
   __pyx_r = __pyx_v_indx;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":765
+  /* "classic_trees.pyx":769
  *     return indx
  * 
  * cdef int* indexx(int n,double[:] arr,int* indx):             # <<<<<<<<<<<<<<
@@ -11451,7 +11135,7 @@ static int *__pyx_f_13classic_trees_indexx(int __pyx_v_n, __Pyx_memviewslice __p
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":802
+/* "classic_trees.pyx":806
  *     return indx
  * 
  * cdef int* indexsh(int n,double[:] arr,int* indx):             # <<<<<<<<<<<<<<
@@ -11486,7 +11170,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("indexsh", 0);
 
-  /* "classic_trees.pyx":807
+  /* "classic_trees.pyx":811
  *     '''
  *     cdef int m,log_nb2,k,i,j
  *     if n >= 2:             # <<<<<<<<<<<<<<
@@ -11496,7 +11180,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
   __pyx_t_1 = ((__pyx_v_n >= 2) != 0);
   if (__pyx_t_1) {
 
-    /* "classic_trees.pyx":808
+    /* "classic_trees.pyx":812
  *     cdef int m,log_nb2,k,i,j
  *     if n >= 2:
  *         log_nb2 = int(log(n)*aln2I+tiny)             # <<<<<<<<<<<<<<
@@ -11505,7 +11189,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
     __pyx_v_log_nb2 = ((int)((log(__pyx_v_n) * __pyx_v_13classic_trees_aln2I) + __pyx_v_13classic_trees_tiny));
 
-    /* "classic_trees.pyx":809
+    /* "classic_trees.pyx":813
  *     if n >= 2:
  *         log_nb2 = int(log(n)*aln2I+tiny)
  *         m = n             # <<<<<<<<<<<<<<
@@ -11514,7 +11198,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
     __pyx_v_m = __pyx_v_n;
 
-    /* "classic_trees.pyx":810
+    /* "classic_trees.pyx":814
  *         log_nb2 = int(log(n)*aln2I+tiny)
  *         m = n
  *         for n_n in range(log_nb2):             # <<<<<<<<<<<<<<
@@ -11526,7 +11210,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
     for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
       __pyx_v_n_n = __pyx_t_4;
 
-      /* "classic_trees.pyx":811
+      /* "classic_trees.pyx":815
  *         m = n
  *         for n_n in range(log_nb2):
  *             m = m//2             # <<<<<<<<<<<<<<
@@ -11535,7 +11219,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
       __pyx_v_m = __Pyx_div_long(__pyx_v_m, 2);
 
-      /* "classic_trees.pyx":812
+      /* "classic_trees.pyx":816
  *         for n_n in range(log_nb2):
  *             m = m//2
  *             k = n - m             # <<<<<<<<<<<<<<
@@ -11544,7 +11228,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
       __pyx_v_k = (__pyx_v_n - __pyx_v_m);
 
-      /* "classic_trees.pyx":813
+      /* "classic_trees.pyx":817
  *             m = m//2
  *             k = n - m
  *             for j in range(int(k)):             # <<<<<<<<<<<<<<
@@ -11556,7 +11240,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
       for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
         __pyx_v_j = __pyx_t_7;
 
-        /* "classic_trees.pyx":814
+        /* "classic_trees.pyx":818
  *             k = n - m
  *             for j in range(int(k)):
  *                 i=j             # <<<<<<<<<<<<<<
@@ -11565,7 +11249,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
         __pyx_v_i = __pyx_v_j;
 
-        /* "classic_trees.pyx":815
+        /* "classic_trees.pyx":819
  *             for j in range(int(k)):
  *                 i=j
  *                 done3 = False             # <<<<<<<<<<<<<<
@@ -11574,7 +11258,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
         __pyx_v_done3 = 0;
 
-        /* "classic_trees.pyx":816
+        /* "classic_trees.pyx":820
  *                 i=j
  *                 done3 = False
  *                 while done3 is False:             # <<<<<<<<<<<<<<
@@ -11585,7 +11269,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
           __pyx_t_1 = ((__pyx_v_done3 == 0) != 0);
           if (!__pyx_t_1) break;
 
-          /* "classic_trees.pyx":817
+          /* "classic_trees.pyx":821
  *                 done3 = False
  *                 while done3 is False:
  *                     l = i + m             # <<<<<<<<<<<<<<
@@ -11594,7 +11278,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
           __pyx_v_l = (__pyx_v_i + __pyx_v_m);
 
-          /* "classic_trees.pyx":818
+          /* "classic_trees.pyx":822
  *                 while done3 is False:
  *                     l = i + m
  *                     if arr[indx[l]] < arr[indx[i]]:             # <<<<<<<<<<<<<<
@@ -11609,7 +11293,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
           } else if (unlikely(__pyx_t_8 >= __pyx_v_arr.shape[0])) __pyx_t_9 = 0;
           if (unlikely(__pyx_t_9 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_9);
-            __PYX_ERR(0, 818, __pyx_L1_error)
+            __PYX_ERR(0, 822, __pyx_L1_error)
           }
           __pyx_t_10 = (__pyx_v_indx[__pyx_v_i]);
           __pyx_t_9 = -1;
@@ -11619,12 +11303,12 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
           } else if (unlikely(__pyx_t_10 >= __pyx_v_arr.shape[0])) __pyx_t_9 = 0;
           if (unlikely(__pyx_t_9 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_9);
-            __PYX_ERR(0, 818, __pyx_L1_error)
+            __PYX_ERR(0, 822, __pyx_L1_error)
           }
           __pyx_t_1 = (((*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_8 * __pyx_v_arr.strides[0]) ))) < (*((double *) ( /* dim=0 */ (__pyx_v_arr.data + __pyx_t_10 * __pyx_v_arr.strides[0]) )))) != 0);
           if (__pyx_t_1) {
 
-            /* "classic_trees.pyx":819
+            /* "classic_trees.pyx":823
  *                     l = i + m
  *                     if arr[indx[l]] < arr[indx[i]]:
  *                         t_index = indx[i]             # <<<<<<<<<<<<<<
@@ -11633,7 +11317,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
             __pyx_v_t_index = (__pyx_v_indx[__pyx_v_i]);
 
-            /* "classic_trees.pyx":820
+            /* "classic_trees.pyx":824
  *                     if arr[indx[l]] < arr[indx[i]]:
  *                         t_index = indx[i]
  *                         indx[i] = indx[l]             # <<<<<<<<<<<<<<
@@ -11642,7 +11326,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
             (__pyx_v_indx[__pyx_v_i]) = (__pyx_v_indx[__pyx_v_l]);
 
-            /* "classic_trees.pyx":821
+            /* "classic_trees.pyx":825
  *                         t_index = indx[i]
  *                         indx[i] = indx[l]
  *                         indx[l] = t_index             # <<<<<<<<<<<<<<
@@ -11651,7 +11335,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
             (__pyx_v_indx[__pyx_v_l]) = __pyx_v_t_index;
 
-            /* "classic_trees.pyx":822
+            /* "classic_trees.pyx":826
  *                         indx[i] = indx[l]
  *                         indx[l] = t_index
  *                         i = i - m             # <<<<<<<<<<<<<<
@@ -11660,7 +11344,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
             __pyx_v_i = (__pyx_v_i - __pyx_v_m);
 
-            /* "classic_trees.pyx":823
+            /* "classic_trees.pyx":827
  *                         indx[l] = t_index
  *                         i = i - m
  *                         if i < 0:             # <<<<<<<<<<<<<<
@@ -11670,7 +11354,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
             __pyx_t_1 = ((__pyx_v_i < 0) != 0);
             if (__pyx_t_1) {
 
-              /* "classic_trees.pyx":824
+              /* "classic_trees.pyx":828
  *                         i = i - m
  *                         if i < 0:
  *                             done3 = True             # <<<<<<<<<<<<<<
@@ -11679,7 +11363,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
               __pyx_v_done3 = 1;
 
-              /* "classic_trees.pyx":823
+              /* "classic_trees.pyx":827
  *                         indx[l] = t_index
  *                         i = i - m
  *                         if i < 0:             # <<<<<<<<<<<<<<
@@ -11688,7 +11372,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
             }
 
-            /* "classic_trees.pyx":818
+            /* "classic_trees.pyx":822
  *                 while done3 is False:
  *                     l = i + m
  *                     if arr[indx[l]] < arr[indx[i]]:             # <<<<<<<<<<<<<<
@@ -11698,7 +11382,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
             goto __pyx_L10;
           }
 
-          /* "classic_trees.pyx":826
+          /* "classic_trees.pyx":830
  *                             done3 = True
  *                     else:
  *                         done3 = True             # <<<<<<<<<<<<<<
@@ -11713,7 +11397,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
       }
     }
 
-    /* "classic_trees.pyx":807
+    /* "classic_trees.pyx":811
  *     '''
  *     cdef int m,log_nb2,k,i,j
  *     if n >= 2:             # <<<<<<<<<<<<<<
@@ -11722,7 +11406,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
  */
   }
 
-  /* "classic_trees.pyx":827
+  /* "classic_trees.pyx":831
  *                     else:
  *                         done3 = True
  *     return indx             # <<<<<<<<<<<<<<
@@ -11732,7 +11416,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
   __pyx_r = __pyx_v_indx;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":802
+  /* "classic_trees.pyx":806
  *     return indx
  * 
  * cdef int* indexsh(int n,double[:] arr,int* indx):             # <<<<<<<<<<<<<<
@@ -11749,7 +11433,7 @@ static int *__pyx_f_13classic_trees_indexsh(int __pyx_v_n, __Pyx_memviewslice __
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":832
+/* "classic_trees.pyx":836
  * cdef DELTA = functions(filename)
  * 
  * cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev,int n_frag_max,int n_frag_tot=0):             # <<<<<<<<<<<<<<
@@ -11763,25 +11447,28 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   struct __pyx_t_13classic_trees_Tree_Node **__pyx_v_merger_tree;
   struct __pyx_t_13classic_trees_Tree_Node *__pyx_v_node;
   int __pyx_v_n_v;
-  int __pyx_v_k_frag;
+  CYTHON_UNUSED int __pyx_v_k_frag;
   CYTHON_UNUSED int __pyx_v_i_err;
   int __pyx_v_j_frag;
-  int __pyx_v_k_frag_p;
-  int __pyx_v_j_child1;
-  int __pyx_v_k_child;
-  int __pyx_v_j_frag_c;
+  int __pyx_v_n_ch;
   int __pyx_v_i_frag_c;
   int __pyx_v_i_frag;
   int __pyx_v_i_frag_prev;
+  int __pyx_v_i_par_prev;
+  int __pyx_v_iw;
+  int __pyx_v_i;
   int *__pyx_v_i_frag_lev;
   double __pyx_v_dw;
+  double __pyx_v_m;
   int __pyx_v_n_prog;
   double *__pyx_v_m_prog;
   double __pyx_v_w;
   double __pyx_v_w_fin;
   int __pyx_v_n_ch_max;
-  int *__pyx_v_indx_ch;
+  CYTHON_UNUSED int *__pyx_v_indx_ch;
   int __pyx_v_i_lev;
+  int __pyx_v_i_lev_wk;
+  int __pyx_v_i_node;
   int *__pyx_v_child_ref;
   int *__pyx_v_j_index;
   double *__pyx_v_m_tr;
@@ -11795,18 +11482,8 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   double *__pyx_v_m_right;
   double *__pyx_v_w_node;
   int *__pyx_v_l_node;
-  PyObject *__pyx_v_i_node = NULL;
-  PyObject *__pyx_v_m = NULL;
   double __pyx_v_m_minlast;
-  PyObject *__pyx_v_count = NULL;
   double __pyx_v_dw_max;
-  int __pyx_v_i_par_prev;
-  PyObject *__pyx_v_iw = NULL;
-  int __pyx_v_i_lev_wk;
-  PyObject *__pyx_v_n_ch = NULL;
-  int __pyx_v_j_frag_p;
-  PyObject *__pyx_v_n_child1 = NULL;
-  int __pyx_8genexpr6__pyx_v_i;
   struct __pyx_t_13classic_trees_Tree_Node **__pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -11819,18 +11496,10 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   PyObject *__pyx_t_8 = NULL;
   PyObject *__pyx_t_9 = NULL;
   double __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  int __pyx_t_12;
-  double *__pyx_t_13;
-  int __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  long __pyx_t_16;
-  long __pyx_t_17;
-  int __pyx_t_18;
-  long __pyx_t_19;
-  long __pyx_t_20;
-  int __pyx_t_21;
-  __Pyx_memviewslice __pyx_t_22 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_11;
+  double *__pyx_t_12;
+  int __pyx_t_13;
+  long __pyx_t_14;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -11841,7 +11510,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     }
   }
 
-  /* "classic_trees.pyx":835
+  /* "classic_trees.pyx":839
  *     cdef:
  *         split_result split_fct
  *         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))             # <<<<<<<<<<<<<<
@@ -11850,7 +11519,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_merger_tree = ((struct __pyx_t_13classic_trees_Tree_Node **)malloc((__pyx_v_n_frag_max * (sizeof(struct __pyx_t_13classic_trees_Tree_Node *)))));
 
-  /* "classic_trees.pyx":836
+  /* "classic_trees.pyx":840
  *         split_result split_fct
  *         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
  *         Tree_Node* node = <Tree_Node*>malloc(sizeof(Tree_Node))             # <<<<<<<<<<<<<<
@@ -11859,7 +11528,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_node = ((struct __pyx_t_13classic_trees_Tree_Node *)malloc((sizeof(struct __pyx_t_13classic_trees_Tree_Node))));
 
-  /* "classic_trees.pyx":837
+  /* "classic_trees.pyx":841
  *         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
  *         Tree_Node* node = <Tree_Node*>malloc(sizeof(Tree_Node))
  *         int n_v = 20000             # <<<<<<<<<<<<<<
@@ -11868,7 +11537,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_n_v = 0x4E20;
 
-  /* "classic_trees.pyx":838
+  /* "classic_trees.pyx":842
  *         Tree_Node* node = <Tree_Node*>malloc(sizeof(Tree_Node))
  *         int n_v = 20000
  *         int k_frag = 0             # <<<<<<<<<<<<<<
@@ -11877,7 +11546,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_k_frag = 0;
 
-  /* "classic_trees.pyx":839
+  /* "classic_trees.pyx":843
  *         int n_v = 20000
  *         int k_frag = 0
  *         int i_err = 0             # <<<<<<<<<<<<<<
@@ -11886,26 +11555,26 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_err = 0;
 
-  /* "classic_trees.pyx":840
+  /* "classic_trees.pyx":844
  *         int k_frag = 0
  *         int i_err = 0
  *         int j_frag = -1             # <<<<<<<<<<<<<<
  *         int k_frag_p
- *         int j_child1
+ *         int j_child1, n_child1, n_ch
  */
   __pyx_v_j_frag = -1;
 
-  /* "classic_trees.pyx":848
- *         int i_frag
- *         int i_frag_prev
+  /* "classic_trees.pyx":853
+ *         int i_frag_prev, i_par_prev
+ *         int k, j, iw, i
  *         int* i_frag_lev = <int*>malloc(n_lev*sizeof(int))             # <<<<<<<<<<<<<<
- *         double dw
+ *         double dw, m
  *         int n_prog
  */
   __pyx_v_i_frag_lev = ((int *)malloc((__pyx_v_n_lev * (sizeof(int)))));
 
-  /* "classic_trees.pyx":851
- *         double dw
+  /* "classic_trees.pyx":856
+ *         double dw, m
  *         int n_prog
  *         double* m_prog = <double*>malloc(2*sizeof(double))             # <<<<<<<<<<<<<<
  *         double w, w_fin, m_min_last
@@ -11913,35 +11582,35 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_m_prog = ((double *)malloc((2 * (sizeof(double)))));
 
-  /* "classic_trees.pyx":853
+  /* "classic_trees.pyx":858
  *         double* m_prog = <double*>malloc(2*sizeof(double))
  *         double w, w_fin, m_min_last
  *         int n_ch_max = 100000             # <<<<<<<<<<<<<<
  *         int* indx_ch = <int*>malloc(n_ch_max*sizeof(int))
- *         int i_lev
+ *         int i_lev, i_lev_wk, i_node
  */
   __pyx_v_n_ch_max = 0x186A0;
 
-  /* "classic_trees.pyx":854
+  /* "classic_trees.pyx":859
  *         double w, w_fin, m_min_last
  *         int n_ch_max = 100000
  *         int* indx_ch = <int*>malloc(n_ch_max*sizeof(int))             # <<<<<<<<<<<<<<
- *         int i_lev
+ *         int i_lev, i_lev_wk, i_node
  *         int* child_ref = <int*>malloc(n_frag_max*sizeof(int))
  */
   __pyx_v_indx_ch = ((int *)malloc((__pyx_v_n_ch_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":856
+  /* "classic_trees.pyx":861
  *         int* indx_ch = <int*>malloc(n_ch_max*sizeof(int))
- *         int i_lev
+ *         int i_lev, i_lev_wk, i_node
  *         int* child_ref = <int*>malloc(n_frag_max*sizeof(int))             # <<<<<<<<<<<<<<
  *         int* j_index = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         double* m_tr = <double*>malloc(n_frag_max*sizeof(double)) #np.zeros(n_frag_max) #[0]*n_frag_max
  */
   __pyx_v_child_ref = ((int *)malloc((__pyx_v_n_frag_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":857
- *         int i_lev
+  /* "classic_trees.pyx":862
+ *         int i_lev, i_lev_wk, i_node
  *         int* child_ref = <int*>malloc(n_frag_max*sizeof(int))
  *         int* j_index = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max             # <<<<<<<<<<<<<<
  *         double* m_tr = <double*>malloc(n_frag_max*sizeof(double)) #np.zeros(n_frag_max) #[0]*n_frag_max
@@ -11949,7 +11618,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_j_index = ((int *)malloc((__pyx_v_n_frag_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":858
+  /* "classic_trees.pyx":863
  *         int* child_ref = <int*>malloc(n_frag_max*sizeof(int))
  *         int* j_index = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         double* m_tr = <double*>malloc(n_frag_max*sizeof(double)) #np.zeros(n_frag_max) #[0]*n_frag_max             # <<<<<<<<<<<<<<
@@ -11958,7 +11627,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_m_tr = ((double *)malloc((__pyx_v_n_frag_max * (sizeof(double)))));
 
-  /* "classic_trees.pyx":859
+  /* "classic_trees.pyx":864
  *         int* j_index = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         double* m_tr = <double*>malloc(n_frag_max*sizeof(double)) #np.zeros(n_frag_max) #[0]*n_frag_max
  *         int* i_par = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max             # <<<<<<<<<<<<<<
@@ -11967,7 +11636,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_par = ((int *)malloc((__pyx_v_n_frag_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":860
+  /* "classic_trees.pyx":865
  *         double* m_tr = <double*>malloc(n_frag_max*sizeof(double)) #np.zeros(n_frag_max) #[0]*n_frag_max
  *         int* i_par = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         int* i_sib = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max             # <<<<<<<<<<<<<<
@@ -11976,7 +11645,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_sib = ((int *)malloc((__pyx_v_n_frag_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":861
+  /* "classic_trees.pyx":866
  *         int* i_par = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         int* i_sib = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         int* i_child = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max             # <<<<<<<<<<<<<<
@@ -11985,7 +11654,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_child = ((int *)malloc((__pyx_v_n_frag_max * (sizeof(int)))));
 
-  /* "classic_trees.pyx":862
+  /* "classic_trees.pyx":867
  *         int* i_sib = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         int* i_child = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         double* w_lev = <double*>malloc(n_lev*sizeof(double))#[0]*n_lev             # <<<<<<<<<<<<<<
@@ -11994,7 +11663,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_w_lev = ((double *)malloc((__pyx_v_n_lev * (sizeof(double)))));
 
-  /* "classic_trees.pyx":863
+  /* "classic_trees.pyx":868
  *         int* i_child = <int*>malloc(n_frag_max*sizeof(int)) #np.zeros(n_frag_max,dtype='int_') #[0]*n_frag_max
  *         double* w_lev = <double*>malloc(n_lev*sizeof(double))#[0]*n_lev
  *         int* n_frag_lev = <int*>malloc(n_lev*sizeof(int))#[-1]*n_lev             # <<<<<<<<<<<<<<
@@ -12003,7 +11672,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_n_frag_lev = ((int *)malloc((__pyx_v_n_lev * (sizeof(int)))));
 
-  /* "classic_trees.pyx":864
+  /* "classic_trees.pyx":869
  *         double* w_lev = <double*>malloc(n_lev*sizeof(double))#[0]*n_lev
  *         int* n_frag_lev = <int*>malloc(n_lev*sizeof(int))#[-1]*n_lev
  *         int* jp_frag = <int*>malloc(n_lev*sizeof(int)) #[-1]*n_lev             # <<<<<<<<<<<<<<
@@ -12012,7 +11681,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_jp_frag = ((int *)malloc((__pyx_v_n_lev * (sizeof(int)))));
 
-  /* "classic_trees.pyx":865
+  /* "classic_trees.pyx":870
  *         int* n_frag_lev = <int*>malloc(n_lev*sizeof(int))#[-1]*n_lev
  *         int* jp_frag = <int*>malloc(n_lev*sizeof(int)) #[-1]*n_lev
  *         double* m_left = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v             # <<<<<<<<<<<<<<
@@ -12021,7 +11690,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_m_left = ((double *)malloc((__pyx_v_n_v * (sizeof(double)))));
 
-  /* "classic_trees.pyx":866
+  /* "classic_trees.pyx":871
  *         int* jp_frag = <int*>malloc(n_lev*sizeof(int)) #[-1]*n_lev
  *         double* m_left = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
  *         double* m_right = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v             # <<<<<<<<<<<<<<
@@ -12030,37 +11699,46 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_m_right = ((double *)malloc((__pyx_v_n_v * (sizeof(double)))));
 
-  /* "classic_trees.pyx":867
+  /* "classic_trees.pyx":872
  *         double* m_left = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
  *         double* m_right = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
  *         double* w_node = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v             # <<<<<<<<<<<<<<
  *         int* l_node = <int*>malloc(n_v*sizeof(int)) #np.zeros(n_v,dtype='bool') #[False]*n_v
- *     print('First for loop')
+ *     n_frag_tot = 0
  */
   __pyx_v_w_node = ((double *)malloc((__pyx_v_n_v * (sizeof(double)))));
 
-  /* "classic_trees.pyx":868
+  /* "classic_trees.pyx":873
  *         double* m_right = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
  *         double* w_node = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
  *         int* l_node = <int*>malloc(n_v*sizeof(int)) #np.zeros(n_v,dtype='bool') #[False]*n_v             # <<<<<<<<<<<<<<
+ *     n_frag_tot = 0
  *     print('First for loop')
- *     for i_frag in range(n_frag_max):
  */
   __pyx_v_l_node = ((int *)malloc((__pyx_v_n_v * (sizeof(int)))));
 
-  /* "classic_trees.pyx":869
+  /* "classic_trees.pyx":874
  *         double* w_node = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
  *         int* l_node = <int*>malloc(n_v*sizeof(int)) #np.zeros(n_v,dtype='bool') #[False]*n_v
+ *     n_frag_tot = 0             # <<<<<<<<<<<<<<
+ *     print('First for loop')
+ *     for i_frag in range(n_frag_max):
+ */
+  __pyx_v_n_frag_tot = 0;
+
+  /* "classic_trees.pyx":875
+ *         int* l_node = <int*>malloc(n_v*sizeof(int)) #np.zeros(n_v,dtype='bool') #[False]*n_v
+ *     n_frag_tot = 0
  *     print('First for loop')             # <<<<<<<<<<<<<<
  *     for i_frag in range(n_frag_max):
  *         node.mhalo = 0.0
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 869, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 875, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":870
- *         int* l_node = <int*>malloc(n_v*sizeof(int)) #np.zeros(n_v,dtype='bool') #[False]*n_v
+  /* "classic_trees.pyx":876
+ *     n_frag_tot = 0
  *     print('First for loop')
  *     for i_frag in range(n_frag_max):             # <<<<<<<<<<<<<<
  *         node.mhalo = 0.0
@@ -12071,7 +11749,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i_frag = __pyx_t_4;
 
-    /* "classic_trees.pyx":871
+    /* "classic_trees.pyx":877
  *     print('First for loop')
  *     for i_frag in range(n_frag_max):
  *         node.mhalo = 0.0             # <<<<<<<<<<<<<<
@@ -12080,7 +11758,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_node->mhalo = 0.0;
 
-    /* "classic_trees.pyx":872
+    /* "classic_trees.pyx":878
  *     for i_frag in range(n_frag_max):
  *         node.mhalo = 0.0
  *         node.jlevel = 0             # <<<<<<<<<<<<<<
@@ -12089,7 +11767,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_node->jlevel = 0;
 
-    /* "classic_trees.pyx":873
+    /* "classic_trees.pyx":879
  *         node.mhalo = 0.0
  *         node.jlevel = 0
  *         node.nchild = 0             # <<<<<<<<<<<<<<
@@ -12098,7 +11776,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_node->nchild = 0;
 
-    /* "classic_trees.pyx":874
+    /* "classic_trees.pyx":880
  *         node.jlevel = 0
  *         node.nchild = 0
  *         node.index  = i_frag             # <<<<<<<<<<<<<<
@@ -12107,7 +11785,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_node->index = __pyx_v_i_frag;
 
-    /* "classic_trees.pyx":875
+    /* "classic_trees.pyx":881
  *         node.nchild = 0
  *         node.index  = i_frag
  *         node.parent = NULL             # <<<<<<<<<<<<<<
@@ -12116,7 +11794,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_node->parent = NULL;
 
-    /* "classic_trees.pyx":876
+    /* "classic_trees.pyx":882
  *         node.index  = i_frag
  *         node.parent = NULL
  *         node.child  = NULL             # <<<<<<<<<<<<<<
@@ -12125,35 +11803,44 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_node->child = NULL;
 
-    /* "classic_trees.pyx":877
+    /* "classic_trees.pyx":883
  *         node.parent = NULL
  *         node.child  = NULL
  *         node.sibling= NULL             # <<<<<<<<<<<<<<
  *         merger_tree[i_frag] = node
- *         i_par[i_frag] = 0
+ *         node = <Tree_Node*>malloc(sizeof(Tree_Node))
  */
     __pyx_v_node->sibling = NULL;
 
-    /* "classic_trees.pyx":878
+    /* "classic_trees.pyx":884
  *         node.child  = NULL
  *         node.sibling= NULL
  *         merger_tree[i_frag] = node             # <<<<<<<<<<<<<<
+ *         node = <Tree_Node*>malloc(sizeof(Tree_Node))
  *         i_par[i_frag] = 0
- *         i_sib[i_frag] = 0
  */
     (__pyx_v_merger_tree[__pyx_v_i_frag]) = __pyx_v_node;
 
-    /* "classic_trees.pyx":879
+    /* "classic_trees.pyx":885
  *         node.sibling= NULL
  *         merger_tree[i_frag] = node
+ *         node = <Tree_Node*>malloc(sizeof(Tree_Node))             # <<<<<<<<<<<<<<
+ *         i_par[i_frag] = 0
+ *         i_sib[i_frag] = 0
+ */
+    __pyx_v_node = ((struct __pyx_t_13classic_trees_Tree_Node *)malloc((sizeof(struct __pyx_t_13classic_trees_Tree_Node))));
+
+    /* "classic_trees.pyx":886
+ *         merger_tree[i_frag] = node
+ *         node = <Tree_Node*>malloc(sizeof(Tree_Node))
  *         i_par[i_frag] = 0             # <<<<<<<<<<<<<<
  *         i_sib[i_frag] = 0
  *         i_child[i_frag] = 0
  */
     (__pyx_v_i_par[__pyx_v_i_frag]) = 0;
 
-    /* "classic_trees.pyx":880
- *         merger_tree[i_frag] = node
+    /* "classic_trees.pyx":887
+ *         node = <Tree_Node*>malloc(sizeof(Tree_Node))
  *         i_par[i_frag] = 0
  *         i_sib[i_frag] = 0             # <<<<<<<<<<<<<<
  *         i_child[i_frag] = 0
@@ -12161,7 +11848,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     (__pyx_v_i_sib[__pyx_v_i_frag]) = 0;
 
-    /* "classic_trees.pyx":881
+    /* "classic_trees.pyx":888
  *         i_par[i_frag] = 0
  *         i_sib[i_frag] = 0
  *         i_child[i_frag] = 0             # <<<<<<<<<<<<<<
@@ -12170,7 +11857,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     (__pyx_v_i_child[__pyx_v_i_frag]) = 0;
 
-    /* "classic_trees.pyx":882
+    /* "classic_trees.pyx":889
  *         i_sib[i_frag] = 0
  *         i_child[i_frag] = 0
  *         child_ref[i_frag] = 0             # <<<<<<<<<<<<<<
@@ -12179,7 +11866,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     (__pyx_v_child_ref[__pyx_v_i_frag]) = 0;
 
-    /* "classic_trees.pyx":883
+    /* "classic_trees.pyx":890
  *         i_child[i_frag] = 0
  *         child_ref[i_frag] = 0
  *         j_index[i_frag] = 0             # <<<<<<<<<<<<<<
@@ -12188,7 +11875,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     (__pyx_v_j_index[__pyx_v_i_frag]) = 0;
 
-    /* "classic_trees.pyx":884
+    /* "classic_trees.pyx":891
  *         child_ref[i_frag] = 0
  *         j_index[i_frag] = 0
  *         m_tr[i_frag] = 0             # <<<<<<<<<<<<<<
@@ -12198,18 +11885,18 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     (__pyx_v_m_tr[__pyx_v_i_frag]) = 0.0;
   }
 
-  /* "classic_trees.pyx":885
+  /* "classic_trees.pyx":892
  *         j_index[i_frag] = 0
  *         m_tr[i_frag] = 0
  *     print('Completed first for loop')             # <<<<<<<<<<<<<<
  *     a_lev[0] = a_0
  *     for i_lev in range(n_lev):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 885, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 892, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":886
+  /* "classic_trees.pyx":893
  *         m_tr[i_frag] = 0
  *     print('Completed first for loop')
  *     a_lev[0] = a_0             # <<<<<<<<<<<<<<
@@ -12224,11 +11911,11 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   } else if (unlikely(__pyx_t_5 >= __pyx_v_a_lev.shape[0])) __pyx_t_2 = 0;
   if (unlikely(__pyx_t_2 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_2);
-    __PYX_ERR(0, 886, __pyx_L1_error)
+    __PYX_ERR(0, 893, __pyx_L1_error)
   }
   *((double *) ( /* dim=0 */ (__pyx_v_a_lev.data + __pyx_t_5 * __pyx_v_a_lev.strides[0]) )) = __pyx_v_a_0;
 
-  /* "classic_trees.pyx":887
+  /* "classic_trees.pyx":894
  *     print('Completed first for loop')
  *     a_lev[0] = a_0
  *     for i_lev in range(n_lev):             # <<<<<<<<<<<<<<
@@ -12240,14 +11927,14 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i_lev = __pyx_t_4;
 
-    /* "classic_trees.pyx":888
+    /* "classic_trees.pyx":895
  *     a_lev[0] = a_0
  *     for i_lev in range(n_lev):
  *         w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])             # <<<<<<<<<<<<<<
  *         i_frag_lev[i_lev] = -1
  *         jp_frag[i_lev] = -1
  */
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_13classic_trees_DELTA, __pyx_n_s_delta_crit); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 888, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_13classic_trees_DELTA, __pyx_n_s_delta_crit); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 895, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_5 = __pyx_v_i_lev;
     __pyx_t_7 = -1;
@@ -12257,9 +11944,9 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     } else if (unlikely(__pyx_t_5 >= __pyx_v_a_lev.shape[0])) __pyx_t_7 = 0;
     if (unlikely(__pyx_t_7 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_7);
-      __PYX_ERR(0, 888, __pyx_L1_error)
+      __PYX_ERR(0, 895, __pyx_L1_error)
     }
-    __pyx_t_8 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_a_lev.data + __pyx_t_5 * __pyx_v_a_lev.strides[0]) )))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 888, __pyx_L1_error)
+    __pyx_t_8 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_a_lev.data + __pyx_t_5 * __pyx_v_a_lev.strides[0]) )))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 895, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_9 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
@@ -12274,14 +11961,14 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     __pyx_t_1 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_9, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_8);
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 888, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 895, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 888, __pyx_L1_error)
+    __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 895, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     (__pyx_v_w_lev[__pyx_v_i_lev]) = __pyx_t_10;
 
-    /* "classic_trees.pyx":889
+    /* "classic_trees.pyx":896
  *     for i_lev in range(n_lev):
  *         w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
  *         i_frag_lev[i_lev] = -1             # <<<<<<<<<<<<<<
@@ -12290,46 +11977,94 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     (__pyx_v_i_frag_lev[__pyx_v_i_lev]) = -1;
 
-    /* "classic_trees.pyx":890
+    /* "classic_trees.pyx":897
  *         w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
  *         i_frag_lev[i_lev] = -1
  *         jp_frag[i_lev] = -1             # <<<<<<<<<<<<<<
  *         n_frag_lev[i_lev] = -1
- *         l_node[i_lev] = -1
+ *         i_frag_lev[i_lev] = -1
  */
     (__pyx_v_jp_frag[__pyx_v_i_lev]) = -1;
 
-    /* "classic_trees.pyx":891
+    /* "classic_trees.pyx":898
  *         i_frag_lev[i_lev] = -1
  *         jp_frag[i_lev] = -1
  *         n_frag_lev[i_lev] = -1             # <<<<<<<<<<<<<<
- *         l_node[i_lev] = -1
- *     i_node = 0
+ *         i_frag_lev[i_lev] = -1
+ * 
  */
     (__pyx_v_n_frag_lev[__pyx_v_i_lev]) = -1;
 
-    /* "classic_trees.pyx":892
+    /* "classic_trees.pyx":899
  *         jp_frag[i_lev] = -1
  *         n_frag_lev[i_lev] = -1
- *         l_node[i_lev] = -1             # <<<<<<<<<<<<<<
+ *         i_frag_lev[i_lev] = -1             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(n_v):
+ */
+    (__pyx_v_i_frag_lev[__pyx_v_i_lev]) = -1;
+  }
+
+  /* "classic_trees.pyx":901
+ *         i_frag_lev[i_lev] = -1
+ * 
+ *     for i in range(n_v):             # <<<<<<<<<<<<<<
+ *         m_left[i] = 0
+ *         m_right[i]= 0
+ */
+  __pyx_t_2 = __pyx_v_n_v;
+  __pyx_t_3 = __pyx_t_2;
+  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
+    __pyx_v_i = __pyx_t_4;
+
+    /* "classic_trees.pyx":902
+ * 
+ *     for i in range(n_v):
+ *         m_left[i] = 0             # <<<<<<<<<<<<<<
+ *         m_right[i]= 0
+ *         w_node[i] = 0
+ */
+    (__pyx_v_m_left[__pyx_v_i]) = 0.0;
+
+    /* "classic_trees.pyx":903
+ *     for i in range(n_v):
+ *         m_left[i] = 0
+ *         m_right[i]= 0             # <<<<<<<<<<<<<<
+ *         w_node[i] = 0
+ *         l_node[i] = -1
+ */
+    (__pyx_v_m_right[__pyx_v_i]) = 0.0;
+
+    /* "classic_trees.pyx":904
+ *         m_left[i] = 0
+ *         m_right[i]= 0
+ *         w_node[i] = 0             # <<<<<<<<<<<<<<
+ *         l_node[i] = -1
+ *     i_node = 0
+ */
+    (__pyx_v_w_node[__pyx_v_i]) = 0.0;
+
+    /* "classic_trees.pyx":905
+ *         m_right[i]= 0
+ *         w_node[i] = 0
+ *         l_node[i] = -1             # <<<<<<<<<<<<<<
  *     i_node = 0
  *     w_fin = w_lev[n_lev-1]
  */
-    (__pyx_v_l_node[__pyx_v_i_lev]) = -1;
+    (__pyx_v_l_node[__pyx_v_i]) = -1;
   }
 
-  /* "classic_trees.pyx":893
- *         n_frag_lev[i_lev] = -1
- *         l_node[i_lev] = -1
+  /* "classic_trees.pyx":906
+ *         w_node[i] = 0
+ *         l_node[i] = -1
  *     i_node = 0             # <<<<<<<<<<<<<<
  *     w_fin = w_lev[n_lev-1]
  * 
  */
-  __Pyx_INCREF(__pyx_int_0);
-  __pyx_v_i_node = __pyx_int_0;
+  __pyx_v_i_node = 0;
 
-  /* "classic_trees.pyx":894
- *         l_node[i_lev] = -1
+  /* "classic_trees.pyx":907
+ *         l_node[i] = -1
  *     i_node = 0
  *     w_fin = w_lev[n_lev-1]             # <<<<<<<<<<<<<<
  * 
@@ -12337,7 +12072,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_w_fin = (__pyx_v_w_lev[(__pyx_v_n_lev - 1)]);
 
-  /* "classic_trees.pyx":896
+  /* "classic_trees.pyx":909
  *     w_fin = w_lev[n_lev-1]
  * 
  *     m_left[0] = m_0             # <<<<<<<<<<<<<<
@@ -12346,7 +12081,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   (__pyx_v_m_left[0]) = __pyx_v_m_0;
 
-  /* "classic_trees.pyx":897
+  /* "classic_trees.pyx":910
  * 
  *     m_left[0] = m_0
  *     m_right[0] = -1             # <<<<<<<<<<<<<<
@@ -12355,19 +12090,16 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   (__pyx_v_m_right[0]) = -1.0;
 
-  /* "classic_trees.pyx":898
+  /* "classic_trees.pyx":911
  *     m_left[0] = m_0
  *     m_right[0] = -1
  *     m = m_0             # <<<<<<<<<<<<<<
  *     w_node[0] = w_lev[0]
  *     w = w_lev[0]
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_m_0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 898, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_m = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_v_m = __pyx_v_m_0;
 
-  /* "classic_trees.pyx":899
+  /* "classic_trees.pyx":912
  *     m_right[0] = -1
  *     m = m_0
  *     w_node[0] = w_lev[0]             # <<<<<<<<<<<<<<
@@ -12376,7 +12108,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   (__pyx_v_w_node[0]) = (__pyx_v_w_lev[0]);
 
-  /* "classic_trees.pyx":900
+  /* "classic_trees.pyx":913
  *     m = m_0
  *     w_node[0] = w_lev[0]
  *     w = w_lev[0]             # <<<<<<<<<<<<<<
@@ -12385,7 +12117,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_w = (__pyx_v_w_lev[0]);
 
-  /* "classic_trees.pyx":901
+  /* "classic_trees.pyx":914
  *     w_node[0] = w_lev[0]
  *     w = w_lev[0]
  *     i_lev = 1             # <<<<<<<<<<<<<<
@@ -12394,7 +12126,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_lev = 1;
 
-  /* "classic_trees.pyx":902
+  /* "classic_trees.pyx":915
  *     w = w_lev[0]
  *     i_lev = 1
  *     i_frag_lev[0] = 0             # <<<<<<<<<<<<<<
@@ -12403,7 +12135,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   (__pyx_v_i_frag_lev[0]) = 0;
 
-  /* "classic_trees.pyx":904
+  /* "classic_trees.pyx":917
  *     i_frag_lev[0] = 0
  * 
  *     i_frag = 0             # <<<<<<<<<<<<<<
@@ -12412,7 +12144,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_frag = 0;
 
-  /* "classic_trees.pyx":905
+  /* "classic_trees.pyx":918
  * 
  *     i_frag = 0
  *     m_tr[0] = m_0             # <<<<<<<<<<<<<<
@@ -12421,7 +12153,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   (__pyx_v_m_tr[0]) = __pyx_v_m_0;
 
-  /* "classic_trees.pyx":906
+  /* "classic_trees.pyx":919
  *     i_frag = 0
  *     m_tr[0] = m_0
  *     m_minlast= 0.0             # <<<<<<<<<<<<<<
@@ -12430,7 +12162,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_m_minlast = 0.0;
 
-  /* "classic_trees.pyx":907
+  /* "classic_trees.pyx":920
  *     m_tr[0] = m_0
  *     m_minlast= 0.0
  *     i_par[0] = -1             # <<<<<<<<<<<<<<
@@ -12439,78 +12171,54 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   (__pyx_v_i_par[0]) = -1;
 
-  /* "classic_trees.pyx":908
+  /* "classic_trees.pyx":921
  *     m_minlast= 0.0
  *     i_par[0] = -1
  *     i_sib[0] = -1             # <<<<<<<<<<<<<<
  *     i_child[0] = -1
- *     count = 0
+ *     while m_left[i_node] > 0.0:
  */
   (__pyx_v_i_sib[0]) = -1;
 
-  /* "classic_trees.pyx":909
+  /* "classic_trees.pyx":922
  *     i_par[0] = -1
  *     i_sib[0] = -1
  *     i_child[0] = -1             # <<<<<<<<<<<<<<
- *     count = 0
  *     while m_left[i_node] > 0.0:
+ *         dw_max = w_lev[i_lev] - w
  */
   (__pyx_v_i_child[0]) = -1;
 
-  /* "classic_trees.pyx":910
+  /* "classic_trees.pyx":923
  *     i_sib[0] = -1
  *     i_child[0] = -1
- *     count = 0             # <<<<<<<<<<<<<<
- *     while m_left[i_node] > 0.0:
- *         count += 1
- */
-  __Pyx_INCREF(__pyx_int_0);
-  __pyx_v_count = __pyx_int_0;
-
-  /* "classic_trees.pyx":911
- *     i_child[0] = -1
- *     count = 0
  *     while m_left[i_node] > 0.0:             # <<<<<<<<<<<<<<
- *         count += 1
- *         dw_max = w_lev[i_lev] - w
- */
-  while (1) {
-    __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 911, __pyx_L1_error)
-    __pyx_t_12 = (((__pyx_v_m_left[__pyx_t_11]) > 0.0) != 0);
-    if (!__pyx_t_12) break;
-
-    /* "classic_trees.pyx":912
- *     count = 0
- *     while m_left[i_node] > 0.0:
- *         count += 1             # <<<<<<<<<<<<<<
  *         dw_max = w_lev[i_lev] - w
  *         split_fct = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
  */
-    __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_count, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 912, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF_SET(__pyx_v_count, __pyx_t_1);
-    __pyx_t_1 = 0;
+  while (1) {
+    __pyx_t_11 = (((__pyx_v_m_left[__pyx_v_i_node]) > 0.0) != 0);
+    if (!__pyx_t_11) break;
 
-    /* "classic_trees.pyx":913
+    /* "classic_trees.pyx":924
+ *     i_child[0] = -1
  *     while m_left[i_node] > 0.0:
- *         count += 1
  *         dw_max = w_lev[i_lev] - w             # <<<<<<<<<<<<<<
  *         split_fct = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
  *         dw = split_fct.dw
  */
     __pyx_v_dw_max = ((__pyx_v_w_lev[__pyx_v_i_lev]) - __pyx_v_w);
 
-    /* "classic_trees.pyx":914
- *         count += 1
+    /* "classic_trees.pyx":925
+ *     while m_left[i_node] > 0.0:
  *         dw_max = w_lev[i_lev] - w
  *         split_fct = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)             # <<<<<<<<<<<<<<
  *         dw = split_fct.dw
  *         n_prog = split_fct.n_prog
  */
-    __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_v_m); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 914, __pyx_L1_error)
-    __pyx_v_split_fct = __pyx_f_13classic_trees_split(__pyx_t_10, __pyx_v_w, __pyx_v_m_min, __pyx_v_dw_max, 0.1, 0.1, __pyx_v_m_minlast);
+    __pyx_v_split_fct = __pyx_f_13classic_trees_split(__pyx_v_m, __pyx_v_w, __pyx_v_m_min, __pyx_v_dw_max, 0.1, 0.1, __pyx_v_m_minlast);
 
-    /* "classic_trees.pyx":915
+    /* "classic_trees.pyx":926
  *         dw_max = w_lev[i_lev] - w
  *         split_fct = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
  *         dw = split_fct.dw             # <<<<<<<<<<<<<<
@@ -12520,7 +12228,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     __pyx_t_10 = __pyx_v_split_fct.dw;
     __pyx_v_dw = __pyx_t_10;
 
-    /* "classic_trees.pyx":916
+    /* "classic_trees.pyx":927
  *         split_fct = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
  *         dw = split_fct.dw
  *         n_prog = split_fct.n_prog             # <<<<<<<<<<<<<<
@@ -12530,17 +12238,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     __pyx_t_2 = __pyx_v_split_fct.n_prog;
     __pyx_v_n_prog = __pyx_t_2;
 
-    /* "classic_trees.pyx":917
+    /* "classic_trees.pyx":928
  *         dw = split_fct.dw
  *         n_prog = split_fct.n_prog
  *         m_prog = split_fct.m_prog             # <<<<<<<<<<<<<<
  *         m_minlast = split_fct.m_min_last
  *         w += dw
  */
-    __pyx_t_13 = __pyx_v_split_fct.m_prog;
-    __pyx_v_m_prog = __pyx_t_13;
+    __pyx_t_12 = __pyx_v_split_fct.m_prog;
+    __pyx_v_m_prog = __pyx_t_12;
 
-    /* "classic_trees.pyx":918
+    /* "classic_trees.pyx":929
  *         n_prog = split_fct.n_prog
  *         m_prog = split_fct.m_prog
  *         m_minlast = split_fct.m_min_last             # <<<<<<<<<<<<<<
@@ -12550,7 +12258,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     __pyx_t_10 = __pyx_v_split_fct.m_min_last;
     __pyx_v_m_minlast = __pyx_t_10;
 
-    /* "classic_trees.pyx":919
+    /* "classic_trees.pyx":930
  *         m_prog = split_fct.m_prog
  *         m_minlast = split_fct.m_min_last
  *         w += dw             # <<<<<<<<<<<<<<
@@ -12559,7 +12267,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_w = (__pyx_v_w + __pyx_v_dw);
 
-    /* "classic_trees.pyx":920
+    /* "classic_trees.pyx":931
  *         m_minlast = split_fct.m_min_last
  *         w += dw
  *         if n_prog==2:             # <<<<<<<<<<<<<<
@@ -12569,72 +12277,61 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     switch (__pyx_v_n_prog) {
       case 2:
 
-      /* "classic_trees.pyx":921
+      /* "classic_trees.pyx":932
  *         w += dw
  *         if n_prog==2:
  *             i_node += 1             # <<<<<<<<<<<<<<
  *             w_node[i_node] = w
  *             l_node[i_node] = -1
  */
-      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_i_node, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 921, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF_SET(__pyx_v_i_node, __pyx_t_1);
-      __pyx_t_1 = 0;
+      __pyx_v_i_node = (__pyx_v_i_node + 1);
 
-      /* "classic_trees.pyx":922
+      /* "classic_trees.pyx":933
  *         if n_prog==2:
  *             i_node += 1
  *             w_node[i_node] = w             # <<<<<<<<<<<<<<
  *             l_node[i_node] = -1
  *             m_left[i_node] = m_prog[0]
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 922, __pyx_L1_error)
-      (__pyx_v_w_node[__pyx_t_11]) = __pyx_v_w;
+      (__pyx_v_w_node[__pyx_v_i_node]) = __pyx_v_w;
 
-      /* "classic_trees.pyx":923
+      /* "classic_trees.pyx":934
  *             i_node += 1
  *             w_node[i_node] = w
  *             l_node[i_node] = -1             # <<<<<<<<<<<<<<
  *             m_left[i_node] = m_prog[0]
  *             m_right[i_node] = m_prog[1]
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 923, __pyx_L1_error)
-      (__pyx_v_l_node[__pyx_t_11]) = -1;
+      (__pyx_v_l_node[__pyx_v_i_node]) = -1;
 
-      /* "classic_trees.pyx":924
+      /* "classic_trees.pyx":935
  *             w_node[i_node] = w
  *             l_node[i_node] = -1
  *             m_left[i_node] = m_prog[0]             # <<<<<<<<<<<<<<
  *             m_right[i_node] = m_prog[1]
  *             m = m_left[i_node]
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 924, __pyx_L1_error)
-      (__pyx_v_m_left[__pyx_t_11]) = (__pyx_v_m_prog[0]);
+      (__pyx_v_m_left[__pyx_v_i_node]) = (__pyx_v_m_prog[0]);
 
-      /* "classic_trees.pyx":925
+      /* "classic_trees.pyx":936
  *             l_node[i_node] = -1
  *             m_left[i_node] = m_prog[0]
  *             m_right[i_node] = m_prog[1]             # <<<<<<<<<<<<<<
  *             m = m_left[i_node]
  *         elif n_prog==1:
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 925, __pyx_L1_error)
-      (__pyx_v_m_right[__pyx_t_11]) = (__pyx_v_m_prog[1]);
+      (__pyx_v_m_right[__pyx_v_i_node]) = (__pyx_v_m_prog[1]);
 
-      /* "classic_trees.pyx":926
+      /* "classic_trees.pyx":937
  *             m_left[i_node] = m_prog[0]
  *             m_right[i_node] = m_prog[1]
  *             m = m_left[i_node]             # <<<<<<<<<<<<<<
  *         elif n_prog==1:
  *             m = m_prog[0]
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 926, __pyx_L1_error)
-      __pyx_t_1 = PyFloat_FromDouble((__pyx_v_m_left[__pyx_t_11])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 926, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF_SET(__pyx_v_m, __pyx_t_1);
-      __pyx_t_1 = 0;
+      __pyx_v_m = (__pyx_v_m_left[__pyx_v_i_node]);
 
-      /* "classic_trees.pyx":920
+      /* "classic_trees.pyx":931
  *         m_minlast = split_fct.m_min_last
  *         w += dw
  *         if n_prog==2:             # <<<<<<<<<<<<<<
@@ -12644,19 +12341,16 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
       break;
       case 1:
 
-      /* "classic_trees.pyx":928
+      /* "classic_trees.pyx":939
  *             m = m_left[i_node]
  *         elif n_prog==1:
  *             m = m_prog[0]             # <<<<<<<<<<<<<<
  *         elif n_prog==0:
  *             m = 0.0
  */
-      __pyx_t_1 = PyFloat_FromDouble((__pyx_v_m_prog[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 928, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF_SET(__pyx_v_m, __pyx_t_1);
-      __pyx_t_1 = 0;
+      __pyx_v_m = (__pyx_v_m_prog[0]);
 
-      /* "classic_trees.pyx":927
+      /* "classic_trees.pyx":938
  *             m_right[i_node] = m_prog[1]
  *             m = m_left[i_node]
  *         elif n_prog==1:             # <<<<<<<<<<<<<<
@@ -12666,27 +12360,25 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
       break;
       case 0:
 
-      /* "classic_trees.pyx":930
+      /* "classic_trees.pyx":941
  *             m = m_prog[0]
  *         elif n_prog==0:
  *             m = 0.0             # <<<<<<<<<<<<<<
  *             m_left[i_node] = -1
- *         if w == w_lev[i_lev] and  n_prog > 0.0:
+ *         if w == w_lev[i_lev] and  n_prog > 0:
  */
-      __Pyx_INCREF(__pyx_float_0_0);
-      __Pyx_DECREF_SET(__pyx_v_m, __pyx_float_0_0);
+      __pyx_v_m = 0.0;
 
-      /* "classic_trees.pyx":931
+      /* "classic_trees.pyx":942
  *         elif n_prog==0:
  *             m = 0.0
  *             m_left[i_node] = -1             # <<<<<<<<<<<<<<
- *         if w == w_lev[i_lev] and  n_prog > 0.0:
+ *         if w == w_lev[i_lev] and  n_prog > 0:
  *             if i_frag+2 > n_frag_max:
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 931, __pyx_L1_error)
-      (__pyx_v_m_left[__pyx_t_11]) = -1.0;
+      (__pyx_v_m_left[__pyx_v_i_node]) = -1.0;
 
-      /* "classic_trees.pyx":929
+      /* "classic_trees.pyx":940
  *         elif n_prog==1:
  *             m = m_prog[0]
  *         elif n_prog==0:             # <<<<<<<<<<<<<<
@@ -12697,36 +12389,36 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
       default: break;
     }
 
-    /* "classic_trees.pyx":932
+    /* "classic_trees.pyx":943
  *             m = 0.0
  *             m_left[i_node] = -1
- *         if w == w_lev[i_lev] and  n_prog > 0.0:             # <<<<<<<<<<<<<<
+ *         if w == w_lev[i_lev] and  n_prog > 0:             # <<<<<<<<<<<<<<
  *             if i_frag+2 > n_frag_max:
  *                 i_err = 1
  */
-    __pyx_t_14 = ((__pyx_v_w == (__pyx_v_w_lev[__pyx_v_i_lev])) != 0);
-    if (__pyx_t_14) {
+    __pyx_t_13 = ((__pyx_v_w == (__pyx_v_w_lev[__pyx_v_i_lev])) != 0);
+    if (__pyx_t_13) {
     } else {
-      __pyx_t_12 = __pyx_t_14;
-      goto __pyx_L10_bool_binop_done;
+      __pyx_t_11 = __pyx_t_13;
+      goto __pyx_L12_bool_binop_done;
     }
-    __pyx_t_14 = ((__pyx_v_n_prog > 0.0) != 0);
-    __pyx_t_12 = __pyx_t_14;
-    __pyx_L10_bool_binop_done:;
-    if (__pyx_t_12) {
+    __pyx_t_13 = ((__pyx_v_n_prog > 0) != 0);
+    __pyx_t_11 = __pyx_t_13;
+    __pyx_L12_bool_binop_done:;
+    if (__pyx_t_11) {
 
-      /* "classic_trees.pyx":933
+      /* "classic_trees.pyx":944
  *             m_left[i_node] = -1
- *         if w == w_lev[i_lev] and  n_prog > 0.0:
+ *         if w == w_lev[i_lev] and  n_prog > 0:
  *             if i_frag+2 > n_frag_max:             # <<<<<<<<<<<<<<
  *                 i_err = 1
  *                 return NULL
  */
-      __pyx_t_12 = (((__pyx_v_i_frag + 2) > __pyx_v_n_frag_max) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = (((__pyx_v_i_frag + 2) > __pyx_v_n_frag_max) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":934
- *         if w == w_lev[i_lev] and  n_prog > 0.0:
+        /* "classic_trees.pyx":945
+ *         if w == w_lev[i_lev] and  n_prog > 0:
  *             if i_frag+2 > n_frag_max:
  *                 i_err = 1             # <<<<<<<<<<<<<<
  *                 return NULL
@@ -12734,7 +12426,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_err = 1;
 
-        /* "classic_trees.pyx":935
+        /* "classic_trees.pyx":946
  *             if i_frag+2 > n_frag_max:
  *                 i_err = 1
  *                 return NULL             # <<<<<<<<<<<<<<
@@ -12744,16 +12436,16 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
         __pyx_r = NULL;
         goto __pyx_L0;
 
-        /* "classic_trees.pyx":933
+        /* "classic_trees.pyx":944
  *             m_left[i_node] = -1
- *         if w == w_lev[i_lev] and  n_prog > 0.0:
+ *         if w == w_lev[i_lev] and  n_prog > 0:
  *             if i_frag+2 > n_frag_max:             # <<<<<<<<<<<<<<
  *                 i_err = 1
  *                 return NULL
  */
       }
 
-      /* "classic_trees.pyx":937
+      /* "classic_trees.pyx":948
  *                 return NULL
  * 
  *             i_frag += 1             # <<<<<<<<<<<<<<
@@ -12762,7 +12454,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       __pyx_v_i_frag = (__pyx_v_i_frag + 1);
 
-      /* "classic_trees.pyx":938
+      /* "classic_trees.pyx":949
  * 
  *             i_frag += 1
  *             m_tr[i_frag] = m_prog[0]             # <<<<<<<<<<<<<<
@@ -12771,7 +12463,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_m_tr[__pyx_v_i_frag]) = (__pyx_v_m_prog[0]);
 
-      /* "classic_trees.pyx":939
+      /* "classic_trees.pyx":950
  *             i_frag += 1
  *             m_tr[i_frag] = m_prog[0]
  *             i_par[i_frag] = i_frag_lev[i_lev-1]             # <<<<<<<<<<<<<<
@@ -12780,7 +12472,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_i_par[__pyx_v_i_frag]) = (__pyx_v_i_frag_lev[(__pyx_v_i_lev - 1)]);
 
-      /* "classic_trees.pyx":940
+      /* "classic_trees.pyx":951
  *             m_tr[i_frag] = m_prog[0]
  *             i_par[i_frag] = i_frag_lev[i_lev-1]
  *             i_sib[i_frag] = -1             # <<<<<<<<<<<<<<
@@ -12789,7 +12481,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_i_sib[__pyx_v_i_frag]) = -1;
 
-      /* "classic_trees.pyx":941
+      /* "classic_trees.pyx":952
  *             i_par[i_frag] = i_frag_lev[i_lev-1]
  *             i_sib[i_frag] = -1
  *             i_child[i_frag] = -1             # <<<<<<<<<<<<<<
@@ -12798,7 +12490,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_i_child[__pyx_v_i_frag]) = -1;
 
-      /* "classic_trees.pyx":943
+      /* "classic_trees.pyx":954
  *             i_child[i_frag] = -1
  * 
  *             i_frag_prev = i_frag_lev[i_lev]             # <<<<<<<<<<<<<<
@@ -12807,17 +12499,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       __pyx_v_i_frag_prev = (__pyx_v_i_frag_lev[__pyx_v_i_lev]);
 
-      /* "classic_trees.pyx":944
+      /* "classic_trees.pyx":955
  * 
  *             i_frag_prev = i_frag_lev[i_lev]
  *             if i_frag_prev > 0:             # <<<<<<<<<<<<<<
  *                 i_par_prev = i_par[i_frag_prev]
  *                 if i_par_prev == i_par[i_frag]:
  */
-      __pyx_t_12 = ((__pyx_v_i_frag_prev > 0) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = ((__pyx_v_i_frag_prev > 0) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":945
+        /* "classic_trees.pyx":956
  *             i_frag_prev = i_frag_lev[i_lev]
  *             if i_frag_prev > 0:
  *                 i_par_prev = i_par[i_frag_prev]             # <<<<<<<<<<<<<<
@@ -12826,17 +12518,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_par_prev = (__pyx_v_i_par[__pyx_v_i_frag_prev]);
 
-        /* "classic_trees.pyx":946
+        /* "classic_trees.pyx":957
  *             if i_frag_prev > 0:
  *                 i_par_prev = i_par[i_frag_prev]
  *                 if i_par_prev == i_par[i_frag]:             # <<<<<<<<<<<<<<
  *                     i_sib[i_frag_prev] = i_frag
  *                 else:
  */
-        __pyx_t_12 = ((__pyx_v_i_par_prev == (__pyx_v_i_par[__pyx_v_i_frag])) != 0);
-        if (__pyx_t_12) {
+        __pyx_t_11 = ((__pyx_v_i_par_prev == (__pyx_v_i_par[__pyx_v_i_frag])) != 0);
+        if (__pyx_t_11) {
 
-          /* "classic_trees.pyx":947
+          /* "classic_trees.pyx":958
  *                 i_par_prev = i_par[i_frag_prev]
  *                 if i_par_prev == i_par[i_frag]:
  *                     i_sib[i_frag_prev] = i_frag             # <<<<<<<<<<<<<<
@@ -12845,17 +12537,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           (__pyx_v_i_sib[__pyx_v_i_frag_prev]) = __pyx_v_i_frag;
 
-          /* "classic_trees.pyx":946
+          /* "classic_trees.pyx":957
  *             if i_frag_prev > 0:
  *                 i_par_prev = i_par[i_frag_prev]
  *                 if i_par_prev == i_par[i_frag]:             # <<<<<<<<<<<<<<
  *                     i_sib[i_frag_prev] = i_frag
  *                 else:
  */
-          goto __pyx_L14;
+          goto __pyx_L16;
         }
 
-        /* "classic_trees.pyx":949
+        /* "classic_trees.pyx":960
  *                     i_sib[i_frag_prev] = i_frag
  *                 else:
  *                     i_child[i_par[i_frag]] = i_frag             # <<<<<<<<<<<<<<
@@ -12865,19 +12557,19 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
         /*else*/ {
           (__pyx_v_i_child[(__pyx_v_i_par[__pyx_v_i_frag])]) = __pyx_v_i_frag;
         }
-        __pyx_L14:;
+        __pyx_L16:;
 
-        /* "classic_trees.pyx":944
+        /* "classic_trees.pyx":955
  * 
  *             i_frag_prev = i_frag_lev[i_lev]
  *             if i_frag_prev > 0:             # <<<<<<<<<<<<<<
  *                 i_par_prev = i_par[i_frag_prev]
  *                 if i_par_prev == i_par[i_frag]:
  */
-        goto __pyx_L13;
+        goto __pyx_L15;
       }
 
-      /* "classic_trees.pyx":951
+      /* "classic_trees.pyx":962
  *                     i_child[i_par[i_frag]] = i_frag
  *             else:
  *                 i_child[i_par[i_frag]] = i_frag             # <<<<<<<<<<<<<<
@@ -12887,9 +12579,9 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
       /*else*/ {
         (__pyx_v_i_child[(__pyx_v_i_par[__pyx_v_i_frag])]) = __pyx_v_i_frag;
       }
-      __pyx_L13:;
+      __pyx_L15:;
 
-      /* "classic_trees.pyx":953
+      /* "classic_trees.pyx":964
  *                 i_child[i_par[i_frag]] = i_frag
  * 
  *             i_frag_lev[i_lev] = i_frag             # <<<<<<<<<<<<<<
@@ -12898,17 +12590,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_i_frag_lev[__pyx_v_i_lev]) = __pyx_v_i_frag;
 
-      /* "classic_trees.pyx":955
+      /* "classic_trees.pyx":966
  *             i_frag_lev[i_lev] = i_frag
  * 
  *             if n_prog == 2:             # <<<<<<<<<<<<<<
  *                 i_frag += 1
  *                 m_tr[i_frag] = m_prog[1]
  */
-      __pyx_t_12 = ((__pyx_v_n_prog == 2) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = ((__pyx_v_n_prog == 2) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":956
+        /* "classic_trees.pyx":967
  * 
  *             if n_prog == 2:
  *                 i_frag += 1             # <<<<<<<<<<<<<<
@@ -12917,7 +12609,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_frag = (__pyx_v_i_frag + 1);
 
-        /* "classic_trees.pyx":957
+        /* "classic_trees.pyx":968
  *             if n_prog == 2:
  *                 i_frag += 1
  *                 m_tr[i_frag] = m_prog[1]             # <<<<<<<<<<<<<<
@@ -12926,7 +12618,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         (__pyx_v_m_tr[__pyx_v_i_frag]) = (__pyx_v_m_prog[1]);
 
-        /* "classic_trees.pyx":958
+        /* "classic_trees.pyx":969
  *                 i_frag += 1
  *                 m_tr[i_frag] = m_prog[1]
  *                 i_par[i_frag] = i_frag_lev[i_lev-1]             # <<<<<<<<<<<<<<
@@ -12935,7 +12627,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         (__pyx_v_i_par[__pyx_v_i_frag]) = (__pyx_v_i_frag_lev[(__pyx_v_i_lev - 1)]);
 
-        /* "classic_trees.pyx":959
+        /* "classic_trees.pyx":970
  *                 m_tr[i_frag] = m_prog[1]
  *                 i_par[i_frag] = i_frag_lev[i_lev-1]
  *                 i_sib[i_frag] = -1             # <<<<<<<<<<<<<<
@@ -12944,7 +12636,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         (__pyx_v_i_sib[__pyx_v_i_frag]) = -1;
 
-        /* "classic_trees.pyx":960
+        /* "classic_trees.pyx":971
  *                 i_par[i_frag] = i_frag_lev[i_lev-1]
  *                 i_sib[i_frag] = -1
  *                 i_child[i_frag] = -1             # <<<<<<<<<<<<<<
@@ -12953,7 +12645,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         (__pyx_v_i_child[__pyx_v_i_frag]) = -1;
 
-        /* "classic_trees.pyx":961
+        /* "classic_trees.pyx":972
  *                 i_sib[i_frag] = -1
  *                 i_child[i_frag] = -1
  *                 i_sib[i_frag-1] = i_frag             # <<<<<<<<<<<<<<
@@ -12962,27 +12654,26 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         (__pyx_v_i_sib[(__pyx_v_i_frag - 1)]) = __pyx_v_i_frag;
 
-        /* "classic_trees.pyx":962
+        /* "classic_trees.pyx":973
  *                 i_child[i_frag] = -1
  *                 i_sib[i_frag-1] = i_frag
  *                 l_node[i_node] = 1             # <<<<<<<<<<<<<<
  *                 if i_lev == n_lev-1:
  *                     i_frag_lev[i_lev] = i_frag
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 962, __pyx_L1_error)
-        (__pyx_v_l_node[__pyx_t_11]) = 1;
+        (__pyx_v_l_node[__pyx_v_i_node]) = 1;
 
-        /* "classic_trees.pyx":963
+        /* "classic_trees.pyx":974
  *                 i_sib[i_frag-1] = i_frag
  *                 l_node[i_node] = 1
  *                 if i_lev == n_lev-1:             # <<<<<<<<<<<<<<
  *                     i_frag_lev[i_lev] = i_frag
  *             if i_lev < n_lev-1:
  */
-        __pyx_t_12 = ((__pyx_v_i_lev == (__pyx_v_n_lev - 1)) != 0);
-        if (__pyx_t_12) {
+        __pyx_t_11 = ((__pyx_v_i_lev == (__pyx_v_n_lev - 1)) != 0);
+        if (__pyx_t_11) {
 
-          /* "classic_trees.pyx":964
+          /* "classic_trees.pyx":975
  *                 l_node[i_node] = 1
  *                 if i_lev == n_lev-1:
  *                     i_frag_lev[i_lev] = i_frag             # <<<<<<<<<<<<<<
@@ -12991,7 +12682,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           (__pyx_v_i_frag_lev[__pyx_v_i_lev]) = __pyx_v_i_frag;
 
-          /* "classic_trees.pyx":963
+          /* "classic_trees.pyx":974
  *                 i_sib[i_frag-1] = i_frag
  *                 l_node[i_node] = 1
  *                 if i_lev == n_lev-1:             # <<<<<<<<<<<<<<
@@ -13000,7 +12691,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         }
 
-        /* "classic_trees.pyx":955
+        /* "classic_trees.pyx":966
  *             i_frag_lev[i_lev] = i_frag
  * 
  *             if n_prog == 2:             # <<<<<<<<<<<<<<
@@ -13009,17 +12700,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       }
 
-      /* "classic_trees.pyx":965
+      /* "classic_trees.pyx":976
  *                 if i_lev == n_lev-1:
  *                     i_frag_lev[i_lev] = i_frag
  *             if i_lev < n_lev-1:             # <<<<<<<<<<<<<<
  *                 i_lev +=1
  * 
  */
-      __pyx_t_12 = ((__pyx_v_i_lev < (__pyx_v_n_lev - 1)) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = ((__pyx_v_i_lev < (__pyx_v_n_lev - 1)) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":966
+        /* "classic_trees.pyx":977
  *                     i_frag_lev[i_lev] = i_frag
  *             if i_lev < n_lev-1:
  *                 i_lev +=1             # <<<<<<<<<<<<<<
@@ -13028,7 +12719,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_lev = (__pyx_v_i_lev + 1);
 
-        /* "classic_trees.pyx":965
+        /* "classic_trees.pyx":976
  *                 if i_lev == n_lev-1:
  *                     i_frag_lev[i_lev] = i_frag
  *             if i_lev < n_lev-1:             # <<<<<<<<<<<<<<
@@ -13037,66 +12728,64 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       }
 
-      /* "classic_trees.pyx":932
+      /* "classic_trees.pyx":943
  *             m = 0.0
  *             m_left[i_node] = -1
- *         if w == w_lev[i_lev] and  n_prog > 0.0:             # <<<<<<<<<<<<<<
+ *         if w == w_lev[i_lev] and  n_prog > 0:             # <<<<<<<<<<<<<<
  *             if i_frag+2 > n_frag_max:
  *                 i_err = 1
  */
     }
 
-    /* "classic_trees.pyx":968
+    /* "classic_trees.pyx":979
  *                 i_lev +=1
  * 
  *         if w >= w_fin:             # <<<<<<<<<<<<<<
  *             if n_prog == 2:
  *                 m_left[i_node] = -1
  */
-    __pyx_t_12 = ((__pyx_v_w >= __pyx_v_w_fin) != 0);
-    if (__pyx_t_12) {
+    __pyx_t_11 = ((__pyx_v_w >= __pyx_v_w_fin) != 0);
+    if (__pyx_t_11) {
 
-      /* "classic_trees.pyx":969
+      /* "classic_trees.pyx":980
  * 
  *         if w >= w_fin:
  *             if n_prog == 2:             # <<<<<<<<<<<<<<
  *                 m_left[i_node] = -1
  *                 m_right[i_node] = -1
  */
-      __pyx_t_12 = ((__pyx_v_n_prog == 2) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = ((__pyx_v_n_prog == 2) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":970
+        /* "classic_trees.pyx":981
  *         if w >= w_fin:
  *             if n_prog == 2:
  *                 m_left[i_node] = -1             # <<<<<<<<<<<<<<
  *                 m_right[i_node] = -1
  *             else:
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 970, __pyx_L1_error)
-        (__pyx_v_m_left[__pyx_t_11]) = -1.0;
+        (__pyx_v_m_left[__pyx_v_i_node]) = -1.0;
 
-        /* "classic_trees.pyx":971
+        /* "classic_trees.pyx":982
  *             if n_prog == 2:
  *                 m_left[i_node] = -1
  *                 m_right[i_node] = -1             # <<<<<<<<<<<<<<
  *             else:
  *                 m_left[i_node] = -1
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 971, __pyx_L1_error)
-        (__pyx_v_m_right[__pyx_t_11]) = -1.0;
+        (__pyx_v_m_right[__pyx_v_i_node]) = -1.0;
 
-        /* "classic_trees.pyx":969
+        /* "classic_trees.pyx":980
  * 
  *         if w >= w_fin:
  *             if n_prog == 2:             # <<<<<<<<<<<<<<
  *                 m_left[i_node] = -1
  *                 m_right[i_node] = -1
  */
-        goto __pyx_L19;
+        goto __pyx_L21;
       }
 
-      /* "classic_trees.pyx":973
+      /* "classic_trees.pyx":984
  *                 m_right[i_node] = -1
  *             else:
  *                 m_left[i_node] = -1             # <<<<<<<<<<<<<<
@@ -13104,12 +12793,11 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *         while m_left[i_node] < 0.0 and i_node > 0:
  */
       /*else*/ {
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 973, __pyx_L1_error)
-        (__pyx_v_m_left[__pyx_t_11]) = -1.0;
+        (__pyx_v_m_left[__pyx_v_i_node]) = -1.0;
       }
-      __pyx_L19:;
+      __pyx_L21:;
 
-      /* "classic_trees.pyx":968
+      /* "classic_trees.pyx":979
  *                 i_lev +=1
  * 
  *         if w >= w_fin:             # <<<<<<<<<<<<<<
@@ -13118,7 +12806,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     }
 
-    /* "classic_trees.pyx":975
+    /* "classic_trees.pyx":986
  *                 m_left[i_node] = -1
  * 
  *         while m_left[i_node] < 0.0 and i_node > 0:             # <<<<<<<<<<<<<<
@@ -13126,126 +12814,114 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *                 m_left[i_node] = m_right[i_node]
  */
     while (1) {
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 975, __pyx_L1_error)
-      __pyx_t_14 = (((__pyx_v_m_left[__pyx_t_11]) < 0.0) != 0);
-      if (__pyx_t_14) {
+      __pyx_t_13 = (((__pyx_v_m_left[__pyx_v_i_node]) < 0.0) != 0);
+      if (__pyx_t_13) {
       } else {
-        __pyx_t_12 = __pyx_t_14;
-        goto __pyx_L22_bool_binop_done;
+        __pyx_t_11 = __pyx_t_13;
+        goto __pyx_L24_bool_binop_done;
       }
-      __pyx_t_1 = PyObject_RichCompare(__pyx_v_i_node, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 975, __pyx_L1_error)
-      __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(0, 975, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_12 = __pyx_t_14;
-      __pyx_L22_bool_binop_done:;
-      if (!__pyx_t_12) break;
+      __pyx_t_13 = ((__pyx_v_i_node > 0) != 0);
+      __pyx_t_11 = __pyx_t_13;
+      __pyx_L24_bool_binop_done:;
+      if (!__pyx_t_11) break;
 
-      /* "classic_trees.pyx":976
+      /* "classic_trees.pyx":987
  * 
  *         while m_left[i_node] < 0.0 and i_node > 0:
  *             if m_right[i_node] > 0.0:             # <<<<<<<<<<<<<<
  *                 m_left[i_node] = m_right[i_node]
  *                 m_right[i_node] = -1
  */
-      __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 976, __pyx_L1_error)
-      __pyx_t_12 = (((__pyx_v_m_right[__pyx_t_11]) > 0.0) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = (((__pyx_v_m_right[__pyx_v_i_node]) > 0.0) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":977
+        /* "classic_trees.pyx":988
  *         while m_left[i_node] < 0.0 and i_node > 0:
  *             if m_right[i_node] > 0.0:
  *                 m_left[i_node] = m_right[i_node]             # <<<<<<<<<<<<<<
  *                 m_right[i_node] = -1
  *                 w = w_node[i_node]
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 977, __pyx_L1_error)
-        __pyx_t_15 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_15 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 977, __pyx_L1_error)
-        (__pyx_v_m_left[__pyx_t_15]) = (__pyx_v_m_right[__pyx_t_11]);
+        (__pyx_v_m_left[__pyx_v_i_node]) = (__pyx_v_m_right[__pyx_v_i_node]);
 
-        /* "classic_trees.pyx":978
+        /* "classic_trees.pyx":989
  *             if m_right[i_node] > 0.0:
  *                 m_left[i_node] = m_right[i_node]
  *                 m_right[i_node] = -1             # <<<<<<<<<<<<<<
  *                 w = w_node[i_node]
  *                 m = m_left[i_node]
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 978, __pyx_L1_error)
-        (__pyx_v_m_right[__pyx_t_11]) = -1.0;
+        (__pyx_v_m_right[__pyx_v_i_node]) = -1.0;
 
-        /* "classic_trees.pyx":979
+        /* "classic_trees.pyx":990
  *                 m_left[i_node] = m_right[i_node]
  *                 m_right[i_node] = -1
  *                 w = w_node[i_node]             # <<<<<<<<<<<<<<
  *                 m = m_left[i_node]
  *                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 979, __pyx_L1_error)
-        __pyx_v_w = (__pyx_v_w_node[__pyx_t_11]);
+        __pyx_v_w = (__pyx_v_w_node[__pyx_v_i_node]);
 
-        /* "classic_trees.pyx":980
+        /* "classic_trees.pyx":991
  *                 m_right[i_node] = -1
  *                 w = w_node[i_node]
  *                 m = m_left[i_node]             # <<<<<<<<<<<<<<
  *                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:
  *                     iw = locate(w_lev, n_lev, w)
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 980, __pyx_L1_error)
-        __pyx_t_1 = PyFloat_FromDouble((__pyx_v_m_left[__pyx_t_11])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 980, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF_SET(__pyx_v_m, __pyx_t_1);
-        __pyx_t_1 = 0;
+        __pyx_v_m = (__pyx_v_m_left[__pyx_v_i_node]);
 
-        /* "classic_trees.pyx":981
+        /* "classic_trees.pyx":992
  *                 w = w_node[i_node]
  *                 m = m_left[i_node]
  *                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:             # <<<<<<<<<<<<<<
  *                     iw = locate(w_lev, n_lev, w)
  *                     i_lev = iw
  */
-        __pyx_t_14 = ((__pyx_v_w < (__pyx_v_w_lev[(__pyx_v_i_lev - 1)])) != 0);
-        if (!__pyx_t_14) {
+        __pyx_t_13 = ((__pyx_v_w < (__pyx_v_w_lev[(__pyx_v_i_lev - 1)])) != 0);
+        if (!__pyx_t_13) {
         } else {
-          __pyx_t_12 = __pyx_t_14;
-          goto __pyx_L26_bool_binop_done;
+          __pyx_t_11 = __pyx_t_13;
+          goto __pyx_L28_bool_binop_done;
         }
-        __pyx_t_14 = ((__pyx_v_w >= (__pyx_v_w_lev[__pyx_v_i_lev])) != 0);
-        __pyx_t_12 = __pyx_t_14;
-        __pyx_L26_bool_binop_done:;
-        if (__pyx_t_12) {
+        __pyx_t_13 = ((__pyx_v_w >= (__pyx_v_w_lev[__pyx_v_i_lev])) != 0);
+        __pyx_t_11 = __pyx_t_13;
+        __pyx_L28_bool_binop_done:;
+        if (__pyx_t_11) {
 
-          /* "classic_trees.pyx":982
+          /* "classic_trees.pyx":993
  *                 m = m_left[i_node]
  *                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:
  *                     iw = locate(w_lev, n_lev, w)             # <<<<<<<<<<<<<<
  *                     i_lev = iw
  *                     if w_lev[i_lev] == w:
  */
-          __pyx_t_1 = __pyx_f_13classic_trees_locate(__pyx_v_w_lev, __pyx_v_n_lev, __pyx_v_w); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 982, __pyx_L1_error)
+          __pyx_t_1 = __pyx_f_13classic_trees_locate(__pyx_v_w_lev, __pyx_v_n_lev, __pyx_v_w); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 993, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_XDECREF_SET(__pyx_v_iw, __pyx_t_1);
-          __pyx_t_1 = 0;
+          __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 993, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+          __pyx_v_iw = __pyx_t_2;
 
-          /* "classic_trees.pyx":983
+          /* "classic_trees.pyx":994
  *                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:
  *                     iw = locate(w_lev, n_lev, w)
  *                     i_lev = iw             # <<<<<<<<<<<<<<
  *                     if w_lev[i_lev] == w:
  *                         i_lev += 1
  */
-          __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_iw); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 983, __pyx_L1_error)
-          __pyx_v_i_lev = __pyx_t_2;
+          __pyx_v_i_lev = __pyx_v_iw;
 
-          /* "classic_trees.pyx":984
+          /* "classic_trees.pyx":995
  *                     iw = locate(w_lev, n_lev, w)
  *                     i_lev = iw
  *                     if w_lev[i_lev] == w:             # <<<<<<<<<<<<<<
  *                         i_lev += 1
  *                 if l_node[i_node]==1:
  */
-          __pyx_t_12 = (((__pyx_v_w_lev[__pyx_v_i_lev]) == __pyx_v_w) != 0);
-          if (__pyx_t_12) {
+          __pyx_t_11 = (((__pyx_v_w_lev[__pyx_v_i_lev]) == __pyx_v_w) != 0);
+          if (__pyx_t_11) {
 
-            /* "classic_trees.pyx":985
+            /* "classic_trees.pyx":996
  *                     i_lev = iw
  *                     if w_lev[i_lev] == w:
  *                         i_lev += 1             # <<<<<<<<<<<<<<
@@ -13254,7 +12930,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
             __pyx_v_i_lev = (__pyx_v_i_lev + 1);
 
-            /* "classic_trees.pyx":984
+            /* "classic_trees.pyx":995
  *                     iw = locate(w_lev, n_lev, w)
  *                     i_lev = iw
  *                     if w_lev[i_lev] == w:             # <<<<<<<<<<<<<<
@@ -13263,7 +12939,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           }
 
-          /* "classic_trees.pyx":981
+          /* "classic_trees.pyx":992
  *                 w = w_node[i_node]
  *                 m = m_left[i_node]
  *                 if w < w_lev[i_lev-1] or w >= w_lev[i_lev]:             # <<<<<<<<<<<<<<
@@ -13272,28 +12948,27 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         }
 
-        /* "classic_trees.pyx":986
+        /* "classic_trees.pyx":997
  *                     if w_lev[i_lev] == w:
  *                         i_lev += 1
  *                 if l_node[i_node]==1:             # <<<<<<<<<<<<<<
  *                     i_frag_lev[i_lev-1] += 1
  *             else:
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 986, __pyx_L1_error)
-        __pyx_t_12 = (((__pyx_v_l_node[__pyx_t_11]) == 1) != 0);
-        if (__pyx_t_12) {
+        __pyx_t_11 = (((__pyx_v_l_node[__pyx_v_i_node]) == 1) != 0);
+        if (__pyx_t_11) {
 
-          /* "classic_trees.pyx":987
+          /* "classic_trees.pyx":998
  *                         i_lev += 1
  *                 if l_node[i_node]==1:
  *                     i_frag_lev[i_lev-1] += 1             # <<<<<<<<<<<<<<
  *             else:
  *                 i_node -= 1
  */
-          __pyx_t_16 = (__pyx_v_i_lev - 1);
-          (__pyx_v_i_frag_lev[__pyx_t_16]) = ((__pyx_v_i_frag_lev[__pyx_t_16]) + 1);
+          __pyx_t_14 = (__pyx_v_i_lev - 1);
+          (__pyx_v_i_frag_lev[__pyx_t_14]) = ((__pyx_v_i_frag_lev[__pyx_t_14]) + 1);
 
-          /* "classic_trees.pyx":986
+          /* "classic_trees.pyx":997
  *                     if w_lev[i_lev] == w:
  *                         i_lev += 1
  *                 if l_node[i_node]==1:             # <<<<<<<<<<<<<<
@@ -13302,17 +12977,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         }
 
-        /* "classic_trees.pyx":976
+        /* "classic_trees.pyx":987
  * 
  *         while m_left[i_node] < 0.0 and i_node > 0:
  *             if m_right[i_node] > 0.0:             # <<<<<<<<<<<<<<
  *                 m_left[i_node] = m_right[i_node]
  *                 m_right[i_node] = -1
  */
-        goto __pyx_L24;
+        goto __pyx_L26;
       }
 
-      /* "classic_trees.pyx":989
+      /* "classic_trees.pyx":1000
  *                     i_frag_lev[i_lev-1] += 1
  *             else:
  *                 i_node -= 1             # <<<<<<<<<<<<<<
@@ -13320,26 +12995,22 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  * 
  */
       /*else*/ {
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_v_i_node, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 989, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF_SET(__pyx_v_i_node, __pyx_t_1);
-        __pyx_t_1 = 0;
+        __pyx_v_i_node = (__pyx_v_i_node - 1);
 
-        /* "classic_trees.pyx":990
+        /* "classic_trees.pyx":1001
  *             else:
  *                 i_node -= 1
  *                 m_left[i_node] = -1             # <<<<<<<<<<<<<<
  * 
  *     n_frag_tot = i_frag
  */
-        __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i_node); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 990, __pyx_L1_error)
-        (__pyx_v_m_left[__pyx_t_11]) = -1.0;
+        (__pyx_v_m_left[__pyx_v_i_node]) = -1.0;
       }
-      __pyx_L24:;
+      __pyx_L26:;
     }
   }
 
-  /* "classic_trees.pyx":992
+  /* "classic_trees.pyx":1003
  *                 m_left[i_node] = -1
  * 
  *     n_frag_tot = i_frag             # <<<<<<<<<<<<<<
@@ -13348,16 +13019,16 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_n_frag_tot = __pyx_v_i_frag;
 
-  /* "classic_trees.pyx":993
+  /* "classic_trees.pyx":1004
  * 
  *     n_frag_tot = i_frag
  *     print('n_frag_tot = ',n_frag_tot)             # <<<<<<<<<<<<<<
  * 
  *     for i_lev_wk in range(n_lev):
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_n_frag_tot); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 993, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_n_frag_tot); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1004, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 993, __pyx_L1_error)
+  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1004, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_INCREF(__pyx_kp_u_n_frag_tot);
   __Pyx_GIVEREF(__pyx_kp_u_n_frag_tot);
@@ -13365,12 +13036,12 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 993, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1004, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":995
+  /* "classic_trees.pyx":1006
  *     print('n_frag_tot = ',n_frag_tot)
  * 
  *     for i_lev_wk in range(n_lev):             # <<<<<<<<<<<<<<
@@ -13382,7 +13053,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i_lev_wk = __pyx_t_4;
 
-    /* "classic_trees.pyx":996
+    /* "classic_trees.pyx":1007
  * 
  *     for i_lev_wk in range(n_lev):
  *         i_lev = 0             # <<<<<<<<<<<<<<
@@ -13391,7 +13062,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_i_lev = 0;
 
-    /* "classic_trees.pyx":997
+    /* "classic_trees.pyx":1008
  *     for i_lev_wk in range(n_lev):
  *         i_lev = 0
  *         i_frag  = 0             # <<<<<<<<<<<<<<
@@ -13400,7 +13071,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_i_frag = 0;
 
-    /* "classic_trees.pyx":998
+    /* "classic_trees.pyx":1009
  *         i_lev = 0
  *         i_frag  = 0
  *         while i_frag >= 0:             # <<<<<<<<<<<<<<
@@ -13408,10 +13079,10 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *                 i_frag = i_child[i_frag]
  */
     while (1) {
-      __pyx_t_12 = ((__pyx_v_i_frag >= 0) != 0);
-      if (!__pyx_t_12) break;
+      __pyx_t_11 = ((__pyx_v_i_frag >= 0) != 0);
+      if (!__pyx_t_11) break;
 
-      /* "classic_trees.pyx":999
+      /* "classic_trees.pyx":1010
  *         i_frag  = 0
  *         while i_frag >= 0:
  *             while i_lev < i_lev_wk and i_child[i_frag] > 0:             # <<<<<<<<<<<<<<
@@ -13419,18 +13090,18 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *                 i_lev += 1
  */
       while (1) {
-        __pyx_t_14 = ((__pyx_v_i_lev < __pyx_v_i_lev_wk) != 0);
-        if (__pyx_t_14) {
+        __pyx_t_13 = ((__pyx_v_i_lev < __pyx_v_i_lev_wk) != 0);
+        if (__pyx_t_13) {
         } else {
-          __pyx_t_12 = __pyx_t_14;
-          goto __pyx_L36_bool_binop_done;
+          __pyx_t_11 = __pyx_t_13;
+          goto __pyx_L38_bool_binop_done;
         }
-        __pyx_t_14 = (((__pyx_v_i_child[__pyx_v_i_frag]) > 0) != 0);
-        __pyx_t_12 = __pyx_t_14;
-        __pyx_L36_bool_binop_done:;
-        if (!__pyx_t_12) break;
+        __pyx_t_13 = (((__pyx_v_i_child[__pyx_v_i_frag]) > 0) != 0);
+        __pyx_t_11 = __pyx_t_13;
+        __pyx_L38_bool_binop_done:;
+        if (!__pyx_t_11) break;
 
-        /* "classic_trees.pyx":1000
+        /* "classic_trees.pyx":1011
  *         while i_frag >= 0:
  *             while i_lev < i_lev_wk and i_child[i_frag] > 0:
  *                 i_frag = i_child[i_frag]             # <<<<<<<<<<<<<<
@@ -13439,7 +13110,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_frag = (__pyx_v_i_child[__pyx_v_i_frag]);
 
-        /* "classic_trees.pyx":1001
+        /* "classic_trees.pyx":1012
  *             while i_lev < i_lev_wk and i_child[i_frag] > 0:
  *                 i_frag = i_child[i_frag]
  *                 i_lev += 1             # <<<<<<<<<<<<<<
@@ -13449,27 +13120,27 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
         __pyx_v_i_lev = (__pyx_v_i_lev + 1);
       }
 
-      /* "classic_trees.pyx":1002
+      /* "classic_trees.pyx":1013
  *                 i_frag = i_child[i_frag]
  *                 i_lev += 1
  *             if i_lev == i_lev_wk:             # <<<<<<<<<<<<<<
  *                 if jp_frag[i_lev_wk]<0:
  *                     jp_frag[i_lev_wk] = j_frag +1
  */
-      __pyx_t_12 = ((__pyx_v_i_lev == __pyx_v_i_lev_wk) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = ((__pyx_v_i_lev == __pyx_v_i_lev_wk) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":1003
+        /* "classic_trees.pyx":1014
  *                 i_lev += 1
  *             if i_lev == i_lev_wk:
  *                 if jp_frag[i_lev_wk]<0:             # <<<<<<<<<<<<<<
  *                     jp_frag[i_lev_wk] = j_frag +1
  *                 while i_frag >= 0:
  */
-        __pyx_t_12 = (((__pyx_v_jp_frag[__pyx_v_i_lev_wk]) < 0) != 0);
-        if (__pyx_t_12) {
+        __pyx_t_11 = (((__pyx_v_jp_frag[__pyx_v_i_lev_wk]) < 0) != 0);
+        if (__pyx_t_11) {
 
-          /* "classic_trees.pyx":1004
+          /* "classic_trees.pyx":1015
  *             if i_lev == i_lev_wk:
  *                 if jp_frag[i_lev_wk]<0:
  *                     jp_frag[i_lev_wk] = j_frag +1             # <<<<<<<<<<<<<<
@@ -13478,7 +13149,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           (__pyx_v_jp_frag[__pyx_v_i_lev_wk]) = (__pyx_v_j_frag + 1);
 
-          /* "classic_trees.pyx":1003
+          /* "classic_trees.pyx":1014
  *                 i_lev += 1
  *             if i_lev == i_lev_wk:
  *                 if jp_frag[i_lev_wk]<0:             # <<<<<<<<<<<<<<
@@ -13487,7 +13158,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         }
 
-        /* "classic_trees.pyx":1005
+        /* "classic_trees.pyx":1016
  *                 if jp_frag[i_lev_wk]<0:
  *                     jp_frag[i_lev_wk] = j_frag +1
  *                 while i_frag >= 0:             # <<<<<<<<<<<<<<
@@ -13495,10 +13166,10 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *                     j_index[i_frag] = j_frag
  */
         while (1) {
-          __pyx_t_12 = ((__pyx_v_i_frag >= 0) != 0);
-          if (!__pyx_t_12) break;
+          __pyx_t_11 = ((__pyx_v_i_frag >= 0) != 0);
+          if (!__pyx_t_11) break;
 
-          /* "classic_trees.pyx":1006
+          /* "classic_trees.pyx":1017
  *                     jp_frag[i_lev_wk] = j_frag +1
  *                 while i_frag >= 0:
  *                     j_frag += 1             # <<<<<<<<<<<<<<
@@ -13507,7 +13178,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           __pyx_v_j_frag = (__pyx_v_j_frag + 1);
 
-          /* "classic_trees.pyx":1007
+          /* "classic_trees.pyx":1018
  *                 while i_frag >= 0:
  *                     j_frag += 1
  *                     j_index[i_frag] = j_frag             # <<<<<<<<<<<<<<
@@ -13516,7 +13187,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           (__pyx_v_j_index[__pyx_v_i_frag]) = __pyx_v_j_frag;
 
-          /* "classic_trees.pyx":1008
+          /* "classic_trees.pyx":1019
  *                     j_frag += 1
  *                     j_index[i_frag] = j_frag
  *                     n_frag_lev[i_lev_wk] += 1             # <<<<<<<<<<<<<<
@@ -13526,7 +13197,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
           __pyx_t_7 = __pyx_v_i_lev_wk;
           (__pyx_v_n_frag_lev[__pyx_t_7]) = ((__pyx_v_n_frag_lev[__pyx_t_7]) + 1);
 
-          /* "classic_trees.pyx":1009
+          /* "classic_trees.pyx":1020
  *                     j_index[i_frag] = j_frag
  *                     n_frag_lev[i_lev_wk] += 1
  *                     merger_tree[j_frag].mhalo = m_tr[i_frag]             # <<<<<<<<<<<<<<
@@ -13535,7 +13206,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           (__pyx_v_merger_tree[__pyx_v_j_frag])->mhalo = (__pyx_v_m_tr[__pyx_v_i_frag]);
 
-          /* "classic_trees.pyx":1010
+          /* "classic_trees.pyx":1021
  *                     n_frag_lev[i_lev_wk] += 1
  *                     merger_tree[j_frag].mhalo = m_tr[i_frag]
  *                     merger_tree[j_frag].jlevel = i_lev_wk             # <<<<<<<<<<<<<<
@@ -13544,17 +13215,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           (__pyx_v_merger_tree[__pyx_v_j_frag])->jlevel = __pyx_v_i_lev_wk;
 
-          /* "classic_trees.pyx":1012
+          /* "classic_trees.pyx":1023
  *                     merger_tree[j_frag].jlevel = i_lev_wk
  * 
  *                     if i_lev > 0:             # <<<<<<<<<<<<<<
  *                         merger_tree[j_frag].parent = merger_tree[j_index[i_par[i_frag]]]
  *                     else:
  */
-          __pyx_t_12 = ((__pyx_v_i_lev > 0) != 0);
-          if (__pyx_t_12) {
+          __pyx_t_11 = ((__pyx_v_i_lev > 0) != 0);
+          if (__pyx_t_11) {
 
-            /* "classic_trees.pyx":1013
+            /* "classic_trees.pyx":1024
  * 
  *                     if i_lev > 0:
  *                         merger_tree[j_frag].parent = merger_tree[j_index[i_par[i_frag]]]             # <<<<<<<<<<<<<<
@@ -13563,17 +13234,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
             (__pyx_v_merger_tree[__pyx_v_j_frag])->parent = (__pyx_v_merger_tree[(__pyx_v_j_index[(__pyx_v_i_par[__pyx_v_i_frag])])]);
 
-            /* "classic_trees.pyx":1012
+            /* "classic_trees.pyx":1023
  *                     merger_tree[j_frag].jlevel = i_lev_wk
  * 
  *                     if i_lev > 0:             # <<<<<<<<<<<<<<
  *                         merger_tree[j_frag].parent = merger_tree[j_index[i_par[i_frag]]]
  *                     else:
  */
-            goto __pyx_L42;
+            goto __pyx_L44;
           }
 
-          /* "classic_trees.pyx":1015
+          /* "classic_trees.pyx":1026
  *                         merger_tree[j_frag].parent = merger_tree[j_index[i_par[i_frag]]]
  *                     else:
  *                         merger_tree[j_frag].parent = NULL             # <<<<<<<<<<<<<<
@@ -13583,9 +13254,9 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
           /*else*/ {
             (__pyx_v_merger_tree[__pyx_v_j_frag])->parent = NULL;
           }
-          __pyx_L42:;
+          __pyx_L44:;
 
-          /* "classic_trees.pyx":1016
+          /* "classic_trees.pyx":1027
  *                     else:
  *                         merger_tree[j_frag].parent = NULL
  *                     i_frag_prev = i_frag             # <<<<<<<<<<<<<<
@@ -13594,7 +13265,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           __pyx_v_i_frag_prev = __pyx_v_i_frag;
 
-          /* "classic_trees.pyx":1017
+          /* "classic_trees.pyx":1028
  *                         merger_tree[j_frag].parent = NULL
  *                     i_frag_prev = i_frag
  *                     i_frag = i_sib[i_frag]             # <<<<<<<<<<<<<<
@@ -13604,7 +13275,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
           __pyx_v_i_frag = (__pyx_v_i_sib[__pyx_v_i_frag]);
         }
 
-        /* "classic_trees.pyx":1018
+        /* "classic_trees.pyx":1029
  *                     i_frag_prev = i_frag
  *                     i_frag = i_sib[i_frag]
  *                 i_frag = i_frag_prev             # <<<<<<<<<<<<<<
@@ -13613,17 +13284,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_frag = __pyx_v_i_frag_prev;
 
-        /* "classic_trees.pyx":1019
+        /* "classic_trees.pyx":1030
  *                     i_frag = i_sib[i_frag]
  *                 i_frag = i_frag_prev
  *                 if i_lev > 0:             # <<<<<<<<<<<<<<
  *                     i_lev -=1
  *                     i_frag = i_par[i_frag]
  */
-        __pyx_t_12 = ((__pyx_v_i_lev > 0) != 0);
-        if (__pyx_t_12) {
+        __pyx_t_11 = ((__pyx_v_i_lev > 0) != 0);
+        if (__pyx_t_11) {
 
-          /* "classic_trees.pyx":1020
+          /* "classic_trees.pyx":1031
  *                 i_frag = i_frag_prev
  *                 if i_lev > 0:
  *                     i_lev -=1             # <<<<<<<<<<<<<<
@@ -13632,7 +13303,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           __pyx_v_i_lev = (__pyx_v_i_lev - 1);
 
-          /* "classic_trees.pyx":1021
+          /* "classic_trees.pyx":1032
  *                 if i_lev > 0:
  *                     i_lev -=1
  *                     i_frag = i_par[i_frag]             # <<<<<<<<<<<<<<
@@ -13641,7 +13312,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
           __pyx_v_i_frag = (__pyx_v_i_par[__pyx_v_i_frag]);
 
-          /* "classic_trees.pyx":1019
+          /* "classic_trees.pyx":1030
  *                     i_frag = i_sib[i_frag]
  *                 i_frag = i_frag_prev
  *                 if i_lev > 0:             # <<<<<<<<<<<<<<
@@ -13650,7 +13321,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         }
 
-        /* "classic_trees.pyx":1002
+        /* "classic_trees.pyx":1013
  *                 i_frag = i_child[i_frag]
  *                 i_lev += 1
  *             if i_lev == i_lev_wk:             # <<<<<<<<<<<<<<
@@ -13659,7 +13330,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       }
 
-      /* "classic_trees.pyx":1023
+      /* "classic_trees.pyx":1034
  *                     i_frag = i_par[i_frag]
  * 
  *             while i_sib[i_frag] < 0 and i_lev > 0:             # <<<<<<<<<<<<<<
@@ -13667,18 +13338,18 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *                 i_frag = i_par[i_frag]
  */
       while (1) {
-        __pyx_t_14 = (((__pyx_v_i_sib[__pyx_v_i_frag]) < 0) != 0);
-        if (__pyx_t_14) {
+        __pyx_t_13 = (((__pyx_v_i_sib[__pyx_v_i_frag]) < 0) != 0);
+        if (__pyx_t_13) {
         } else {
-          __pyx_t_12 = __pyx_t_14;
-          goto __pyx_L46_bool_binop_done;
+          __pyx_t_11 = __pyx_t_13;
+          goto __pyx_L48_bool_binop_done;
         }
-        __pyx_t_14 = ((__pyx_v_i_lev > 0) != 0);
-        __pyx_t_12 = __pyx_t_14;
-        __pyx_L46_bool_binop_done:;
-        if (!__pyx_t_12) break;
+        __pyx_t_13 = ((__pyx_v_i_lev > 0) != 0);
+        __pyx_t_11 = __pyx_t_13;
+        __pyx_L48_bool_binop_done:;
+        if (!__pyx_t_11) break;
 
-        /* "classic_trees.pyx":1024
+        /* "classic_trees.pyx":1035
  * 
  *             while i_sib[i_frag] < 0 and i_lev > 0:
  *                 i_lev -= 1             # <<<<<<<<<<<<<<
@@ -13687,7 +13358,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_lev = (__pyx_v_i_lev - 1);
 
-        /* "classic_trees.pyx":1025
+        /* "classic_trees.pyx":1036
  *             while i_sib[i_frag] < 0 and i_lev > 0:
  *                 i_lev -= 1
  *                 i_frag = i_par[i_frag]             # <<<<<<<<<<<<<<
@@ -13697,17 +13368,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
         __pyx_v_i_frag = (__pyx_v_i_par[__pyx_v_i_frag]);
       }
 
-      /* "classic_trees.pyx":1026
+      /* "classic_trees.pyx":1037
  *                 i_lev -= 1
  *                 i_frag = i_par[i_frag]
  *             if i_lev > 0:             # <<<<<<<<<<<<<<
  *                 i_frag = i_sib[i_frag]
  *             else:
  */
-      __pyx_t_12 = ((__pyx_v_i_lev > 0) != 0);
-      if (__pyx_t_12) {
+      __pyx_t_11 = ((__pyx_v_i_lev > 0) != 0);
+      if (__pyx_t_11) {
 
-        /* "classic_trees.pyx":1027
+        /* "classic_trees.pyx":1038
  *                 i_frag = i_par[i_frag]
  *             if i_lev > 0:
  *                 i_frag = i_sib[i_frag]             # <<<<<<<<<<<<<<
@@ -13716,17 +13387,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
         __pyx_v_i_frag = (__pyx_v_i_sib[__pyx_v_i_frag]);
 
-        /* "classic_trees.pyx":1026
+        /* "classic_trees.pyx":1037
  *                 i_lev -= 1
  *                 i_frag = i_par[i_frag]
  *             if i_lev > 0:             # <<<<<<<<<<<<<<
  *                 i_frag = i_sib[i_frag]
  *             else:
  */
-        goto __pyx_L48;
+        goto __pyx_L50;
       }
 
-      /* "classic_trees.pyx":1029
+      /* "classic_trees.pyx":1040
  *                 i_frag = i_sib[i_frag]
  *             else:
  *                 i_frag = -1             # <<<<<<<<<<<<<<
@@ -13736,22 +13407,22 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
       /*else*/ {
         __pyx_v_i_frag = -1;
       }
-      __pyx_L48:;
+      __pyx_L50:;
     }
   }
 
-  /* "classic_trees.pyx":1030
+  /* "classic_trees.pyx":1041
  *             else:
  *                 i_frag = -1
  *     print('Got till here!')             # <<<<<<<<<<<<<<
  *     for i_frag in range(n_frag_tot):
  *         j_frag = j_index[i_frag]
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1030, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1041, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":1031
+  /* "classic_trees.pyx":1042
  *                 i_frag = -1
  *     print('Got till here!')
  *     for i_frag in range(n_frag_tot):             # <<<<<<<<<<<<<<
@@ -13763,7 +13434,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i_frag = __pyx_t_4;
 
-    /* "classic_trees.pyx":1032
+    /* "classic_trees.pyx":1043
  *     print('Got till here!')
  *     for i_frag in range(n_frag_tot):
  *         j_frag = j_index[i_frag]             # <<<<<<<<<<<<<<
@@ -13772,7 +13443,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_j_frag = (__pyx_v_j_index[__pyx_v_i_frag]);
 
-    /* "classic_trees.pyx":1033
+    /* "classic_trees.pyx":1044
  *     for i_frag in range(n_frag_tot):
  *         j_frag = j_index[i_frag]
  *         i_frag_c = i_child[i_frag]             # <<<<<<<<<<<<<<
@@ -13781,17 +13452,17 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
     __pyx_v_i_frag_c = (__pyx_v_i_child[__pyx_v_i_frag]);
 
-    /* "classic_trees.pyx":1034
+    /* "classic_trees.pyx":1045
  *         j_frag = j_index[i_frag]
  *         i_frag_c = i_child[i_frag]
  *         if i_frag_c >= 0:             # <<<<<<<<<<<<<<
  *             child_ref[j_frag] = j_index[i_frag_c]
  * 
  */
-    __pyx_t_12 = ((__pyx_v_i_frag_c >= 0) != 0);
-    if (__pyx_t_12) {
+    __pyx_t_11 = ((__pyx_v_i_frag_c >= 0) != 0);
+    if (__pyx_t_11) {
 
-      /* "classic_trees.pyx":1035
+      /* "classic_trees.pyx":1046
  *         i_frag_c = i_child[i_frag]
  *         if i_frag_c >= 0:
  *             child_ref[j_frag] = j_index[i_frag_c]             # <<<<<<<<<<<<<<
@@ -13800,7 +13471,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_child_ref[__pyx_v_j_frag]) = (__pyx_v_j_index[__pyx_v_i_frag_c]);
 
-      /* "classic_trees.pyx":1037
+      /* "classic_trees.pyx":1048
  *             child_ref[j_frag] = j_index[i_frag_c]
  * 
  *             merger_tree[j_frag].child = merger_tree[j_index[i_frag_c]]             # <<<<<<<<<<<<<<
@@ -13809,17 +13480,16 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
       (__pyx_v_merger_tree[__pyx_v_j_frag])->child = (__pyx_v_merger_tree[(__pyx_v_j_index[__pyx_v_i_frag_c])]);
 
-      /* "classic_trees.pyx":1038
+      /* "classic_trees.pyx":1049
  * 
  *             merger_tree[j_frag].child = merger_tree[j_index[i_frag_c]]
  *             n_ch = 0             # <<<<<<<<<<<<<<
  *             while i_frag_c >= 0:
  *                 n_ch += 1
  */
-      __Pyx_INCREF(__pyx_int_0);
-      __Pyx_XDECREF_SET(__pyx_v_n_ch, __pyx_int_0);
+      __pyx_v_n_ch = 0;
 
-      /* "classic_trees.pyx":1039
+      /* "classic_trees.pyx":1050
  *             merger_tree[j_frag].child = merger_tree[j_index[i_frag_c]]
  *             n_ch = 0
  *             while i_frag_c >= 0:             # <<<<<<<<<<<<<<
@@ -13827,56 +13497,60 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  *                 i_frag_c = i_sib[i_frag_c]
  */
       while (1) {
-        __pyx_t_12 = ((__pyx_v_i_frag_c >= 0) != 0);
-        if (!__pyx_t_12) break;
+        __pyx_t_11 = ((__pyx_v_i_frag_c >= 0) != 0);
+        if (!__pyx_t_11) break;
 
-        /* "classic_trees.pyx":1040
+        /* "classic_trees.pyx":1051
  *             n_ch = 0
  *             while i_frag_c >= 0:
  *                 n_ch += 1             # <<<<<<<<<<<<<<
  *                 i_frag_c = i_sib[i_frag_c]
- *             #print('Out of while loop')
+ *             print('n_ch = ',n_ch)
  */
-        __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_n_ch, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1040, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF_SET(__pyx_v_n_ch, __pyx_t_1);
-        __pyx_t_1 = 0;
+        __pyx_v_n_ch = (__pyx_v_n_ch + 1);
 
-        /* "classic_trees.pyx":1041
+        /* "classic_trees.pyx":1052
  *             while i_frag_c >= 0:
  *                 n_ch += 1
  *                 i_frag_c = i_sib[i_frag_c]             # <<<<<<<<<<<<<<
- *             #print('Out of while loop')
+ *             print('n_ch = ',n_ch)
  *             merger_tree[j_frag].nchild = n_ch
  */
         __pyx_v_i_frag_c = (__pyx_v_i_sib[__pyx_v_i_frag_c]);
       }
 
-      /* "classic_trees.pyx":1043
+      /* "classic_trees.pyx":1053
+ *                 n_ch += 1
  *                 i_frag_c = i_sib[i_frag_c]
- *             #print('Out of while loop')
- *             merger_tree[j_frag].nchild = n_ch             # <<<<<<<<<<<<<<
- *             print(i_frag)
- *     print('out of here')
- */
-      __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_n_ch); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1043, __pyx_L1_error)
-      (__pyx_v_merger_tree[__pyx_v_j_frag])->nchild = __pyx_t_7;
-
-      /* "classic_trees.pyx":1044
- *             #print('Out of while loop')
+ *             print('n_ch = ',n_ch)             # <<<<<<<<<<<<<<
  *             merger_tree[j_frag].nchild = n_ch
- *             print(i_frag)             # <<<<<<<<<<<<<<
- *     print('out of here')
- *     j_index[0] = 0
+ *             #print(i_frag)
  */
-      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_i_frag); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1044, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_n_ch); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1053, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1044, __pyx_L1_error)
+      __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1053, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_INCREF(__pyx_kp_u_n_ch);
+      __Pyx_GIVEREF(__pyx_kp_u_n_ch);
+      PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_kp_u_n_ch);
+      __Pyx_GIVEREF(__pyx_t_1);
+      PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_1);
+      __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1053, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "classic_trees.pyx":1034
+      /* "classic_trees.pyx":1054
+ *                 i_frag_c = i_sib[i_frag_c]
+ *             print('n_ch = ',n_ch)
+ *             merger_tree[j_frag].nchild = n_ch             # <<<<<<<<<<<<<<
+ *             #print(i_frag)
+ *     print('out of here')
+ */
+      (__pyx_v_merger_tree[__pyx_v_j_frag])->nchild = __pyx_v_n_ch;
+
+      /* "classic_trees.pyx":1045
  *         j_frag = j_index[i_frag]
  *         i_frag_c = i_child[i_frag]
  *         if i_frag_c >= 0:             # <<<<<<<<<<<<<<
@@ -13886,396 +13560,49 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
     }
   }
 
-  /* "classic_trees.pyx":1045
+  /* "classic_trees.pyx":1056
  *             merger_tree[j_frag].nchild = n_ch
- *             print(i_frag)
+ *             #print(i_frag)
  *     print('out of here')             # <<<<<<<<<<<<<<
- *     j_index[0] = 0
- *     #i_sib = <int*>malloc(n_frag_max*sizeof(int))
+ *     print('n_frag_tot = ',n_frag_tot)
+ *     '''
  */
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1045, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1056, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":1046
- *             print(i_frag)
+  /* "classic_trees.pyx":1057
+ *             #print(i_frag)
  *     print('out of here')
- *     j_index[0] = 0             # <<<<<<<<<<<<<<
- *     #i_sib = <int*>malloc(n_frag_max*sizeof(int))
- *     #i_child = <int*>malloc(n_frag_max*sizeof(int))
+ *     print('n_frag_tot = ',n_frag_tot)             # <<<<<<<<<<<<<<
+ *     '''
+ *     j_index[0] = 0
  */
-  (__pyx_v_j_index[0]) = 0;
-
-  /* "classic_trees.pyx":1050
- *     #i_child = <int*>malloc(n_frag_max*sizeof(int))
- *     #m_tr = <double*>malloc(n_frag_max*sizeof(double))
- *     print('Up till here!')             # <<<<<<<<<<<<<<
- *     merger_tree[0].mhalo = m_tr[0]
- *     for i_lev in range(n_lev-1):
- */
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1050, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_n_frag_tot); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1057, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1057, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_INCREF(__pyx_kp_u_n_frag_tot);
+  __Pyx_GIVEREF(__pyx_kp_u_n_frag_tot);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_kp_u_n_frag_tot);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_1);
+  __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1057, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":1051
- *     #m_tr = <double*>malloc(n_frag_max*sizeof(double))
- *     print('Up till here!')
- *     merger_tree[0].mhalo = m_tr[0]             # <<<<<<<<<<<<<<
- *     for i_lev in range(n_lev-1):
- *         print('start point range: ',jp_frag[i_lev])
- */
-  (__pyx_v_merger_tree[0])->mhalo = (__pyx_v_m_tr[0]);
-
-  /* "classic_trees.pyx":1052
- *     print('Up till here!')
- *     merger_tree[0].mhalo = m_tr[0]
- *     for i_lev in range(n_lev-1):             # <<<<<<<<<<<<<<
- *         print('start point range: ',jp_frag[i_lev])
- *         print('end point range: ',jp_frag[i_lev]+n_frag_lev[i_lev])
- */
-  __pyx_t_16 = (__pyx_v_n_lev - 1);
-  __pyx_t_17 = __pyx_t_16;
-  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_17; __pyx_t_2+=1) {
-    __pyx_v_i_lev = __pyx_t_2;
-
-    /* "classic_trees.pyx":1053
- *     merger_tree[0].mhalo = m_tr[0]
- *     for i_lev in range(n_lev-1):
- *         print('start point range: ',jp_frag[i_lev])             # <<<<<<<<<<<<<<
- *         print('end point range: ',jp_frag[i_lev]+n_frag_lev[i_lev])
- *         for k_frag_p in range(jp_frag[i_lev],jp_frag[i_lev]+n_frag_lev[i_lev]):
- */
-    __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_jp_frag[__pyx_v_i_lev])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1053, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1053, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_INCREF(__pyx_kp_u_start_point_range);
-    __Pyx_GIVEREF(__pyx_kp_u_start_point_range);
-    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_start_point_range);
-    __Pyx_GIVEREF(__pyx_t_6);
-    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_6);
-    __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1053, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-    /* "classic_trees.pyx":1054
- *     for i_lev in range(n_lev-1):
- *         print('start point range: ',jp_frag[i_lev])
- *         print('end point range: ',jp_frag[i_lev]+n_frag_lev[i_lev])             # <<<<<<<<<<<<<<
- *         for k_frag_p in range(jp_frag[i_lev],jp_frag[i_lev]+n_frag_lev[i_lev]):
- *             #print('k_frag_p = ',k_frag_p)
- */
-    __pyx_t_6 = __Pyx_PyInt_From_int(((__pyx_v_jp_frag[__pyx_v_i_lev]) + (__pyx_v_n_frag_lev[__pyx_v_i_lev]))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1054, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1054, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_INCREF(__pyx_kp_u_end_point_range);
-    __Pyx_GIVEREF(__pyx_kp_u_end_point_range);
-    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_end_point_range);
-    __Pyx_GIVEREF(__pyx_t_6);
-    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_6);
-    __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1054, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-    /* "classic_trees.pyx":1055
- *         print('start point range: ',jp_frag[i_lev])
- *         print('end point range: ',jp_frag[i_lev]+n_frag_lev[i_lev])
- *         for k_frag_p in range(jp_frag[i_lev],jp_frag[i_lev]+n_frag_lev[i_lev]):             # <<<<<<<<<<<<<<
- *             #print('k_frag_p = ',k_frag_p)
- *             j_frag_p = j_index[k_frag_p]
- */
-    __pyx_t_3 = ((__pyx_v_jp_frag[__pyx_v_i_lev]) + (__pyx_v_n_frag_lev[__pyx_v_i_lev]));
-    __pyx_t_4 = __pyx_t_3;
-    for (__pyx_t_7 = (__pyx_v_jp_frag[__pyx_v_i_lev]); __pyx_t_7 < __pyx_t_4; __pyx_t_7+=1) {
-      __pyx_v_k_frag_p = __pyx_t_7;
-
-      /* "classic_trees.pyx":1057
- *         for k_frag_p in range(jp_frag[i_lev],jp_frag[i_lev]+n_frag_lev[i_lev]):
- *             #print('k_frag_p = ',k_frag_p)
- *             j_frag_p = j_index[k_frag_p]             # <<<<<<<<<<<<<<
- *             n_child1 = merger_tree[j_frag_p].nchild
- *             i_sib[k_frag_p] = n_child1
- */
-      __pyx_v_j_frag_p = (__pyx_v_j_index[__pyx_v_k_frag_p]);
-
-      /* "classic_trees.pyx":1058
- *             #print('k_frag_p = ',k_frag_p)
- *             j_frag_p = j_index[k_frag_p]
- *             n_child1 = merger_tree[j_frag_p].nchild             # <<<<<<<<<<<<<<
- *             i_sib[k_frag_p] = n_child1
- *             j_child1 = child_ref[j_frag_p]
- */
-      __pyx_t_6 = __Pyx_PyInt_From_int((__pyx_v_merger_tree[__pyx_v_j_frag_p])->nchild); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1058, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_XDECREF_SET(__pyx_v_n_child1, __pyx_t_6);
-      __pyx_t_6 = 0;
-
-      /* "classic_trees.pyx":1059
- *             j_frag_p = j_index[k_frag_p]
- *             n_child1 = merger_tree[j_frag_p].nchild
- *             i_sib[k_frag_p] = n_child1             # <<<<<<<<<<<<<<
- *             j_child1 = child_ref[j_frag_p]
- *             if n_child1==1:
- */
-      __pyx_t_18 = __Pyx_PyInt_As_int(__pyx_v_n_child1); if (unlikely((__pyx_t_18 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1059, __pyx_L1_error)
-      (__pyx_v_i_sib[__pyx_v_k_frag_p]) = __pyx_t_18;
-
-      /* "classic_trees.pyx":1060
- *             n_child1 = merger_tree[j_frag_p].nchild
- *             i_sib[k_frag_p] = n_child1
- *             j_child1 = child_ref[j_frag_p]             # <<<<<<<<<<<<<<
- *             if n_child1==1:
- *                 #print('indx_ch = ',indx_ch)
- */
-      __pyx_v_j_child1 = (__pyx_v_child_ref[__pyx_v_j_frag_p]);
-
-      /* "classic_trees.pyx":1061
- *             i_sib[k_frag_p] = n_child1
- *             j_child1 = child_ref[j_frag_p]
- *             if n_child1==1:             # <<<<<<<<<<<<<<
- *                 #print('indx_ch = ',indx_ch)
- *                 indx_ch[0] = 0
- */
-      __pyx_t_6 = __Pyx_PyInt_EqObjC(__pyx_v_n_child1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1061, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 1061, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (__pyx_t_12) {
-
-        /* "classic_trees.pyx":1063
- *             if n_child1==1:
- *                 #print('indx_ch = ',indx_ch)
- *                 indx_ch[0] = 0             # <<<<<<<<<<<<<<
- *             elif n_child1 >= 2:
- *                 if n_child1 > n_ch_max:
- */
-        (__pyx_v_indx_ch[0]) = 0;
-
-        /* "classic_trees.pyx":1061
- *             i_sib[k_frag_p] = n_child1
- *             j_child1 = child_ref[j_frag_p]
- *             if n_child1==1:             # <<<<<<<<<<<<<<
- *                 #print('indx_ch = ',indx_ch)
- *                 indx_ch[0] = 0
- */
-        goto __pyx_L58;
-      }
-
-      /* "classic_trees.pyx":1064
- *                 #print('indx_ch = ',indx_ch)
- *                 indx_ch[0] = 0
- *             elif n_child1 >= 2:             # <<<<<<<<<<<<<<
- *                 if n_child1 > n_ch_max:
- *                     print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
- */
-      __pyx_t_6 = PyObject_RichCompare(__pyx_v_n_child1, __pyx_int_2, Py_GE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1064, __pyx_L1_error)
-      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 1064, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (__pyx_t_12) {
-
-        /* "classic_trees.pyx":1065
- *                 indx_ch[0] = 0
- *             elif n_child1 >= 2:
- *                 if n_child1 > n_ch_max:             # <<<<<<<<<<<<<<
- *                     print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
- *                 #length = len(merger_tree[j_child1:j_child1+n_child1])
- */
-        __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_n_ch_max); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1065, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_1 = PyObject_RichCompare(__pyx_v_n_child1, __pyx_t_6, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1065, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 1065, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        if (__pyx_t_12) {
-
-          /* "classic_trees.pyx":1066
- *             elif n_child1 >= 2:
- *                 if n_child1 > n_ch_max:
- *                     print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)             # <<<<<<<<<<<<<<
- *                 #length = len(merger_tree[j_child1:j_child1+n_child1])
- *                 indx_ch = indexxx(n_child1,[merger_tree[i+j_child1].mhalo for i in range(n_child1)],indx_ch)
- */
-          __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1066, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_INCREF(__pyx_kp_u_make_tree_n_child1_n_ch_max_incr);
-          __Pyx_GIVEREF(__pyx_kp_u_make_tree_n_child1_n_ch_max_incr);
-          PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_make_tree_n_child1_n_ch_max_incr);
-          __Pyx_INCREF(__pyx_v_n_child1);
-          __Pyx_GIVEREF(__pyx_v_n_child1);
-          PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_n_child1);
-          __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1066, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-          /* "classic_trees.pyx":1065
- *                 indx_ch[0] = 0
- *             elif n_child1 >= 2:
- *                 if n_child1 > n_ch_max:             # <<<<<<<<<<<<<<
- *                     print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
- *                 #length = len(merger_tree[j_child1:j_child1+n_child1])
- */
-        }
-
-        /* "classic_trees.pyx":1068
- *                     print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
- *                 #length = len(merger_tree[j_child1:j_child1+n_child1])
- *                 indx_ch = indexxx(n_child1,[merger_tree[i+j_child1].mhalo for i in range(n_child1)],indx_ch)             # <<<<<<<<<<<<<<
- *             if n_child1 >= 1:
- *                 i_child[k_frag_p] = k_frag + 1
- */
-        __pyx_t_18 = __Pyx_PyInt_As_int(__pyx_v_n_child1); if (unlikely((__pyx_t_18 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1068, __pyx_L1_error)
-        { /* enter inner scope */
-          __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1068, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_19 = __Pyx_PyInt_As_long(__pyx_v_n_child1); if (unlikely((__pyx_t_19 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 1068, __pyx_L1_error)
-          __pyx_t_20 = __pyx_t_19;
-          for (__pyx_t_21 = 0; __pyx_t_21 < __pyx_t_20; __pyx_t_21+=1) {
-            __pyx_8genexpr6__pyx_v_i = __pyx_t_21;
-            __pyx_t_1 = PyFloat_FromDouble((__pyx_v_merger_tree[(__pyx_8genexpr6__pyx_v_i + __pyx_v_j_child1)])->mhalo); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1068, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_1);
-            if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_1))) __PYX_ERR(0, 1068, __pyx_L1_error)
-            __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          }
-        } /* exit inner scope */
-        __pyx_t_22 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_6, PyBUF_WRITABLE); if (unlikely(!__pyx_t_22.memview)) __PYX_ERR(0, 1068, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_v_indx_ch = __pyx_f_13classic_trees_indexxx(__pyx_t_18, __pyx_t_22, __pyx_v_indx_ch);
-        __PYX_XDEC_MEMVIEW(&__pyx_t_22, 1);
-        __pyx_t_22.memview = NULL;
-        __pyx_t_22.data = NULL;
-
-        /* "classic_trees.pyx":1064
- *                 #print('indx_ch = ',indx_ch)
- *                 indx_ch[0] = 0
- *             elif n_child1 >= 2:             # <<<<<<<<<<<<<<
- *                 if n_child1 > n_ch_max:
- *                     print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
- */
-      }
-      __pyx_L58:;
-
-      /* "classic_trees.pyx":1069
- *                 #length = len(merger_tree[j_child1:j_child1+n_child1])
- *                 indx_ch = indexxx(n_child1,[merger_tree[i+j_child1].mhalo for i in range(n_child1)],indx_ch)
- *             if n_child1 >= 1:             # <<<<<<<<<<<<<<
- *                 i_child[k_frag_p] = k_frag + 1
- *             else:
- */
-      __pyx_t_6 = PyObject_RichCompare(__pyx_v_n_child1, __pyx_int_1, Py_GE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1069, __pyx_L1_error)
-      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 1069, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (__pyx_t_12) {
-
-        /* "classic_trees.pyx":1070
- *                 indx_ch = indexxx(n_child1,[merger_tree[i+j_child1].mhalo for i in range(n_child1)],indx_ch)
- *             if n_child1 >= 1:
- *                 i_child[k_frag_p] = k_frag + 1             # <<<<<<<<<<<<<<
- *             else:
- *                 i_child[k_frag_p] = -1
- */
-        (__pyx_v_i_child[__pyx_v_k_frag_p]) = (__pyx_v_k_frag + 1);
-
-        /* "classic_trees.pyx":1069
- *                 #length = len(merger_tree[j_child1:j_child1+n_child1])
- *                 indx_ch = indexxx(n_child1,[merger_tree[i+j_child1].mhalo for i in range(n_child1)],indx_ch)
- *             if n_child1 >= 1:             # <<<<<<<<<<<<<<
- *                 i_child[k_frag_p] = k_frag + 1
- *             else:
- */
-        goto __pyx_L62;
-      }
-
-      /* "classic_trees.pyx":1072
- *                 i_child[k_frag_p] = k_frag + 1
- *             else:
- *                 i_child[k_frag_p] = -1             # <<<<<<<<<<<<<<
- *             for k_child in range(n_child1-1,-1,-1):
- *                 j_frag_c = indx_ch[k_child] + j_child1 - 1  # Adjust for Python's 0-based indexing
- */
-      /*else*/ {
-        (__pyx_v_i_child[__pyx_v_k_frag_p]) = -1;
-      }
-      __pyx_L62:;
-
-      /* "classic_trees.pyx":1073
- *             else:
- *                 i_child[k_frag_p] = -1
- *             for k_child in range(n_child1-1,-1,-1):             # <<<<<<<<<<<<<<
- *                 j_frag_c = indx_ch[k_child] + j_child1 - 1  # Adjust for Python's 0-based indexing
- *                 k_frag += 1
- */
-      __pyx_t_6 = __Pyx_PyInt_SubtractObjC(__pyx_v_n_child1, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1073, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_19 = __Pyx_PyInt_As_long(__pyx_t_6); if (unlikely((__pyx_t_19 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 1073, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      for (__pyx_t_18 = __pyx_t_19; __pyx_t_18 > -1; __pyx_t_18-=1) {
-        __pyx_v_k_child = __pyx_t_18;
-
-        /* "classic_trees.pyx":1074
- *                 i_child[k_frag_p] = -1
- *             for k_child in range(n_child1-1,-1,-1):
- *                 j_frag_c = indx_ch[k_child] + j_child1 - 1  # Adjust for Python's 0-based indexing             # <<<<<<<<<<<<<<
- *                 k_frag += 1
- *                 j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing
- */
-        __pyx_v_j_frag_c = (((__pyx_v_indx_ch[__pyx_v_k_child]) + __pyx_v_j_child1) - 1);
-
-        /* "classic_trees.pyx":1075
- *             for k_child in range(n_child1-1,-1,-1):
- *                 j_frag_c = indx_ch[k_child] + j_child1 - 1  # Adjust for Python's 0-based indexing
- *                 k_frag += 1             # <<<<<<<<<<<<<<
- *                 j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing
- *                 merger_tree[k_frag].parent = merger_tree[k_frag_p]  # Assign parent as a reference
- */
-        __pyx_v_k_frag = (__pyx_v_k_frag + 1);
-
-        /* "classic_trees.pyx":1076
- *                 j_frag_c = indx_ch[k_child] + j_child1 - 1  # Adjust for Python's 0-based indexing
- *                 k_frag += 1
- *                 j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing             # <<<<<<<<<<<<<<
- *                 merger_tree[k_frag].parent = merger_tree[k_frag_p]  # Assign parent as a reference
- *                 m_tr[k_frag] = merger_tree[j_frag_c].mhalo  # Store mhalo value in mtr array
- */
-        (__pyx_v_j_index[__pyx_v_k_frag]) = __pyx_v_j_frag_c;
-
-        /* "classic_trees.pyx":1077
- *                 k_frag += 1
- *                 j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing
- *                 merger_tree[k_frag].parent = merger_tree[k_frag_p]  # Assign parent as a reference             # <<<<<<<<<<<<<<
- *                 m_tr[k_frag] = merger_tree[j_frag_c].mhalo  # Store mhalo value in mtr array
- * 
- */
-        (__pyx_v_merger_tree[__pyx_v_k_frag])->parent = (__pyx_v_merger_tree[__pyx_v_k_frag_p]);
-
-        /* "classic_trees.pyx":1078
- *                 j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing
- *                 merger_tree[k_frag].parent = merger_tree[k_frag_p]  # Assign parent as a reference
- *                 m_tr[k_frag] = merger_tree[j_frag_c].mhalo  # Store mhalo value in mtr array             # <<<<<<<<<<<<<<
- * 
- *     merger_tree = build_sibling(merger_tree,n_frag_tot)
- */
-        __pyx_t_10 = (__pyx_v_merger_tree[__pyx_v_j_frag_c])->mhalo;
-        (__pyx_v_m_tr[__pyx_v_k_frag]) = __pyx_t_10;
-      }
-    }
-  }
-
-  /* "classic_trees.pyx":1080
- *                 m_tr[k_frag] = merger_tree[j_frag_c].mhalo  # Store mhalo value in mtr array
- * 
+  /* "classic_trees.pyx":1120
+ *        merger_tree[k].nchild = i_sib[k]
+ *     '''
  *     merger_tree = build_sibling(merger_tree,n_frag_tot)             # <<<<<<<<<<<<<<
  * 
  *     i_err = 0
  */
   __pyx_v_merger_tree = __pyx_f_13classic_trees_build_sibling(__pyx_v_merger_tree, __pyx_v_n_frag_tot);
 
-  /* "classic_trees.pyx":1082
+  /* "classic_trees.pyx":1122
  *     merger_tree = build_sibling(merger_tree,n_frag_tot)
  * 
  *     i_err = 0             # <<<<<<<<<<<<<<
@@ -14284,7 +13611,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
  */
   __pyx_v_i_err = 0;
 
-  /* "classic_trees.pyx":1083
+  /* "classic_trees.pyx":1123
  * 
  *     i_err = 0
  *     return merger_tree             # <<<<<<<<<<<<<<
@@ -14294,7 +13621,7 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   __pyx_r = __pyx_v_merger_tree;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":832
+  /* "classic_trees.pyx":836
  * cdef DELTA = functions(filename)
  * 
  * cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev,int n_frag_max,int n_frag_tot=0):             # <<<<<<<<<<<<<<
@@ -14308,21 +13635,14 @@ static struct __pyx_t_13classic_trees_Tree_Node **__pyx_f_13classic_trees_make_t
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_22, 1);
   __Pyx_WriteUnraisable("classic_trees.make_tree", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_i_node);
-  __Pyx_XDECREF(__pyx_v_m);
-  __Pyx_XDECREF(__pyx_v_count);
-  __Pyx_XDECREF(__pyx_v_iw);
-  __Pyx_XDECREF(__pyx_v_n_ch);
-  __Pyx_XDECREF(__pyx_v_n_child1);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "classic_trees.pyx":1085
+/* "classic_trees.pyx":1125
  *     return merger_tree
  * 
  * def get_tree_vals(             # <<<<<<<<<<<<<<
@@ -14386,43 +13706,43 @@ static PyObject *__pyx_pw_13classic_trees_3get_tree_vals(PyObject *__pyx_self, P
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_i_seed_0)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 1); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 1); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_m_0)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 2); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 2); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_a_0)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 3); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 3); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_m_min)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 4); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 4); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_a_lev)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 5); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 5); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_n_lev)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 6); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 6); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_n_frag_max)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 7); __PYX_ERR(0, 1085, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, 7); __PYX_ERR(0, 1125, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
@@ -14432,7 +13752,7 @@ static PyObject *__pyx_pw_13classic_trees_3get_tree_vals(PyObject *__pyx_self, P
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_tree_vals") < 0)) __PYX_ERR(0, 1085, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_tree_vals") < 0)) __PYX_ERR(0, 1125, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -14450,23 +13770,23 @@ static PyObject *__pyx_pw_13classic_trees_3get_tree_vals(PyObject *__pyx_self, P
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_i = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_i == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1086, __pyx_L3_error)
-    __pyx_v_i_seed_0 = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_i_seed_0 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1087, __pyx_L3_error)
-    __pyx_v_m_0 = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_m_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1088, __pyx_L3_error)
-    __pyx_v_a_0 = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_a_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1089, __pyx_L3_error)
-    __pyx_v_m_min = __pyx_PyFloat_AsDouble(values[4]); if (unlikely((__pyx_v_m_min == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1090, __pyx_L3_error)
-    __pyx_v_a_lev = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_a_lev.memview)) __PYX_ERR(0, 1091, __pyx_L3_error)
-    __pyx_v_n_lev = __Pyx_PyInt_As_int(values[6]); if (unlikely((__pyx_v_n_lev == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1092, __pyx_L3_error)
-    __pyx_v_n_frag_max = __Pyx_PyInt_As_int(values[7]); if (unlikely((__pyx_v_n_frag_max == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1093, __pyx_L3_error)
+    __pyx_v_i = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_i == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1126, __pyx_L3_error)
+    __pyx_v_i_seed_0 = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_i_seed_0 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1127, __pyx_L3_error)
+    __pyx_v_m_0 = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_m_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1128, __pyx_L3_error)
+    __pyx_v_a_0 = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_a_0 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1129, __pyx_L3_error)
+    __pyx_v_m_min = __pyx_PyFloat_AsDouble(values[4]); if (unlikely((__pyx_v_m_min == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1130, __pyx_L3_error)
+    __pyx_v_a_lev = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_a_lev.memview)) __PYX_ERR(0, 1131, __pyx_L3_error)
+    __pyx_v_n_lev = __Pyx_PyInt_As_int(values[6]); if (unlikely((__pyx_v_n_lev == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1132, __pyx_L3_error)
+    __pyx_v_n_frag_max = __Pyx_PyInt_As_int(values[7]); if (unlikely((__pyx_v_n_frag_max == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1133, __pyx_L3_error)
     if (values[8]) {
-      __pyx_v_n_frag_tot = __Pyx_PyInt_As_int(values[8]); if (unlikely((__pyx_v_n_frag_tot == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1094, __pyx_L3_error)
+      __pyx_v_n_frag_tot = __Pyx_PyInt_As_int(values[8]); if (unlikely((__pyx_v_n_frag_tot == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1134, __pyx_L3_error)
     } else {
       __pyx_v_n_frag_tot = ((int)0);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1085, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_tree_vals", 0, 8, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1125, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("classic_trees.get_tree_vals", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -14492,12 +13812,12 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   PyObject *__pyx_v_arr_desc = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
+  struct __pyx_t_13classic_trees_Tree_Node **__pyx_t_1;
+  struct __pyx_opt_args_13classic_trees_make_tree __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
-  struct __pyx_t_13classic_trees_Tree_Node **__pyx_t_5;
-  struct __pyx_opt_args_13classic_trees_make_tree __pyx_t_6;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
   PyObject *__pyx_t_8 = NULL;
   PyObject *__pyx_t_9 = NULL;
@@ -14513,7 +13833,7 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_tree_vals", 0);
 
-  /* "classic_trees.pyx":1096
+  /* "classic_trees.pyx":1136
  *     int n_frag_tot=0):
  * 
  *     i_seed_0 -=19*(1+i)             # <<<<<<<<<<<<<<
@@ -14522,7 +13842,7 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
  */
   __pyx_v_i_seed_0 = (__pyx_v_i_seed_0 - (19 * (1 + __pyx_v_i)));
 
-  /* "classic_trees.pyx":1098
+  /* "classic_trees.pyx":1138
  *     i_seed_0 -=19*(1+i)
  *     cdef:
  *         int i_seed = i_seed_0             # <<<<<<<<<<<<<<
@@ -14531,82 +13851,59 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
  */
   __pyx_v_i_seed = __pyx_v_i_seed_0;
 
-  /* "classic_trees.pyx":1101
+  /* "classic_trees.pyx":1141
  *         Tree_Node** merger_tree
  *         Tree_Node* this_node
  *         int count = 0             # <<<<<<<<<<<<<<
- *     random.seed(i_seed)
+ *     srand(i_seed)
  *     merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)
  */
   __pyx_v_count = 0;
 
-  /* "classic_trees.pyx":1102
+  /* "classic_trees.pyx":1142
  *         Tree_Node* this_node
  *         int count = 0
- *     random.seed(i_seed)             # <<<<<<<<<<<<<<
+ *     srand(i_seed)             # <<<<<<<<<<<<<<
  *     merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_random); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1102, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_seed); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1102, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_i_seed); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1102, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_4);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-    }
-  }
-  __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1102, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  srand(__pyx_v_i_seed);
 
-  /* "classic_trees.pyx":1103
+  /* "classic_trees.pyx":1143
  *         int count = 0
- *     random.seed(i_seed)
+ *     srand(i_seed)
  *     merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)             # <<<<<<<<<<<<<<
  * 
  *     print('Made a tree ',i+1)
  */
-  __pyx_t_6.__pyx_n = 1;
-  __pyx_t_6.n_frag_tot = __pyx_v_n_frag_tot;
-  __pyx_t_5 = __pyx_f_13classic_trees_make_tree(__pyx_v_m_0, __pyx_v_a_0, __pyx_v_m_min, __pyx_v_a_lev, __pyx_v_n_lev, __pyx_v_n_frag_max, &__pyx_t_6); 
-  __pyx_v_merger_tree = __pyx_t_5;
+  __pyx_t_2.__pyx_n = 1;
+  __pyx_t_2.n_frag_tot = __pyx_v_n_frag_tot;
+  __pyx_t_1 = __pyx_f_13classic_trees_make_tree(__pyx_v_m_0, __pyx_v_a_0, __pyx_v_m_min, __pyx_v_a_lev, __pyx_v_n_lev, __pyx_v_n_frag_max, &__pyx_t_2); 
+  __pyx_v_merger_tree = __pyx_t_1;
 
-  /* "classic_trees.pyx":1105
+  /* "classic_trees.pyx":1145
  *     merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)
  * 
  *     print('Made a tree ',i+1)             # <<<<<<<<<<<<<<
  *     this_node = merger_tree[0]
  *     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
  */
-  __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_i + 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1105, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1105, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_long((__pyx_v_i + 1)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1145, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1145, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_kp_u_Made_a_tree);
   __Pyx_GIVEREF(__pyx_kp_u_Made_a_tree);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_Made_a_tree);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
-  __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1105, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_kp_u_Made_a_tree);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
+  __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1145, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":1106
+  /* "classic_trees.pyx":1146
  * 
  *     print('Made a tree ',i+1)
  *     this_node = merger_tree[0]             # <<<<<<<<<<<<<<
@@ -14615,44 +13912,44 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
  */
   __pyx_v_this_node = (__pyx_v_merger_tree[0]);
 
-  /* "classic_trees.pyx":1107
+  /* "classic_trees.pyx":1147
  *     print('Made a tree ',i+1)
  *     this_node = merger_tree[0]
  *     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)             # <<<<<<<<<<<<<<
  * 
  *     print('Number of nodes in tree',i+1,'is',count)
  */
-  __pyx_t_1 = __pyx_f_13classic_trees_node_vals_and_counter(__pyx_v_i, __pyx_v_this_node, __pyx_v_n_frag_max, __pyx_v_merger_tree); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1107, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
-    PyObject* sequence = __pyx_t_1;
+  __pyx_t_3 = __pyx_f_13classic_trees_node_vals_and_counter(__pyx_v_i, __pyx_v_this_node, __pyx_v_n_frag_max, __pyx_v_merger_tree); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1147, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if ((likely(PyTuple_CheckExact(__pyx_t_3))) || (PyList_CheckExact(__pyx_t_3))) {
+    PyObject* sequence = __pyx_t_3;
     Py_ssize_t size = __Pyx_PySequence_SIZE(sequence);
     if (unlikely(size != 7)) {
       if (size > 7) __Pyx_RaiseTooManyValuesError(7);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(0, 1107, __pyx_L1_error)
+      __PYX_ERR(0, 1147, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     if (likely(PyTuple_CheckExact(sequence))) {
-      __pyx_t_3 = PyTuple_GET_ITEM(sequence, 0); 
-      __pyx_t_2 = PyTuple_GET_ITEM(sequence, 1); 
-      __pyx_t_4 = PyTuple_GET_ITEM(sequence, 2); 
+      __pyx_t_4 = PyTuple_GET_ITEM(sequence, 0); 
+      __pyx_t_5 = PyTuple_GET_ITEM(sequence, 1); 
+      __pyx_t_6 = PyTuple_GET_ITEM(sequence, 2); 
       __pyx_t_7 = PyTuple_GET_ITEM(sequence, 3); 
       __pyx_t_8 = PyTuple_GET_ITEM(sequence, 4); 
       __pyx_t_9 = PyTuple_GET_ITEM(sequence, 5); 
       __pyx_t_10 = PyTuple_GET_ITEM(sequence, 6); 
     } else {
-      __pyx_t_3 = PyList_GET_ITEM(sequence, 0); 
-      __pyx_t_2 = PyList_GET_ITEM(sequence, 1); 
-      __pyx_t_4 = PyList_GET_ITEM(sequence, 2); 
+      __pyx_t_4 = PyList_GET_ITEM(sequence, 0); 
+      __pyx_t_5 = PyList_GET_ITEM(sequence, 1); 
+      __pyx_t_6 = PyList_GET_ITEM(sequence, 2); 
       __pyx_t_7 = PyList_GET_ITEM(sequence, 3); 
       __pyx_t_8 = PyList_GET_ITEM(sequence, 4); 
       __pyx_t_9 = PyList_GET_ITEM(sequence, 5); 
       __pyx_t_10 = PyList_GET_ITEM(sequence, 6); 
     }
-    __Pyx_INCREF(__pyx_t_3);
-    __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx_t_5);
+    __Pyx_INCREF(__pyx_t_6);
     __Pyx_INCREF(__pyx_t_7);
     __Pyx_INCREF(__pyx_t_8);
     __Pyx_INCREF(__pyx_t_9);
@@ -14660,28 +13957,28 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
     #else
     {
       Py_ssize_t i;
-      PyObject** temps[7] = {&__pyx_t_3,&__pyx_t_2,&__pyx_t_4,&__pyx_t_7,&__pyx_t_8,&__pyx_t_9,&__pyx_t_10};
+      PyObject** temps[7] = {&__pyx_t_4,&__pyx_t_5,&__pyx_t_6,&__pyx_t_7,&__pyx_t_8,&__pyx_t_9,&__pyx_t_10};
       for (i=0; i < 7; i++) {
-        PyObject* item = PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 1107, __pyx_L1_error)
+        PyObject* item = PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 1147, __pyx_L1_error)
         __Pyx_GOTREF(item);
         *(temps[i]) = item;
       }
     }
     #endif
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
     Py_ssize_t index = -1;
-    PyObject** temps[7] = {&__pyx_t_3,&__pyx_t_2,&__pyx_t_4,&__pyx_t_7,&__pyx_t_8,&__pyx_t_9,&__pyx_t_10};
-    __pyx_t_11 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 1107, __pyx_L1_error)
+    PyObject** temps[7] = {&__pyx_t_4,&__pyx_t_5,&__pyx_t_6,&__pyx_t_7,&__pyx_t_8,&__pyx_t_9,&__pyx_t_10};
+    __pyx_t_11 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 1147, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_12 = Py_TYPE(__pyx_t_11)->tp_iternext;
     for (index=0; index < 7; index++) {
       PyObject* item = __pyx_t_12(__pyx_t_11); if (unlikely(!item)) goto __pyx_L3_unpacking_failed;
       __Pyx_GOTREF(item);
       *(temps[index]) = item;
     }
-    if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_11), 7) < 0) __PYX_ERR(0, 1107, __pyx_L1_error)
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_11), 7) < 0) __PYX_ERR(0, 1147, __pyx_L1_error)
     __pyx_t_12 = NULL;
     __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
     goto __pyx_L4_unpacking_done;
@@ -14689,16 +13986,16 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
     __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
     __pyx_t_12 = NULL;
     if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-    __PYX_ERR(0, 1107, __pyx_L1_error)
+    __PYX_ERR(0, 1147, __pyx_L1_error)
     __pyx_L4_unpacking_done:;
   }
-  __pyx_t_13 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_13 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1107, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_13 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_13 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1147, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_count = __pyx_t_13;
-  __pyx_v_arr_mhalo = __pyx_t_2;
-  __pyx_t_2 = 0;
-  __pyx_v_arr_nodid = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_v_arr_mhalo = __pyx_t_5;
+  __pyx_t_5 = 0;
+  __pyx_v_arr_nodid = __pyx_t_6;
+  __pyx_t_6 = 0;
   __pyx_v_arr_treeid = __pyx_t_7;
   __pyx_t_7 = 0;
   __pyx_v_arr_time = __pyx_t_8;
@@ -14708,48 +14005,48 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   __pyx_v_arr_desc = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "classic_trees.pyx":1109
+  /* "classic_trees.pyx":1149
  *     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
  * 
  *     print('Number of nodes in tree',i+1,'is',count)             # <<<<<<<<<<<<<<
  * 
  *     print('Example information from tree:')
  */
-  __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_i + 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1109, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1109, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_long((__pyx_v_i + 1)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1149, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1149, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_9 = PyTuple_New(4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1109, __pyx_L1_error)
+  __pyx_t_9 = PyTuple_New(4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1149, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_INCREF(__pyx_kp_u_Number_of_nodes_in_tree);
   __Pyx_GIVEREF(__pyx_kp_u_Number_of_nodes_in_tree);
   PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_kp_u_Number_of_nodes_in_tree);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_3);
   __Pyx_INCREF(__pyx_n_u_is);
   __Pyx_GIVEREF(__pyx_n_u_is);
   PyTuple_SET_ITEM(__pyx_t_9, 2, __pyx_n_u_is);
   __Pyx_GIVEREF(__pyx_t_10);
   PyTuple_SET_ITEM(__pyx_t_9, 3, __pyx_t_10);
-  __pyx_t_1 = 0;
+  __pyx_t_3 = 0;
   __pyx_t_10 = 0;
-  __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_9, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1109, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_9, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1149, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "classic_trees.pyx":1111
+  /* "classic_trees.pyx":1151
  *     print('Number of nodes in tree',i+1,'is',count)
  * 
  *     print('Example information from tree:')             # <<<<<<<<<<<<<<
  *     this_node = merger_tree[0]
  *     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
  */
-  __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1111, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "classic_trees.pyx":1112
+  /* "classic_trees.pyx":1152
  * 
  *     print('Example information from tree:')
  *     this_node = merger_tree[0]             # <<<<<<<<<<<<<<
@@ -14758,14 +14055,14 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
  */
   __pyx_v_this_node = (__pyx_v_merger_tree[0]);
 
-  /* "classic_trees.pyx":1113
+  /* "classic_trees.pyx":1153
  *     print('Example information from tree:')
  *     this_node = merger_tree[0]
  *     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)             # <<<<<<<<<<<<<<
  *     this_node = this_node.child
  *     print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
  */
-  __pyx_t_10 = PyFloat_FromDouble(__pyx_v_this_node->mhalo); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1113, __pyx_L1_error)
+  __pyx_t_10 = PyFloat_FromDouble(__pyx_v_this_node->mhalo); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 1153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __pyx_t_14 = __pyx_v_this_node->jlevel;
   __pyx_t_13 = -1;
@@ -14775,18 +14072,18 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   } else if (unlikely(__pyx_t_14 >= __pyx_v_a_lev.shape[0])) __pyx_t_13 = 0;
   if (unlikely(__pyx_t_13 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_13);
-    __PYX_ERR(0, 1113, __pyx_L1_error)
+    __PYX_ERR(0, 1153, __pyx_L1_error)
   }
   __pyx_t_15 = (*((double *) ( /* dim=0 */ (__pyx_v_a_lev.data + __pyx_t_14 * __pyx_v_a_lev.strides[0]) )));
   if (unlikely(__pyx_t_15 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 1113, __pyx_L1_error)
+    __PYX_ERR(0, 1153, __pyx_L1_error)
   }
-  __pyx_t_9 = PyFloat_FromDouble(((1.0 / __pyx_t_15) - 1.0)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1113, __pyx_L1_error)
+  __pyx_t_9 = PyFloat_FromDouble(((1.0 / __pyx_t_15) - 1.0)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_this_node->nchild); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1113, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_8 = PyTuple_New(6); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1113, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_this_node->nchild); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1153, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_8 = PyTuple_New(6); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_kp_u_Base_node_mass);
   __Pyx_GIVEREF(__pyx_kp_u_Base_node_mass);
@@ -14801,17 +14098,17 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   __Pyx_INCREF(__pyx_kp_u_number_of_progenitors);
   __Pyx_GIVEREF(__pyx_kp_u_number_of_progenitors);
   PyTuple_SET_ITEM(__pyx_t_8, 4, __pyx_kp_u_number_of_progenitors);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_8, 5, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_8, 5, __pyx_t_3);
   __pyx_t_10 = 0;
   __pyx_t_9 = 0;
-  __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1113, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_8, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1153, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "classic_trees.pyx":1114
+  /* "classic_trees.pyx":1154
  *     this_node = merger_tree[0]
  *     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
  *     this_node = this_node.child             # <<<<<<<<<<<<<<
@@ -14821,15 +14118,15 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   __pyx_t_16 = __pyx_v_this_node->child;
   __pyx_v_this_node = __pyx_t_16;
 
-  /* "classic_trees.pyx":1115
+  /* "classic_trees.pyx":1155
  *     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
  *     this_node = this_node.child
  *     print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)             # <<<<<<<<<<<<<<
  *     this_node = this_node.sibling
  *     print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_this_node->mhalo); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1115, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_this_node->mhalo); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1155, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_14 = __pyx_v_this_node->jlevel;
   __pyx_t_13 = -1;
   if (__pyx_t_14 < 0) {
@@ -14838,35 +14135,35 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   } else if (unlikely(__pyx_t_14 >= __pyx_v_a_lev.shape[0])) __pyx_t_13 = 0;
   if (unlikely(__pyx_t_13 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_13);
-    __PYX_ERR(0, 1115, __pyx_L1_error)
+    __PYX_ERR(0, 1155, __pyx_L1_error)
   }
   __pyx_t_15 = (*((double *) ( /* dim=0 */ (__pyx_v_a_lev.data + __pyx_t_14 * __pyx_v_a_lev.strides[0]) )));
   if (unlikely(__pyx_t_15 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 1115, __pyx_L1_error)
+    __PYX_ERR(0, 1155, __pyx_L1_error)
   }
-  __pyx_t_8 = PyFloat_FromDouble(((1.0 / __pyx_t_15) - 1.0)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1115, __pyx_L1_error)
+  __pyx_t_8 = PyFloat_FromDouble(((1.0 / __pyx_t_15) - 1.0)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = PyTuple_New(4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1115, __pyx_L1_error)
+  __pyx_t_9 = PyTuple_New(4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_INCREF(__pyx_kp_u_First_progenitor_mass);
   __Pyx_GIVEREF(__pyx_kp_u_First_progenitor_mass);
   PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_kp_u_First_progenitor_mass);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_3);
   __Pyx_INCREF(__pyx_kp_u_z);
   __Pyx_GIVEREF(__pyx_kp_u_z);
   PyTuple_SET_ITEM(__pyx_t_9, 2, __pyx_kp_u_z);
   __Pyx_GIVEREF(__pyx_t_8);
   PyTuple_SET_ITEM(__pyx_t_9, 3, __pyx_t_8);
-  __pyx_t_1 = 0;
+  __pyx_t_3 = 0;
   __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_9, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1115, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_9, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "classic_trees.pyx":1116
+  /* "classic_trees.pyx":1156
  *     this_node = this_node.child
  *     print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
  *     this_node = this_node.sibling             # <<<<<<<<<<<<<<
@@ -14876,13 +14173,13 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   __pyx_t_16 = __pyx_v_this_node->sibling;
   __pyx_v_this_node = __pyx_t_16;
 
-  /* "classic_trees.pyx":1117
+  /* "classic_trees.pyx":1157
  *     print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
  *     this_node = this_node.sibling
  *     print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)             # <<<<<<<<<<<<<<
  *     return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
  */
-  __pyx_t_8 = PyFloat_FromDouble(__pyx_v_this_node->mhalo); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1117, __pyx_L1_error)
+  __pyx_t_8 = PyFloat_FromDouble(__pyx_v_this_node->mhalo); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_14 = __pyx_v_this_node->jlevel;
   __pyx_t_13 = -1;
@@ -14892,70 +14189,70 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
   } else if (unlikely(__pyx_t_14 >= __pyx_v_a_lev.shape[0])) __pyx_t_13 = 0;
   if (unlikely(__pyx_t_13 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_13);
-    __PYX_ERR(0, 1117, __pyx_L1_error)
+    __PYX_ERR(0, 1157, __pyx_L1_error)
   }
   __pyx_t_15 = (*((double *) ( /* dim=0 */ (__pyx_v_a_lev.data + __pyx_t_14 * __pyx_v_a_lev.strides[0]) )));
   if (unlikely(__pyx_t_15 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 1117, __pyx_L1_error)
+    __PYX_ERR(0, 1157, __pyx_L1_error)
   }
-  __pyx_t_9 = PyFloat_FromDouble(((1.0 / __pyx_t_15) - 1.0)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1117, __pyx_L1_error)
+  __pyx_t_9 = PyFloat_FromDouble(((1.0 / __pyx_t_15) - 1.0)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = PyTuple_New(4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1157, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_INCREF(__pyx_kp_u_mass);
   __Pyx_GIVEREF(__pyx_kp_u_mass);
-  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_mass);
+  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_mass);
   __Pyx_GIVEREF(__pyx_t_8);
-  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_8);
+  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_8);
   __Pyx_INCREF(__pyx_kp_u_z);
   __Pyx_GIVEREF(__pyx_kp_u_z);
-  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_z);
+  PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_kp_u_z);
   __Pyx_GIVEREF(__pyx_t_9);
-  PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_9);
+  PyTuple_SET_ITEM(__pyx_t_3, 3, __pyx_t_9);
   __pyx_t_8 = 0;
   __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1117, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "classic_trees.pyx":1118
+  /* "classic_trees.pyx":1158
  *     this_node = this_node.sibling
  *     print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
  *     return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1118, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1158, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_1 = PyTuple_New(7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1118, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = PyTuple_New(7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1158, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_9);
-  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_9);
+  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_9);
   __Pyx_INCREF(__pyx_v_arr_mhalo);
   __Pyx_GIVEREF(__pyx_v_arr_mhalo);
-  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_arr_mhalo);
+  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_v_arr_mhalo);
   __Pyx_INCREF(__pyx_v_arr_nodid);
   __Pyx_GIVEREF(__pyx_v_arr_nodid);
-  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_v_arr_nodid);
+  PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_v_arr_nodid);
   __Pyx_INCREF(__pyx_v_arr_treeid);
   __Pyx_GIVEREF(__pyx_v_arr_treeid);
-  PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_v_arr_treeid);
+  PyTuple_SET_ITEM(__pyx_t_3, 3, __pyx_v_arr_treeid);
   __Pyx_INCREF(__pyx_v_arr_time);
   __Pyx_GIVEREF(__pyx_v_arr_time);
-  PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_v_arr_time);
+  PyTuple_SET_ITEM(__pyx_t_3, 4, __pyx_v_arr_time);
   __Pyx_INCREF(__pyx_v_arr_1prog);
   __Pyx_GIVEREF(__pyx_v_arr_1prog);
-  PyTuple_SET_ITEM(__pyx_t_1, 5, __pyx_v_arr_1prog);
+  PyTuple_SET_ITEM(__pyx_t_3, 5, __pyx_v_arr_1prog);
   __Pyx_INCREF(__pyx_v_arr_desc);
   __Pyx_GIVEREF(__pyx_v_arr_desc);
-  PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_v_arr_desc);
+  PyTuple_SET_ITEM(__pyx_t_3, 6, __pyx_v_arr_desc);
   __pyx_t_9 = 0;
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "classic_trees.pyx":1085
+  /* "classic_trees.pyx":1125
  *     return merger_tree
  * 
  * def get_tree_vals(             # <<<<<<<<<<<<<<
@@ -14965,10 +14262,10 @@ static PyObject *__pyx_pf_13classic_trees_2get_tree_vals(CYTHON_UNUSED PyObject 
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
@@ -23635,9 +22932,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
         __Pyx_GOTREF(__pyx_t_7);
         { Py_ssize_t __pyx_temp;
           for (__pyx_temp=0; __pyx_temp < ((__pyx_v_ndim - __pyx_t_8) + 1); __pyx_temp++) {
-            __Pyx_INCREF(__pyx_slice__4);
-            __Pyx_GIVEREF(__pyx_slice__4);
-            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__4);
+            __Pyx_INCREF(__pyx_slice__5);
+            __Pyx_GIVEREF(__pyx_slice__5);
+            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__5);
           }
         }
         __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_7); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 684, __pyx_L1_error)
@@ -23670,7 +22967,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
  *         else:
  */
       /*else*/ {
-        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__4); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 687, __pyx_L1_error)
+        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__5); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 687, __pyx_L1_error)
       }
       __pyx_L7:;
 
@@ -23810,9 +23107,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
     __Pyx_GOTREF(__pyx_t_3);
     { Py_ssize_t __pyx_temp;
       for (__pyx_temp=0; __pyx_temp < __pyx_v_nslices; __pyx_temp++) {
-        __Pyx_INCREF(__pyx_slice__4);
-        __Pyx_GIVEREF(__pyx_slice__4);
-        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__4);
+        __Pyx_INCREF(__pyx_slice__5);
+        __Pyx_GIVEREF(__pyx_slice__5);
+        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__5);
       }
     }
     __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_3); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 698, __pyx_L1_error)
@@ -30668,6 +29965,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_G, __pyx_k_G, sizeof(__pyx_k_G), 0, 0, 1, 1},
   {&__pyx_kp_u_Got_till_here, __pyx_k_Got_till_here, sizeof(__pyx_k_Got_till_here), 0, 1, 0, 0},
   {&__pyx_n_s_ImportError, __pyx_k_ImportError, sizeof(__pyx_k_ImportError), 0, 0, 1, 1},
+  {&__pyx_kp_u_In_node_vals_and_counter_functio, __pyx_k_In_node_vals_and_counter_functio, sizeof(__pyx_k_In_node_vals_and_counter_functio), 0, 1, 0, 0},
   {&__pyx_kp_s_Incompatible_checksums_0x_x_vs_0, __pyx_k_Incompatible_checksums_0x_x_vs_0, sizeof(__pyx_k_Incompatible_checksums_0x_x_vs_0), 0, 0, 1, 0},
   {&__pyx_kp_s_Incompatible_checksums_0x_x_vs_0_2, __pyx_k_Incompatible_checksums_0x_x_vs_0_2, sizeof(__pyx_k_Incompatible_checksums_0x_x_vs_0_2), 0, 0, 1, 0},
   {&__pyx_n_s_IndexError, __pyx_k_IndexError, sizeof(__pyx_k_IndexError), 0, 0, 1, 1},
@@ -30685,10 +29983,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Out_of_bounds_on_buffer_access_a, __pyx_k_Out_of_bounds_on_buffer_access_a, sizeof(__pyx_k_Out_of_bounds_on_buffer_access_a), 0, 0, 1, 0},
   {&__pyx_n_s_PickleError, __pyx_k_PickleError, sizeof(__pyx_k_PickleError), 0, 0, 1, 1},
   {&__pyx_n_s_R, __pyx_k_R, sizeof(__pyx_k_R), 0, 0, 1, 1},
+  {&__pyx_kp_u_Siblings_mass, __pyx_k_Siblings_mass, sizeof(__pyx_k_Siblings_mass), 0, 1, 0, 0},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
   {&__pyx_n_s_UnivariateSpline, __pyx_k_UnivariateSpline, sizeof(__pyx_k_UnivariateSpline), 0, 0, 1, 1},
-  {&__pyx_kp_u_Up_till_here, __pyx_k_Up_till_here, sizeof(__pyx_k_Up_till_here), 0, 1, 0, 0},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
   {&__pyx_n_s_a, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
@@ -30709,6 +30007,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_bisect_left, __pyx_k_bisect_left, sizeof(__pyx_k_bisect_left), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
+  {&__pyx_kp_u_child_index, __pyx_k_child_index, sizeof(__pyx_k_child_index), 0, 1, 0, 0},
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_n_s_classic_trees, __pyx_k_classic_trees, sizeof(__pyx_k_classic_trees), 0, 0, 1, 1},
   {&__pyx_kp_s_classic_trees_pyx, __pyx_k_classic_trees_pyx, sizeof(__pyx_k_classic_trees_pyx), 0, 0, 1, 0},
@@ -30725,7 +30024,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
   {&__pyx_n_s_empty_like, __pyx_k_empty_like, sizeof(__pyx_k_empty_like), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
-  {&__pyx_kp_u_end_point_range, __pyx_k_end_point_range, sizeof(__pyx_k_end_point_range), 0, 1, 0, 0},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_error, __pyx_k_error, sizeof(__pyx_k_error), 0, 0, 1, 1},
   {&__pyx_n_s_filename, __pyx_k_filename, sizeof(__pyx_k_filename), 0, 0, 1, 1},
@@ -30740,6 +30038,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_kp_s_got_differing_extents_in_dimensi, __pyx_k_got_differing_extents_in_dimensi, sizeof(__pyx_k_got_differing_extents_in_dimensi), 0, 0, 1, 0},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
+  {&__pyx_kp_u_i_frag, __pyx_k_i_frag, sizeof(__pyx_k_i_frag), 0, 1, 0, 0},
   {&__pyx_n_s_i_seed, __pyx_k_i_seed, sizeof(__pyx_k_i_seed), 0, 0, 1, 1},
   {&__pyx_n_s_i_seed_0, __pyx_k_i_seed_0, sizeof(__pyx_k_i_seed_0), 0, 0, 1, 1},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
@@ -30758,13 +30057,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_m_0, __pyx_k_m_0, sizeof(__pyx_k_m_0), 0, 0, 1, 1},
   {&__pyx_n_s_m_min, __pyx_k_m_min, sizeof(__pyx_k_m_min), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
-  {&__pyx_kp_u_make_tree_n_child1_n_ch_max_incr, __pyx_k_make_tree_n_child1_n_ch_max_incr, sizeof(__pyx_k_make_tree_n_child1_n_ch_max_incr), 0, 1, 0, 0},
   {&__pyx_kp_u_mass, __pyx_k_mass, sizeof(__pyx_k_mass), 0, 1, 0, 0},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_merger_tree, __pyx_k_merger_tree, sizeof(__pyx_k_merger_tree), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
   {&__pyx_n_s_my_integrand, __pyx_k_my_integrand, sizeof(__pyx_k_my_integrand), 0, 0, 1, 1},
   {&__pyx_n_s_n, __pyx_k_n, sizeof(__pyx_k_n), 0, 0, 1, 1},
+  {&__pyx_kp_u_n_ch, __pyx_k_n_ch, sizeof(__pyx_k_n_ch), 0, 1, 0, 0},
   {&__pyx_n_s_n_frag_max, __pyx_k_n_frag_max, sizeof(__pyx_k_n_frag_max), 0, 0, 1, 1},
   {&__pyx_kp_u_n_frag_tot, __pyx_k_n_frag_tot, sizeof(__pyx_k_n_frag_tot), 0, 1, 0, 0},
   {&__pyx_n_s_n_frag_tot_2, __pyx_k_n_frag_tot_2, sizeof(__pyx_k_n_frag_tot_2), 0, 0, 1, 1},
@@ -30775,6 +30074,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_new, __pyx_k_new, sizeof(__pyx_k_new), 0, 0, 1, 1},
   {&__pyx_kp_s_no_default___reduce___due_to_non, __pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 0, 1, 0},
   {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
+  {&__pyx_kp_u_number_of_children_in_this_node, __pyx_k_number_of_children_in_this_node, sizeof(__pyx_k_number_of_children_in_this_node), 0, 1, 0, 0},
   {&__pyx_kp_u_number_of_progenitors, __pyx_k_number_of_progenitors, sizeof(__pyx_k_number_of_progenitors), 0, 1, 0, 0},
   {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
   {&__pyx_kp_u_numpy__core_multiarray_failed_to, __pyx_k_numpy__core_multiarray_failed_to, sizeof(__pyx_k_numpy__core_multiarray_failed_to), 0, 1, 0, 0},
@@ -30795,7 +30095,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_pyx_unpickle_Enum, __pyx_k_pyx_unpickle_Enum, sizeof(__pyx_k_pyx_unpickle_Enum), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_unpickle_functions, __pyx_k_pyx_unpickle_functions, sizeof(__pyx_k_pyx_unpickle_functions), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
-  {&__pyx_n_s_random, __pyx_k_random, sizeof(__pyx_k_random), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_reduce, __pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_cython, __pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 0, 1, 1},
@@ -30803,7 +30102,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_s, __pyx_k_s, sizeof(__pyx_k_s), 0, 0, 1, 1},
   {&__pyx_n_s_scipy_integrate, __pyx_k_scipy_integrate, sizeof(__pyx_k_scipy_integrate), 0, 0, 1, 1},
   {&__pyx_n_s_scipy_interpolate, __pyx_k_scipy_interpolate, sizeof(__pyx_k_scipy_interpolate), 0, 0, 1, 1},
-  {&__pyx_n_s_seed, __pyx_k_seed, sizeof(__pyx_k_seed), 0, 0, 1, 1},
   {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
   {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
@@ -30813,7 +30111,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_split_R_q_1, __pyx_k_split_R_q_1, sizeof(__pyx_k_split_R_q_1), 0, 1, 0, 0},
   {&__pyx_kp_u_split_beta_0, __pyx_k_split_beta_0, sizeof(__pyx_k_split_beta_0), 0, 1, 0, 0},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
-  {&__pyx_kp_u_start_point_range, __pyx_k_start_point_range, sizeof(__pyx_k_start_point_range), 0, 1, 0, 0},
   {&__pyx_n_s_step, __pyx_k_step, sizeof(__pyx_k_step), 0, 0, 1, 1},
   {&__pyx_n_s_stop, __pyx_k_stop, sizeof(__pyx_k_stop), 0, 0, 1, 1},
   {&__pyx_kp_s_strided_and_direct, __pyx_k_strided_and_direct, sizeof(__pyx_k_strided_and_direct), 0, 0, 1, 0},
@@ -30835,10 +30132,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 469, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 470, __pyx_L1_error)
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(0, 20, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 87, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 869, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 193, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(2, 940, __pyx_L1_error)
   __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(1, 152, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
@@ -30865,149 +30162,149 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "classic_trees.pyx":229
- *     try:
- *         if malloc_failed:
- *             raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')             # <<<<<<<<<<<<<<
- *         while this_node is not NULL:
- *             node_ID = count
+  /* "classic_trees.pyx":193
+ * 
+ * cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
+ *     print('In node_vals_and_counter function')             # <<<<<<<<<<<<<<
+ *     '''
+ *     Function to count the number of nodes in a merger tree and get values out of it.
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_u_Failed_to_allocate_memory_for_ar); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 229, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_u_In_node_vals_and_counter_functio); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 193, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "classic_trees.pyx":264
- *     # finding the Tree Node index of inside a merger tree
+  /* "classic_trees.pyx":229
+ *         malloc_failed = 1
+ *     if malloc_failed:
+ *         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')             # <<<<<<<<<<<<<<
+ *     while this_node is not NULL:
+ *         node_ID = count
+ */
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_u_Failed_to_allocate_memory_for_ar); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 229, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__3);
+  __Pyx_GIVEREF(__pyx_tuple__3);
+
+  /* "classic_trees.pyx":259
+ *     cdef int index
  *     if node is NULL:
  *         raise ValueError('Node is not associated with any tree')             # <<<<<<<<<<<<<<
  *     index = node.index
  *     return index
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_u_Node_is_not_associated_with_any); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 264, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_u_Node_is_not_associated_with_any); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 259, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__4);
+  __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "classic_trees.pyx":328
+  /* "classic_trees.pyx":329
  *     def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):
  *         cdef:
  *             double[:] omega_flat= self.data[:,0]             # <<<<<<<<<<<<<<
  *             double[:] delflat   = self.data[:,-1]
  *             int n_table = 200
  */
-  __pyx_slice__4 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__4)) __PYX_ERR(0, 328, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__4);
-  __Pyx_GIVEREF(__pyx_slice__4);
-  __pyx_tuple__5 = PyTuple_Pack(2, __pyx_slice__4, __pyx_int_0); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 328, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_slice__5 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__5)) __PYX_ERR(0, 329, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__5);
+  __Pyx_GIVEREF(__pyx_slice__5);
+  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_slice__5, __pyx_int_0); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 329, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "classic_trees.pyx":329
+  /* "classic_trees.pyx":330
  *         cdef:
  *             double[:] omega_flat= self.data[:,0]
  *             double[:] delflat   = self.data[:,-1]             # <<<<<<<<<<<<<<
  *             int n_table = 200
  *             int n_v = 1000
  */
-  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_slice__4, __pyx_int_neg_1); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 329, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
+  __pyx_tuple__7 = PyTuple_Pack(2, __pyx_slice__5, __pyx_int_neg_1); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 330, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "classic_trees.pyx":362
+  /* "classic_trees.pyx":363
  *                 l_0_save = l_0
  *                 if fabs(omega_0+l_0-1) > eps_om:
  *                     raise ValueError('ERROR: omega_0+l_0+1 != 1')             # <<<<<<<<<<<<<<
  *                 x_0 = (2*(1/omega_0-1))**0.333333
  *                 summ= 0
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_u_ERROR_omega_0_l_0_1_1); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 362, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_u_ERROR_omega_0_l_0_1_1); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 363, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "classic_trees.pyx":652
+  /* "classic_trees.pyx":656
  *         beta = log(v_q_min/v_hf)/log(2*q_min)
  *         if beta <= 0:
  *             raise ValueError('split(): beta <= 0')             # <<<<<<<<<<<<<<
  * 
  *         two_pow_beta = 2**beta
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_u_split_beta_0); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 652, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
-
-  /* "classic_trees.pyx":693
- * 
- *             if R_q > 1.00001:
- *                 raise ValueError('split(): R_q > 1')             # <<<<<<<<<<<<<<
- *             randy = random.random()
- *             if randy >= R_q:
- */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_u_split_R_q_1); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 693, __pyx_L1_error)
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_u_split_beta_0); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 656, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__9);
   __Pyx_GIVEREF(__pyx_tuple__9);
 
-  /* "classic_trees.pyx":869
- *         double* w_node = <double*>malloc(n_v*sizeof(double)) #np.zeros(n_v) #[0]*n_v
+  /* "classic_trees.pyx":697
+ * 
+ *             if R_q > 1.00001:
+ *                 raise ValueError('split(): R_q > 1')             # <<<<<<<<<<<<<<
+ *             randy = rand()/float(RAND_MAX)
+ *             if randy >= R_q:
+ */
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_split_R_q_1); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 697, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__10);
+  __Pyx_GIVEREF(__pyx_tuple__10);
+
+  /* "classic_trees.pyx":875
  *         int* l_node = <int*>malloc(n_v*sizeof(int)) #np.zeros(n_v,dtype='bool') #[False]*n_v
+ *     n_frag_tot = 0
  *     print('First for loop')             # <<<<<<<<<<<<<<
  *     for i_frag in range(n_frag_max):
  *         node.mhalo = 0.0
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_First_for_loop); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 869, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_First_for_loop); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 875, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "classic_trees.pyx":885
+  /* "classic_trees.pyx":892
  *         j_index[i_frag] = 0
  *         m_tr[i_frag] = 0
  *     print('Completed first for loop')             # <<<<<<<<<<<<<<
  *     a_lev[0] = a_0
  *     for i_lev in range(n_lev):
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_Completed_first_for_loop); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 885, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__11);
-  __Pyx_GIVEREF(__pyx_tuple__11);
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_Completed_first_for_loop); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 892, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "classic_trees.pyx":1030
+  /* "classic_trees.pyx":1041
  *             else:
  *                 i_frag = -1
  *     print('Got till here!')             # <<<<<<<<<<<<<<
  *     for i_frag in range(n_frag_tot):
  *         j_frag = j_index[i_frag]
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_Got_till_here); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 1030, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__12);
-  __Pyx_GIVEREF(__pyx_tuple__12);
-
-  /* "classic_trees.pyx":1045
- *             merger_tree[j_frag].nchild = n_ch
- *             print(i_frag)
- *     print('out of here')             # <<<<<<<<<<<<<<
- *     j_index[0] = 0
- *     #i_sib = <int*>malloc(n_frag_max*sizeof(int))
- */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_u_out_of_here); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 1045, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_u_Got_till_here); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 1041, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
 
-  /* "classic_trees.pyx":1050
- *     #i_child = <int*>malloc(n_frag_max*sizeof(int))
- *     #m_tr = <double*>malloc(n_frag_max*sizeof(double))
- *     print('Up till here!')             # <<<<<<<<<<<<<<
- *     merger_tree[0].mhalo = m_tr[0]
- *     for i_lev in range(n_lev-1):
+  /* "classic_trees.pyx":1056
+ *             merger_tree[j_frag].nchild = n_ch
+ *             #print(i_frag)
+ *     print('out of here')             # <<<<<<<<<<<<<<
+ *     print('n_frag_tot = ',n_frag_tot)
+ *     '''
  */
-  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_u_Up_till_here); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 1050, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_u_out_of_here); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 1056, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__14);
   __Pyx_GIVEREF(__pyx_tuple__14);
 
-  /* "classic_trees.pyx":1111
+  /* "classic_trees.pyx":1151
  *     print('Number of nodes in tree',i+1,'is',count)
  * 
  *     print('Example information from tree:')             # <<<<<<<<<<<<<<
  *     this_node = merger_tree[0]
  *     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
  */
-  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_u_Example_information_from_tree); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 1111, __pyx_L1_error)
+  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_u_Example_information_from_tree); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 1151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__15);
   __Pyx_GIVEREF(__pyx_tuple__15);
 
@@ -31228,51 +30525,51 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__36);
   __Pyx_GIVEREF(__pyx_tuple__36);
 
-  /* "classic_trees.pyx":412
+  /* "classic_trees.pyx":413
  * 
  * # Load data from file
  * cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')             # <<<<<<<<<<<<<<
  * cdef np.ndarray k_0_np = pk_data[0]
  * cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
  */
-  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_u_CLASSIC_trees_pk_CLASS_txt); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_u_CLASSIC_trees_pk_CLASS_txt); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 413, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__37);
   __Pyx_GIVEREF(__pyx_tuple__37);
 
-  /* "classic_trees.pyx":424
+  /* "classic_trees.pyx":425
  * #    Pk_0[i_k] = Pk_0_np[i_k]
  * # Precompute sigma values for interpolation
  * cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 500)             # <<<<<<<<<<<<<<
  * cdef np.ndarray Sig = np.zeros_like(m_rough)
  * 
  */
-  __pyx_tuple__38 = PyTuple_Pack(3, __pyx_float_1e7, __pyx_float_1e15, __pyx_int_500); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_tuple__38 = PyTuple_Pack(3, __pyx_float_1e7, __pyx_float_1e15, __pyx_int_500); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__38);
   __Pyx_GIVEREF(__pyx_tuple__38);
 
-  /* "classic_trees.pyx":432
+  /* "classic_trees.pyx":433
  * 
  * 
  * def sig_int(double m):             # <<<<<<<<<<<<<<
  *     cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
  *     cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
  */
-  __pyx_tuple__39 = PyTuple_Pack(5, __pyx_n_s_m, __pyx_n_s_m, __pyx_n_s_R, __pyx_n_s_my_integrand, __pyx_n_s_i); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(0, 432, __pyx_L1_error)
+  __pyx_tuple__39 = PyTuple_Pack(5, __pyx_n_s_m, __pyx_n_s_m, __pyx_n_s_R, __pyx_n_s_my_integrand, __pyx_n_s_i); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(0, 433, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__39);
   __Pyx_GIVEREF(__pyx_tuple__39);
-  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__39, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_classic_trees_pyx, __pyx_n_s_sig_int, 432, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(0, 432, __pyx_L1_error)
+  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__39, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_classic_trees_pyx, __pyx_n_s_sig_int, 433, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(0, 433, __pyx_L1_error)
 
-  /* "classic_trees.pyx":1085
+  /* "classic_trees.pyx":1125
  *     return merger_tree
  * 
  * def get_tree_vals(             # <<<<<<<<<<<<<<
  *     int i,
  *     int i_seed_0,
  */
-  __pyx_tuple__41 = PyTuple_Pack(19, __pyx_n_s_i, __pyx_n_s_i_seed_0, __pyx_n_s_m_0, __pyx_n_s_a_0, __pyx_n_s_m_min, __pyx_n_s_a_lev, __pyx_n_s_n_lev, __pyx_n_s_n_frag_max, __pyx_n_s_n_frag_tot_2, __pyx_n_s_i_seed, __pyx_n_s_merger_tree, __pyx_n_s_this_node, __pyx_n_s_count, __pyx_n_s_arr_mhalo, __pyx_n_s_arr_nodid, __pyx_n_s_arr_treeid, __pyx_n_s_arr_time, __pyx_n_s_arr_1prog, __pyx_n_s_arr_desc); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(0, 1085, __pyx_L1_error)
+  __pyx_tuple__41 = PyTuple_Pack(19, __pyx_n_s_i, __pyx_n_s_i_seed_0, __pyx_n_s_m_0, __pyx_n_s_a_0, __pyx_n_s_m_min, __pyx_n_s_a_lev, __pyx_n_s_n_lev, __pyx_n_s_n_frag_max, __pyx_n_s_n_frag_tot_2, __pyx_n_s_i_seed, __pyx_n_s_merger_tree, __pyx_n_s_this_node, __pyx_n_s_count, __pyx_n_s_arr_mhalo, __pyx_n_s_arr_nodid, __pyx_n_s_arr_treeid, __pyx_n_s_arr_time, __pyx_n_s_arr_1prog, __pyx_n_s_arr_desc); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(0, 1125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__41);
   __Pyx_GIVEREF(__pyx_tuple__41);
-  __pyx_codeobj__42 = (PyObject*)__Pyx_PyCode_New(9, 0, 19, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__41, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_classic_trees_pyx, __pyx_n_s_get_tree_vals, 1085, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__42)) __PYX_ERR(0, 1085, __pyx_L1_error)
+  __pyx_codeobj__42 = (PyObject*)__Pyx_PyCode_New(9, 0, 19, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__41, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_classic_trees_pyx, __pyx_n_s_get_tree_vals, 1125, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__42)) __PYX_ERR(0, 1125, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_functions(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
@@ -31357,12 +30654,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 
 static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  __pyx_float_0_0 = PyFloat_FromDouble(0.0); if (unlikely(!__pyx_float_0_0)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_float_0_1 = PyFloat_FromDouble(0.1); if (unlikely(!__pyx_float_0_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_float_1e6 = PyFloat_FromDouble(1e6); if (unlikely(!__pyx_float_1e6)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_float_1e7 = PyFloat_FromDouble(1e7); if (unlikely(!__pyx_float_1e7)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_float_1e15 = PyFloat_FromDouble(1e15); if (unlikely(!__pyx_float_1e15)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_float_1_00001 = PyFloat_FromDouble(1.00001); if (unlikely(!__pyx_float_1_00001)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -31434,15 +30729,15 @@ static int __Pyx_modinit_type_init_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_13classic_trees_functions) < 0) __PYX_ERR(0, 319, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_13classic_trees_functions) < 0) __PYX_ERR(0, 320, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_13classic_trees_functions.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_13classic_trees_functions.tp_dictoffset && __pyx_type_13classic_trees_functions.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_13classic_trees_functions.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_functions, (PyObject *)&__pyx_type_13classic_trees_functions) < 0) __PYX_ERR(0, 319, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_13classic_trees_functions) < 0) __PYX_ERR(0, 319, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_functions, (PyObject *)&__pyx_type_13classic_trees_functions) < 0) __PYX_ERR(0, 320, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_13classic_trees_functions) < 0) __PYX_ERR(0, 320, __pyx_L1_error)
   __pyx_ptype_13classic_trees_functions = &__pyx_type_13classic_trees_functions;
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
@@ -31807,7 +31102,7 @@ if (!__Pyx_RefNanny) {
  * import numpy as np
  * cimport numpy as np
  * import bisect             # <<<<<<<<<<<<<<
- * import random
+ * #import random
  * #from libc.stdlib cimport rand, srand
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_bisect, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
@@ -31815,20 +31110,8 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_bisect, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":5
- * cimport numpy as np
- * import bisect
- * import random             # <<<<<<<<<<<<<<
- * #from libc.stdlib cimport rand, srand
- * from scipy.integrate import simpson
- */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_random, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_random, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
   /* "classic_trees.pyx":7
- * import random
+ * #import random
  * #from libc.stdlib cimport rand, srand
  * from scipy.integrate import simpson             # <<<<<<<<<<<<<<
  * from astropy.constants import G, M_sun, pc
@@ -31887,7 +31170,7 @@ if (!__Pyx_RefNanny) {
  * from astropy.constants import G, M_sun, pc
  * from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh
  * from scipy.interpolate import UnivariateSpline, CubicSpline             # <<<<<<<<<<<<<<
- * from libc.stdlib cimport malloc, free
+ * from libc.stdlib cimport malloc, free, rand, srand
  * 
  */
   __pyx_t_1 = PyList_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
@@ -31926,50 +31209,50 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_DTYPE, __pyx_t_1) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":407
+  /* "classic_trees.pyx":408
  * 
  * # Constants
  * cdef double G_used = G.value * M_sun.value / (1e6 * pc.value * (1e3**2))             # <<<<<<<<<<<<<<
  * cdef double H_0100 = 100 * 0.73
  * cdef double rho_crit = 3 * H_0100**2 / (8 * pi * G_used)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_G); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_G); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_M_sun); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_M_sun); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_value); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_value); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyNumber_Multiply(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Multiply(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_pc); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_pc); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyNumber_Multiply(__pyx_float_1e6, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_Multiply(__pyx_float_1e6, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyFloat_FromDouble(pow(1e3, 2.0)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(pow(1e3, 2.0)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyNumber_Multiply(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_Multiply(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 407, __pyx_L1_error)
+  __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 408, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_13classic_trees_G_used = __pyx_t_5;
 
-  /* "classic_trees.pyx":408
+  /* "classic_trees.pyx":409
  * # Constants
  * cdef double G_used = G.value * M_sun.value / (1e6 * pc.value * (1e3**2))
  * cdef double H_0100 = 100 * 0.73             # <<<<<<<<<<<<<<
@@ -31978,7 +31261,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_H_0100 = (100.0 * 0.73);
 
-  /* "classic_trees.pyx":409
+  /* "classic_trees.pyx":410
  * cdef double G_used = G.value * M_sun.value / (1e6 * pc.value * (1e3**2))
  * cdef double H_0100 = 100 * 0.73
  * cdef double rho_crit = 3 * H_0100**2 / (8 * pi * G_used)             # <<<<<<<<<<<<<<
@@ -31989,161 +31272,161 @@ if (!__Pyx_RefNanny) {
   __pyx_t_6 = ((8.0 * M_PI) * __pyx_v_13classic_trees_G_used);
   if (unlikely(__pyx_t_6 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 409, __pyx_L1_error)
+    __PYX_ERR(0, 410, __pyx_L1_error)
   }
   __pyx_v_13classic_trees_rho_crit = (__pyx_t_5 / __pyx_t_6);
 
-  /* "classic_trees.pyx":412
+  /* "classic_trees.pyx":413
  * 
  * # Load data from file
  * cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')             # <<<<<<<<<<<<<<
  * cdef np.ndarray k_0_np = pk_data[0]
  * cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 413, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_loadtxt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_loadtxt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 413, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 413, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 412, __pyx_L1_error)
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 413, __pyx_L1_error)
   __Pyx_XGOTREF(((PyObject *)__pyx_v_13classic_trees_pk_data));
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_pk_data, ((PyArrayObject *)__pyx_t_2));
   __Pyx_GIVEREF(__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "classic_trees.pyx":413
+  /* "classic_trees.pyx":414
  * # Load data from file
  * cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')
  * cdef np.ndarray k_0_np = pk_data[0]             # <<<<<<<<<<<<<<
  * cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
  * cdef int n_Pk_k = len(pk_data[0])
  */
-  __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_pk_data), 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 413, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_pk_data), 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 414, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 413, __pyx_L1_error)
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 414, __pyx_L1_error)
   __Pyx_XGOTREF(((PyObject *)__pyx_v_13classic_trees_k_0_np));
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_k_0_np, ((PyArrayObject *)__pyx_t_2));
   __Pyx_GIVEREF(__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "classic_trees.pyx":414
+  /* "classic_trees.pyx":415
  * cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')
  * cdef np.ndarray k_0_np = pk_data[0]
  * cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3             # <<<<<<<<<<<<<<
  * cdef int n_Pk_k = len(pk_data[0])
  * 
  */
-  __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_pk_data), 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 414, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_pk_data), 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyFloat_FromDouble(pow(0.73, 3.0)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 414, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(pow(0.73, 3.0)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = PyNumber_Multiply(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 414, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Multiply(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 414, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_XGOTREF(((PyObject *)__pyx_v_13classic_trees_Pk_0_np));
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_Pk_0_np, ((PyArrayObject *)__pyx_t_1));
   __Pyx_GIVEREF(__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":415
+  /* "classic_trees.pyx":416
  * cdef np.ndarray k_0_np = pk_data[0]
  * cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
  * cdef int n_Pk_k = len(pk_data[0])             # <<<<<<<<<<<<<<
  * 
  * cdef double[:] Pk_0 = Pk_0_np
  */
-  __pyx_t_1 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_pk_data), 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 415, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_pk_data), 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 416, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_7 == ((Py_ssize_t)-1))) __PYX_ERR(0, 415, __pyx_L1_error)
+  __pyx_t_7 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_7 == ((Py_ssize_t)-1))) __PYX_ERR(0, 416, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_13classic_trees_n_Pk_k = __pyx_t_7;
 
-  /* "classic_trees.pyx":417
+  /* "classic_trees.pyx":418
  * cdef int n_Pk_k = len(pk_data[0])
  * 
  * cdef double[:] Pk_0 = Pk_0_np             # <<<<<<<<<<<<<<
  * cdef double[:] k_0 = k_0_np
  * cdef int i_k
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(((PyObject *)__pyx_v_13classic_trees_Pk_0_np), PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 417, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(((PyObject *)__pyx_v_13classic_trees_Pk_0_np), PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 418, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_13classic_trees_Pk_0, 1);
   __pyx_v_13classic_trees_Pk_0 = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "classic_trees.pyx":418
+  /* "classic_trees.pyx":419
  * 
  * cdef double[:] Pk_0 = Pk_0_np
  * cdef double[:] k_0 = k_0_np             # <<<<<<<<<<<<<<
  * cdef int i_k
  * #for i_k in range(n_Pk_k):
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(((PyObject *)__pyx_v_13classic_trees_k_0_np), PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 418, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(((PyObject *)__pyx_v_13classic_trees_k_0_np), PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 419, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_13classic_trees_k_0, 1);
   __pyx_v_13classic_trees_k_0 = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "classic_trees.pyx":424
+  /* "classic_trees.pyx":425
  * #    Pk_0[i_k] = Pk_0_np[i_k]
  * # Precompute sigma values for interpolation
  * cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 500)             # <<<<<<<<<<<<<<
  * cdef np.ndarray Sig = np.zeros_like(m_rough)
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_geomspace); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_geomspace); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 424, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 424, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_XGOTREF(((PyObject *)__pyx_v_13classic_trees_m_rough));
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_m_rough, ((PyArrayObject *)__pyx_t_1));
   __Pyx_GIVEREF(__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":425
+  /* "classic_trees.pyx":426
  * # Precompute sigma values for interpolation
  * cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 500)
  * cdef np.ndarray Sig = np.zeros_like(m_rough)             # <<<<<<<<<<<<<<
  * 
  * # Helper function for integrand calculation
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 425, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 426, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros_like); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 425, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros_like); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 426, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_13classic_trees_m_rough)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 425, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_13classic_trees_m_rough)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 426, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 425, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 426, __pyx_L1_error)
   __Pyx_XGOTREF(((PyObject *)__pyx_v_13classic_trees_Sig));
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_Sig, ((PyArrayObject *)__pyx_t_1));
   __Pyx_GIVEREF(__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":432
+  /* "classic_trees.pyx":433
  * 
  * 
  * def sig_int(double m):             # <<<<<<<<<<<<<<
  *     cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
  *     cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_13classic_trees_1sig_int, NULL, __pyx_n_s_classic_trees); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 432, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_13classic_trees_1sig_int, NULL, __pyx_n_s_classic_trees); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 433, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sig_int, __pyx_t_1) < 0) __PYX_ERR(0, 432, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_sig_int, __pyx_t_1) < 0) __PYX_ERR(0, 433, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "classic_trees.pyx":465
+  /* "classic_trees.pyx":466
  *         free(log_m_r)
  * '''
  * cdef double* log_m_r = <double*>malloc(500*sizeof(double))             # <<<<<<<<<<<<<<
@@ -32152,7 +31435,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_log_m_r = ((double *)malloc((0x1F4 * (sizeof(double)))));
 
-  /* "classic_trees.pyx":466
+  /* "classic_trees.pyx":467
  * '''
  * cdef double* log_m_r = <double*>malloc(500*sizeof(double))
  * cdef double* sigma_temp = <double*>malloc(500*sizeof(double))             # <<<<<<<<<<<<<<
@@ -32161,7 +31444,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_sigma_temp = ((double *)malloc((0x1F4 * (sizeof(double)))));
 
-  /* "classic_trees.pyx":467
+  /* "classic_trees.pyx":468
  * cdef double* log_m_r = <double*>malloc(500*sizeof(double))
  * cdef double* sigma_temp = <double*>malloc(500*sizeof(double))
  * cdef double* alpha_temp = <double*>malloc(500*sizeof(double))             # <<<<<<<<<<<<<<
@@ -32170,7 +31453,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_alpha_temp = ((double *)malloc((0x1F4 * (sizeof(double)))));
 
-  /* "classic_trees.pyx":469
+  /* "classic_trees.pyx":470
  * cdef double* alpha_temp = <double*>malloc(500*sizeof(double))
  * cdef int i
  * for i in range(m_rough.shape[0]):             # <<<<<<<<<<<<<<
@@ -32182,49 +31465,18 @@ if (!__Pyx_RefNanny) {
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_13classic_trees_i = __pyx_t_11;
 
-    /* "classic_trees.pyx":470
+    /* "classic_trees.pyx":471
  * cdef int i
  * for i in range(m_rough.shape[0]):
  *     log_m_r[i] = np.log(m_rough[i])             # <<<<<<<<<<<<<<
  *     sigma_temp[i] = sig_int(m_rough[i])
  *     Sig[i] = sig_int(m_rough[i])
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 470, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 471, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_log); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 470, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_log); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_m_rough), __pyx_v_13classic_trees_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 470, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-      if (likely(__pyx_t_3)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-        __Pyx_INCREF(__pyx_t_3);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_2, function);
-      }
-    }
-    __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 470, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 470, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    (__pyx_v_13classic_trees_log_m_r[__pyx_v_13classic_trees_i]) = __pyx_t_6;
-
-    /* "classic_trees.pyx":471
- * for i in range(m_rough.shape[0]):
- *     log_m_r[i] = np.log(m_rough[i])
- *     sigma_temp[i] = sig_int(m_rough[i])             # <<<<<<<<<<<<<<
- *     Sig[i] = sig_int(m_rough[i])
- * cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sig_int); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_m_rough), __pyx_v_13classic_trees_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 471, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
@@ -32245,14 +31497,14 @@ if (!__Pyx_RefNanny) {
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 471, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    (__pyx_v_13classic_trees_sigma_temp[__pyx_v_13classic_trees_i]) = __pyx_t_6;
+    (__pyx_v_13classic_trees_log_m_r[__pyx_v_13classic_trees_i]) = __pyx_t_6;
 
     /* "classic_trees.pyx":472
+ * for i in range(m_rough.shape[0]):
  *     log_m_r[i] = np.log(m_rough[i])
- *     sigma_temp[i] = sig_int(m_rough[i])
- *     Sig[i] = sig_int(m_rough[i])             # <<<<<<<<<<<<<<
+ *     sigma_temp[i] = sig_int(m_rough[i])             # <<<<<<<<<<<<<<
+ *     Sig[i] = sig_int(m_rough[i])
  * cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
- * # Interpolated sigma function
  */
     __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sig_int); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 472, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
@@ -32274,11 +31526,42 @@ if (!__Pyx_RefNanny) {
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 472, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_13classic_trees_Sig), __pyx_v_13classic_trees_i, __pyx_t_1, int, 1, __Pyx_PyInt_From_int, 0, 1, 1) < 0)) __PYX_ERR(0, 472, __pyx_L1_error)
+    __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 472, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    (__pyx_v_13classic_trees_sigma_temp[__pyx_v_13classic_trees_i]) = __pyx_t_6;
+
+    /* "classic_trees.pyx":473
+ *     log_m_r[i] = np.log(m_rough[i])
+ *     sigma_temp[i] = sig_int(m_rough[i])
+ *     Sig[i] = sig_int(m_rough[i])             # <<<<<<<<<<<<<<
+ * cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
+ * # Interpolated sigma function
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sig_int); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 473, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_m_rough), __pyx_v_13classic_trees_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 473, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_3 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 473, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_13classic_trees_Sig), __pyx_v_13classic_trees_i, __pyx_t_1, int, 1, __Pyx_PyInt_From_int, 0, 1, 1) < 0)) __PYX_ERR(0, 473, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "classic_trees.pyx":473
+  /* "classic_trees.pyx":474
  *     sigma_temp[i] = sig_int(m_rough[i])
  *     Sig[i] = sig_int(m_rough[i])
  * cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)             # <<<<<<<<<<<<<<
@@ -32287,7 +31570,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_sigma_spline = __pyx_f_13classic_trees_cspline_alloc(0x1F4, __pyx_v_13classic_trees_log_m_r, __pyx_v_13classic_trees_sigma_temp);
 
-  /* "classic_trees.pyx":479
+  /* "classic_trees.pyx":480
  * 
  * 
  * cdef double m_min=1e8             # <<<<<<<<<<<<<<
@@ -32296,7 +31579,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_m_min = 1e8;
 
-  /* "classic_trees.pyx":480
+  /* "classic_trees.pyx":481
  * 
  * cdef double m_min=1e8
  * cdef double m_max=1e15             # <<<<<<<<<<<<<<
@@ -32305,7 +31588,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_m_max = 1e15;
 
-  /* "classic_trees.pyx":481
+  /* "classic_trees.pyx":482
  * cdef double m_min=1e8
  * cdef double m_max=1e15
  * cdef int num_points=500             # <<<<<<<<<<<<<<
@@ -32314,25 +31597,25 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_num_points = 0x1F4;
 
-  /* "classic_trees.pyx":482
+  /* "classic_trees.pyx":483
  * cdef double m_max=1e15
  * cdef int num_points=500
  * cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)             # <<<<<<<<<<<<<<
  * cdef log_sig = compute_log_sig(m_array)
  * log_m = np.log(m_array)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_geomspace); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_geomspace); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_13classic_trees_m_min); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_13classic_trees_m_min); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_13classic_trees_m_max); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_13classic_trees_m_max); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_13classic_trees_num_points); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_13classic_trees_num_points); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_12 = PyTuple_New(3); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_12 = PyTuple_New(3); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_1);
@@ -32343,24 +31626,24 @@ if (!__Pyx_RefNanny) {
   __pyx_t_1 = 0;
   __pyx_t_4 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_DTYPE); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_DTYPE); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 482, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_12, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_12, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 482, __pyx_L1_error)
+  if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 483, __pyx_L1_error)
   __Pyx_XGOTREF(((PyObject *)__pyx_v_13classic_trees_m_array));
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_m_array, ((PyArrayObject *)__pyx_t_4));
   __Pyx_GIVEREF(__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "classic_trees.pyx":483
+  /* "classic_trees.pyx":484
  * cdef int num_points=500
  * cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
  * cdef log_sig = compute_log_sig(m_array)             # <<<<<<<<<<<<<<
@@ -32369,7 +31652,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_t_4 = ((PyObject *)__pyx_v_13classic_trees_m_array);
   __Pyx_INCREF(__pyx_t_4);
-  __pyx_t_3 = __pyx_f_13classic_trees_compute_log_sig(((PyArrayObject *)__pyx_t_4)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 483, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_13classic_trees_compute_log_sig(((PyArrayObject *)__pyx_t_4)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 484, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_XGOTREF(__pyx_v_13classic_trees_log_sig);
@@ -32377,36 +31660,36 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "classic_trees.pyx":484
+  /* "classic_trees.pyx":485
  * cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
  * cdef log_sig = compute_log_sig(m_array)
  * log_m = np.log(m_array)             # <<<<<<<<<<<<<<
  * interp = UnivariateSpline(log_m, log_sig, k=4, s=0.1)
  * deriv = interp.derivative(n=1)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 484, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 485, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_log); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 484, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_log); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 485, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_13classic_trees_m_array)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 484, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_13classic_trees_m_array)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 485, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_log_m, __pyx_t_3) < 0) __PYX_ERR(0, 484, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_log_m, __pyx_t_3) < 0) __PYX_ERR(0, 485, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "classic_trees.pyx":485
+  /* "classic_trees.pyx":486
  * cdef log_sig = compute_log_sig(m_array)
  * log_m = np.log(m_array)
  * interp = UnivariateSpline(log_m, log_sig, k=4, s=0.1)             # <<<<<<<<<<<<<<
  * deriv = interp.derivative(n=1)
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_UnivariateSpline); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 485, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_UnivariateSpline); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 486, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_log_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 485, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_log_m); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 486, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_12 = PyTuple_New(2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 485, __pyx_L1_error)
+  __pyx_t_12 = PyTuple_New(2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 486, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_4);
@@ -32414,41 +31697,41 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_v_13classic_trees_log_sig);
   PyTuple_SET_ITEM(__pyx_t_12, 1, __pyx_v_13classic_trees_log_sig);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 485, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 486, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_k, __pyx_int_4) < 0) __PYX_ERR(0, 485, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_s, __pyx_float_0_1) < 0) __PYX_ERR(0, 485, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_12, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 485, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_k, __pyx_int_4) < 0) __PYX_ERR(0, 486, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_s, __pyx_float_0_1) < 0) __PYX_ERR(0, 486, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_12, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 486, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_interp, __pyx_t_2) < 0) __PYX_ERR(0, 485, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_interp, __pyx_t_2) < 0) __PYX_ERR(0, 486, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "classic_trees.pyx":486
+  /* "classic_trees.pyx":487
  * log_m = np.log(m_array)
  * interp = UnivariateSpline(log_m, log_sig, k=4, s=0.1)
  * deriv = interp.derivative(n=1)             # <<<<<<<<<<<<<<
  * 
  * cdef compute_log_sig(np.ndarray m_array):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_interp); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 486, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_interp); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 487, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_derivative); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 486, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_derivative); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 487, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 486, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 487, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_n, __pyx_int_1) < 0) __PYX_ERR(0, 486, __pyx_L1_error)
-  __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 486, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_n, __pyx_int_1) < 0) __PYX_ERR(0, 487, __pyx_L1_error)
+  __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 487, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_deriv, __pyx_t_12) < 0) __PYX_ERR(0, 486, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_deriv, __pyx_t_12) < 0) __PYX_ERR(0, 487, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
-  /* "classic_trees.pyx":496
+  /* "classic_trees.pyx":497
  *         log_sig[i] = log(sigma_cdm(m_array[i]))
  *     return np.asarray(log_sig)
  * for i in range(m_rough.shape[0]):             # <<<<<<<<<<<<<<
@@ -32460,20 +31743,20 @@ if (!__Pyx_RefNanny) {
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_13classic_trees_i = __pyx_t_11;
 
-    /* "classic_trees.pyx":497
+    /* "classic_trees.pyx":498
  *     return np.asarray(log_sig)
  * for i in range(m_rough.shape[0]):
  *     alpha_temp[i] = interp(log(m_rough[i]))             # <<<<<<<<<<<<<<
  * cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)
  * cdef double alpha(double m):
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_interp); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 497, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_interp); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 498, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_m_rough), __pyx_v_13classic_trees_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 497, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_13classic_trees_m_rough), __pyx_v_13classic_trees_i, int, 1, __Pyx_PyInt_From_int, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 498, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 497, __pyx_L1_error)
+    __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 498, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = PyFloat_FromDouble(log(__pyx_t_6)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 497, __pyx_L1_error)
+    __pyx_t_4 = PyFloat_FromDouble(log(__pyx_t_6)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 498, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -32488,15 +31771,15 @@ if (!__Pyx_RefNanny) {
     __pyx_t_12 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 497, __pyx_L1_error)
+    if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 498, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_12); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 497, __pyx_L1_error)
+    __pyx_t_6 = __pyx_PyFloat_AsDouble(__pyx_t_12); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 498, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
     (__pyx_v_13classic_trees_alpha_temp[__pyx_v_13classic_trees_i]) = __pyx_t_6;
   }
 
-  /* "classic_trees.pyx":498
+  /* "classic_trees.pyx":499
  * for i in range(m_rough.shape[0]):
  *     alpha_temp[i] = interp(log(m_rough[i]))
  * cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)             # <<<<<<<<<<<<<<
@@ -32505,7 +31788,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_alpha_spline = __pyx_f_13classic_trees_cspline_alloc(0x1F4, __pyx_v_13classic_trees_log_m_r, __pyx_v_13classic_trees_alpha_temp);
 
-  /* "classic_trees.pyx":503
+  /* "classic_trees.pyx":504
  * 
  * 
  * cdef double eps = 1e-5             # <<<<<<<<<<<<<<
@@ -32514,7 +31797,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_eps = 1e-5;
 
-  /* "classic_trees.pyx":504
+  /* "classic_trees.pyx":505
  * 
  * cdef double eps = 1e-5
  * cdef double z_max = 10             # <<<<<<<<<<<<<<
@@ -32523,7 +31806,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_z_max = 10.0;
 
-  /* "classic_trees.pyx":505
+  /* "classic_trees.pyx":506
  * cdef double eps = 1e-5
  * cdef double z_max = 10
  * cdef int N_TAB = 10000             # <<<<<<<<<<<<<<
@@ -32532,7 +31815,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_N_TAB = 0x2710;
 
-  /* "classic_trees.pyx":506
+  /* "classic_trees.pyx":507
  * cdef double z_max = 10
  * cdef int N_TAB = 10000
  * cdef double gamma_1=0.38             # <<<<<<<<<<<<<<
@@ -32541,7 +31824,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_gamma_1 = 0.38;
 
-  /* "classic_trees.pyx":544
+  /* "classic_trees.pyx":545
  *     return J_un
  * 
  * cdef int n = 400             # <<<<<<<<<<<<<<
@@ -32550,7 +31833,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_n = 0x190;
 
-  /* "classic_trees.pyx":551
+  /* "classic_trees.pyx":552
  *         J_arr[i] = log(J_pre(z_arr[i]))
  *     return J_arr
  * cdef double* z_arr = c_logspace(-3.0,3.0,n)             # <<<<<<<<<<<<<<
@@ -32559,7 +31842,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_z_arr = __pyx_f_13classic_trees_c_logspace(-3.0, 3.0, __pyx_v_13classic_trees_n);
 
-  /* "classic_trees.pyx":552
+  /* "classic_trees.pyx":553
  *     return J_arr
  * cdef double* z_arr = c_logspace(-3.0,3.0,n)
  * cdef double* J_arr = compute_J_arr(z_arr)             # <<<<<<<<<<<<<<
@@ -32568,7 +31851,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_J_arr = __pyx_f_13classic_trees_compute_J_arr(__pyx_v_13classic_trees_z_arr);
 
-  /* "classic_trees.pyx":553
+  /* "classic_trees.pyx":554
  * cdef double* z_arr = c_logspace(-3.0,3.0,n)
  * cdef double* J_arr = compute_J_arr(z_arr)
  * cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))             # <<<<<<<<<<<<<<
@@ -32577,7 +31860,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_log_z_arr = ((double *)malloc((__pyx_v_13classic_trees_n * (sizeof(double *)))));
 
-  /* "classic_trees.pyx":554
+  /* "classic_trees.pyx":555
  * cdef double* J_arr = compute_J_arr(z_arr)
  * cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))
  * for i in range(n):             # <<<<<<<<<<<<<<
@@ -32589,7 +31872,7 @@ if (!__Pyx_RefNanny) {
   for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
     __pyx_v_13classic_trees_i = __pyx_t_14;
 
-    /* "classic_trees.pyx":555
+    /* "classic_trees.pyx":556
  * cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))
  * for i in range(n):
  *     log_z_arr[i] = log(z_arr[i])             # <<<<<<<<<<<<<<
@@ -32599,7 +31882,7 @@ if (!__Pyx_RefNanny) {
     (__pyx_v_13classic_trees_log_z_arr[__pyx_v_13classic_trees_i]) = log((__pyx_v_13classic_trees_z_arr[__pyx_v_13classic_trees_i]));
   }
 
-  /* "classic_trees.pyx":559
+  /* "classic_trees.pyx":560
  * 
  * #log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural')
  * cdef cspline* J_spline = cspline_alloc(n,log_z_arr,J_arr)             # <<<<<<<<<<<<<<
@@ -32608,7 +31891,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_J_spline = __pyx_f_13classic_trees_cspline_alloc(__pyx_v_13classic_trees_n, __pyx_v_13classic_trees_log_z_arr, __pyx_v_13classic_trees_J_arr);
 
-  /* "classic_trees.pyx":565
+  /* "classic_trees.pyx":566
  *     return exp(log_J_used)
  * 
  * cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)             # <<<<<<<<<<<<<<
@@ -32618,11 +31901,11 @@ if (!__Pyx_RefNanny) {
   __pyx_t_6 = sqrt((((double)M_PI) / 2.0));
   if (unlikely(__pyx_t_6 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 565, __pyx_L1_error)
+    __PYX_ERR(0, 566, __pyx_L1_error)
   }
   __pyx_v_13classic_trees_SQRT2OPI = (1.0 / __pyx_t_6);
 
-  /* "classic_trees.pyx":754
+  /* "classic_trees.pyx":758
  *             ju = jm
  *     return int(jl-1)
  * cdef int n_switch = 60             # <<<<<<<<<<<<<<
@@ -32631,7 +31914,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_n_switch = 60;
 
-  /* "classic_trees.pyx":755
+  /* "classic_trees.pyx":759
  *     return int(jl-1)
  * cdef int n_switch = 60
  * cdef double tiny = 1e-5             # <<<<<<<<<<<<<<
@@ -32640,7 +31923,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_13classic_trees_tiny = 1e-5;
 
-  /* "classic_trees.pyx":756
+  /* "classic_trees.pyx":760
  * cdef int n_switch = 60
  * cdef double tiny = 1e-5
  * cdef double aln2I = 1.0/log(2.0)             # <<<<<<<<<<<<<<
@@ -32650,11 +31933,11 @@ if (!__Pyx_RefNanny) {
   __pyx_t_6 = log(2.0);
   if (unlikely(__pyx_t_6 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 756, __pyx_L1_error)
+    __PYX_ERR(0, 760, __pyx_L1_error)
   }
   __pyx_v_13classic_trees_aln2I = (1.0 / __pyx_t_6);
 
-  /* "classic_trees.pyx":829
+  /* "classic_trees.pyx":833
  *     return indx
  * 
  * cdef str filename = './CLASSIC-trees/Data/flat.txt'             # <<<<<<<<<<<<<<
@@ -32666,30 +31949,30 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_filename, __pyx_kp_u_CLASSIC_trees_Data_flat_txt);
   __Pyx_GIVEREF(__pyx_kp_u_CLASSIC_trees_Data_flat_txt);
 
-  /* "classic_trees.pyx":830
+  /* "classic_trees.pyx":834
  * 
  * cdef str filename = './CLASSIC-trees/Data/flat.txt'
  * cdef DELTA = functions(filename)             # <<<<<<<<<<<<<<
  * 
  * cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
  */
-  __pyx_t_12 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_13classic_trees_functions), __pyx_v_13classic_trees_filename); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 830, __pyx_L1_error)
+  __pyx_t_12 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_13classic_trees_functions), __pyx_v_13classic_trees_filename); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 834, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_XGOTREF(__pyx_v_13classic_trees_DELTA);
   __Pyx_DECREF_SET(__pyx_v_13classic_trees_DELTA, __pyx_t_12);
   __Pyx_GIVEREF(__pyx_t_12);
   __pyx_t_12 = 0;
 
-  /* "classic_trees.pyx":1085
+  /* "classic_trees.pyx":1125
  *     return merger_tree
  * 
  * def get_tree_vals(             # <<<<<<<<<<<<<<
  *     int i,
  *     int i_seed_0,
  */
-  __pyx_t_12 = PyCFunction_NewEx(&__pyx_mdef_13classic_trees_3get_tree_vals, NULL, __pyx_n_s_classic_trees); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 1085, __pyx_L1_error)
+  __pyx_t_12 = PyCFunction_NewEx(&__pyx_mdef_13classic_trees_3get_tree_vals, NULL, __pyx_n_s_classic_trees); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 1125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_tree_vals, __pyx_t_12) < 0) __PYX_ERR(0, 1085, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_tree_vals, __pyx_t_12) < 0) __PYX_ERR(0, 1125, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
   /* "(tree fragment)":1
@@ -33484,171 +32767,6 @@ static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyOb
 done:
     return result;
 }
-
-/* GetException */
-#if CYTHON_FAST_THREAD_STATE
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
-#endif
-{
-    PyObject *local_type, *local_value, *local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    local_type = tstate->curexc_type;
-    local_value = tstate->curexc_value;
-    local_tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-#else
-    PyErr_Fetch(&local_type, &local_value, &local_tb);
-#endif
-    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
-#if CYTHON_FAST_THREAD_STATE
-    if (unlikely(tstate->curexc_type))
-#else
-    if (unlikely(PyErr_Occurred()))
-#endif
-        goto bad;
-    #if PY_MAJOR_VERSION >= 3
-    if (local_tb) {
-        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
-            goto bad;
-    }
-    #endif
-    Py_XINCREF(local_tb);
-    Py_XINCREF(local_type);
-    Py_XINCREF(local_value);
-    *type = local_type;
-    *value = local_value;
-    *tb = local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    #if CYTHON_USE_EXC_INFO_STACK
-    {
-        _PyErr_StackItem *exc_info = tstate->exc_info;
-        tmp_type = exc_info->exc_type;
-        tmp_value = exc_info->exc_value;
-        tmp_tb = exc_info->exc_traceback;
-        exc_info->exc_type = local_type;
-        exc_info->exc_value = local_value;
-        exc_info->exc_traceback = local_tb;
-    }
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = local_type;
-    tstate->exc_value = local_value;
-    tstate->exc_traceback = local_tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-#else
-    PyErr_SetExcInfo(local_type, local_value, local_tb);
-#endif
-    return 0;
-bad:
-    *type = 0;
-    *value = 0;
-    *tb = 0;
-    Py_XDECREF(local_type);
-    Py_XDECREF(local_value);
-    Py_XDECREF(local_tb);
-    return -1;
-}
-
-/* SwapException */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = *type;
-    exc_info->exc_value = *value;
-    exc_info->exc_traceback = *tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = *type;
-    tstate->exc_value = *value;
-    tstate->exc_traceback = *tb;
-    #endif
-    *type = tmp_type;
-    *value = tmp_value;
-    *tb = tmp_tb;
-}
-#else
-static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    PyErr_GetExcInfo(&tmp_type, &tmp_value, &tmp_tb);
-    PyErr_SetExcInfo(*type, *value, *tb);
-    *type = tmp_type;
-    *value = tmp_value;
-    *tb = tmp_tb;
-}
-#endif
-
-/* GetTopmostException */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem *
-__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
-{
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
-           exc_info->previous_item != NULL)
-    {
-        exc_info = exc_info->previous_item;
-    }
-    return exc_info;
-}
-#endif
-
-/* SaveResetException */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
-    *type = exc_info->exc_type;
-    *value = exc_info->exc_value;
-    *tb = exc_info->exc_traceback;
-    #else
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
-    #endif
-    Py_XINCREF(*type);
-    Py_XINCREF(*value);
-    Py_XINCREF(*tb);
-}
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = type;
-    exc_info->exc_value = value;
-    exc_info->exc_traceback = tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-#endif
 
 /* RaiseDoubleKeywords */
 static void __Pyx_RaiseDoubleKeywordsError(
@@ -35244,95 +34362,6 @@ fail:;
   return -1;
 }
 
-/* PyObjectCallNoArg */
-  #if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
-#if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(func)) {
-        return __Pyx_PyFunction_FastCall(func, NULL, 0);
-    }
-#endif
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || __Pyx_CyFunction_Check(func)))
-#else
-    if (likely(PyCFunction_Check(func)))
-#endif
-    {
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
-            return __Pyx_PyObject_CallMethO(func, NULL);
-        }
-    }
-    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
-}
-#endif
-
-/* PyIntCompare */
-  static CYTHON_INLINE PyObject* __Pyx_PyInt_EqObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED long inplace) {
-    if (op1 == op2) {
-        Py_RETURN_TRUE;
-    }
-    #if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_CheckExact(op1))) {
-        const long b = intval;
-        long a = PyInt_AS_LONG(op1);
-        if (a == b) Py_RETURN_TRUE; else Py_RETURN_FALSE;
-    }
-    #endif
-    #if CYTHON_USE_PYLONG_INTERNALS
-    if (likely(PyLong_CheckExact(op1))) {
-        int unequal;
-        unsigned long uintval;
-        Py_ssize_t size = Py_SIZE(op1);
-        const digit* digits = ((PyLongObject*)op1)->ob_digit;
-        if (intval == 0) {
-            if (size == 0) Py_RETURN_TRUE; else Py_RETURN_FALSE;
-        } else if (intval < 0) {
-            if (size >= 0)
-                Py_RETURN_FALSE;
-            intval = -intval;
-            size = -size;
-        } else {
-            if (size <= 0)
-                Py_RETURN_FALSE;
-        }
-        uintval = (unsigned long) intval;
-#if PyLong_SHIFT * 4 < SIZEOF_LONG*8
-        if (uintval >> (PyLong_SHIFT * 4)) {
-            unequal = (size != 5) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
-                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[2] != ((uintval >> (2 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[3] != ((uintval >> (3 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[4] != ((uintval >> (4 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
-        } else
-#endif
-#if PyLong_SHIFT * 3 < SIZEOF_LONG*8
-        if (uintval >> (PyLong_SHIFT * 3)) {
-            unequal = (size != 4) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
-                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[2] != ((uintval >> (2 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[3] != ((uintval >> (3 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
-        } else
-#endif
-#if PyLong_SHIFT * 2 < SIZEOF_LONG*8
-        if (uintval >> (PyLong_SHIFT * 2)) {
-            unequal = (size != 3) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
-                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[2] != ((uintval >> (2 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
-        } else
-#endif
-#if PyLong_SHIFT * 1 < SIZEOF_LONG*8
-        if (uintval >> (PyLong_SHIFT * 1)) {
-            unequal = (size != 2) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
-                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
-        } else
-#endif
-            unequal = (size != 1) || (((unsigned long) digits[0]) != (uintval & (unsigned long) PyLong_MASK));
-        if (unequal == 0) Py_RETURN_TRUE; else Py_RETURN_FALSE;
-    }
-    #endif
-    if (PyFloat_CheckExact(op1)) {
-        const long b = intval;
-        double a = PyFloat_AS_DOUBLE(op1);
-        if ((double)a == (double)b) Py_RETURN_TRUE; else Py_RETURN_FALSE;
-    }
-    return (
-        PyObject_RichCompare(op1, op2, Py_EQ));
-}
-
 /* RaiseTooManyValuesToUnpack */
   static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
     PyErr_Format(PyExc_ValueError,
@@ -35488,6 +34517,136 @@ bad:
         Py_DECREF(r);
         return 1;
     }
+}
+
+/* GetTopmostException */
+  #if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem *
+__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
+{
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
+           exc_info->previous_item != NULL)
+    {
+        exc_info = exc_info->previous_item;
+    }
+    return exc_info;
+}
+#endif
+
+/* SaveResetException */
+  #if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
+    *type = exc_info->exc_type;
+    *value = exc_info->exc_value;
+    *tb = exc_info->exc_traceback;
+    #else
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    #endif
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
+}
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    tmp_type = exc_info->exc_type;
+    tmp_value = exc_info->exc_value;
+    tmp_tb = exc_info->exc_traceback;
+    exc_info->exc_type = type;
+    exc_info->exc_value = value;
+    exc_info->exc_traceback = tb;
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+#endif
+
+/* GetException */
+  #if CYTHON_FAST_THREAD_STATE
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
+#endif
+{
+    PyObject *local_type, *local_value, *local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    local_type = tstate->curexc_type;
+    local_value = tstate->curexc_value;
+    local_tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(&local_type, &local_value, &local_tb);
+#endif
+    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
+#if CYTHON_FAST_THREAD_STATE
+    if (unlikely(tstate->curexc_type))
+#else
+    if (unlikely(PyErr_Occurred()))
+#endif
+        goto bad;
+    #if PY_MAJOR_VERSION >= 3
+    if (local_tb) {
+        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
+            goto bad;
+    }
+    #endif
+    Py_XINCREF(local_tb);
+    Py_XINCREF(local_type);
+    Py_XINCREF(local_value);
+    *type = local_type;
+    *value = local_value;
+    *tb = local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    #if CYTHON_USE_EXC_INFO_STACK
+    {
+        _PyErr_StackItem *exc_info = tstate->exc_info;
+        tmp_type = exc_info->exc_type;
+        tmp_value = exc_info->exc_value;
+        tmp_tb = exc_info->exc_traceback;
+        exc_info->exc_type = local_type;
+        exc_info->exc_value = local_value;
+        exc_info->exc_traceback = local_tb;
+    }
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = local_type;
+    tstate->exc_value = local_value;
+    tstate->exc_traceback = local_tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_SetExcInfo(local_type, local_value, local_tb);
+#endif
+    return 0;
+bad:
+    *type = 0;
+    *value = 0;
+    *tb = 0;
+    Py_XDECREF(local_type);
+    Py_XDECREF(local_value);
+    Py_XDECREF(local_tb);
+    return -1;
 }
 
 /* BytesEquals */
@@ -35684,6 +34843,41 @@ return_ne:
   static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
 }
+
+/* SwapException */
+  #if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    tmp_type = exc_info->exc_type;
+    tmp_value = exc_info->exc_value;
+    tmp_tb = exc_info->exc_traceback;
+    exc_info->exc_type = *type;
+    exc_info->exc_value = *value;
+    exc_info->exc_traceback = *tb;
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = *type;
+    tstate->exc_value = *value;
+    tstate->exc_traceback = *tb;
+    #endif
+    *type = tmp_type;
+    *value = tmp_value;
+    *tb = tmp_tb;
+}
+#else
+static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    PyErr_GetExcInfo(&tmp_type, &tmp_value, &tmp_tb);
+    PyErr_SetExcInfo(*type, *value, *tb);
+    *type = tmp_type;
+    *value = tmp_value;
+    *tb = tmp_tb;
+}
+#endif
 
 /* FastTypeChecks */
   #if CYTHON_COMPILING_IN_CPYTHON
