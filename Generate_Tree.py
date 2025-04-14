@@ -69,6 +69,7 @@ n_frag_max = 10
 start_offset = 0
 for i in range(n_tree):
     start = time.time()
-    count,i_seed_0,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
+    print(count-len(np.where(arr_mhalo==0)[0]))
     end = time.time()
     print(f"Elapsed time: {end - start} seconds")
