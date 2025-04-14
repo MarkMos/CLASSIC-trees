@@ -910,7 +910,8 @@ cdef list make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev
                 n_ch += 1
                 i_frag_c = i_sib[i_frag_c]
             merger_tree[j_frag].nchild = n_ch
-
+            print('n_ch = ',n_ch)
+    print('n_frag_tot = ',n_frag_tot)
     merger_tree = build_sibling(merger_tree,n_frag_tot)
     
     i_err = 0
