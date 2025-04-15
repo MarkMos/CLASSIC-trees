@@ -5,7 +5,7 @@
 # from sigma_cdm_func import *
 from classic_trees import functions, get_tree_vals
 import numpy as np
-# import h5py
+import h5py
 import time
 
 filename = './CLASSIC-trees/Data/flat.txt'
@@ -26,9 +26,9 @@ def append_create_dataset(grp,name,data):
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e13
+mp_halo = 1e14
 m_res   = 1e8
-n_tree  = 1
+n_tree  = 10
 
 G_0=0.57
 gamma_1=0.38
@@ -67,9 +67,36 @@ a_lev = np.array(a_lev)
 jp_halo = []
 n_frag_max = 10
 start_offset = 0
+start = time.time()
 for i in range(n_tree):
-    start = time.time()
     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
-    print(count-len(np.where(arr_mhalo==0)[0]))
-    end = time.time()
-    print(f"Elapsed time: {end - start} seconds")
+    # with h5py.File('./Code_own/Trees/tree_selftestfast_r10_1e14_bottleneck.hdf5','a') as f:
+    #     # Create or access groups of the merger tree file
+    #     if 'TreeHalos' not in f:
+    #         grp1 = f.create_group('TreeHalos')
+    #     else:
+    #         grp1 = f['TreeHalos']
+    #         nth_run = True
+    #     if 'TreeTable' not in f:
+    #         grp2 = f.create_group('TreeTable')
+    #     else:
+    #         grp2 = f['TreeTable']
+        
+    #     if nth_run is False:
+    #         grp3 = f.create_group('TreeTimes')
+    #         d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
+    #         d_time= grp3.create_dataset('Time',data=a_lev)
+        
+    #     append_create_dataset(grp1,'SnapNum',arr_time)
+    #     append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
+    #     append_create_dataset(grp1,'TreeDescendant',arr_desc)
+    #     append_create_dataset(grp1,'TreeFirstProgenitor',arr_1prog)
+    #     append_create_dataset(grp1,'TreeID',data=arr_treeid)
+    #     append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
+    #     append_create_dataset(grp2,'Length',data=np.array([count]))
+    #     append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
+    #     append_create_dataset(grp2,'TreeID',data=np.array([i]))
+
+    # start_offset += count
+end = time.time()
+print(f"Elapsed time: {end - start} seconds")
