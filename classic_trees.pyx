@@ -250,18 +250,25 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         node_ID = count
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
+        #print('mass : ',arr_mhalo[node_ID])
         arr_treeid[node_ID]= i
+        #print('tree ID : ',arr_treeid[node_ID])
         arr_time[node_ID]  = this_node.jlevel
+        #print('time level : ',arr_time[node_ID])
         if this_node.child is not NULL:
             arr_1prog[node_ID] = this_node.child.index
         else:
             arr_1prog[node_ID] = -1
+        #print('index_ch : ',arr_1prog[node_ID])
         if this_node.parent is not NULL:
             arr_desc[node_ID] = this_node.parent.index
         else:
             arr_desc[node_ID] = -1
+        #print('index_p : ',arr_desc[node_ID])
         count +=1
+        #print('count = ',count)
         this_node = walk_tree(this_node)
+    print('out of while loop')
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
@@ -324,9 +331,10 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
     
     if this_node.nchild > 1:
         child_index = tree_index(this_node.child)
-        
+        #print('child_index = ',child_index)
         # 1. Sort siblings in-place using mhalo
         for i_frag in range(child_index, child_index + this_node.nchild - 2):
+            #print('i_frag = ',i_frag)
             for j in range(child_index, child_index + this_node.nchild - 2 - i_frag):
                 if merger_tree[j + 1].mhalo < merger_tree[j + 2].mhalo:
                     # Swap pointers
@@ -1054,6 +1062,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 m_left[i_node] = -1
 
     n_frag_tot = i_frag
+    print('n_frag_tot = ',n_frag_tot)
 
     for i_lev_wk in range(n_lev):
         i_lev = 0
@@ -1090,7 +1099,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 i_frag = i_sib[i_frag]
             else:
                 i_frag = -1
-
+    print('did this for-loop')
     for i_frag in range(n_frag_tot):
         j_frag = j_index[i_frag]
         i_frag_c = i_child[i_frag]
@@ -1104,7 +1113,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 i_frag_c = i_sib[i_frag_c]
 
             merger_tree[j_frag].nchild = n_ch
-
+    print('Going into build_sibling')
     merger_tree = build_sibling(merger_tree,n_frag_tot)
     
     i_err = 0
@@ -1151,6 +1160,7 @@ def get_tree_vals(
         Tree_Node* this_node
         int count = 0
     srand(i_seed)
+    print('Going into make_tree')
     merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)
 
     print('Made a tree ',i+1)
