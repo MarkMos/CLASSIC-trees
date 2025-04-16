@@ -28,7 +28,7 @@ n_halo_lev = 10
 
 mp_halo = 1e14
 m_res   = 1e8
-n_tree  = 10
+n_tree  = 100
 
 G_0=0.57
 gamma_1=0.38
@@ -68,7 +68,7 @@ jp_halo = []
 n_frag_max = 10
 start_offset = 0
 start = time.time()
-for i in range(n_tree):
+for i in range(49,n_tree):
     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
     # with h5py.File('./Code_own/Trees/tree_selftestfast_r10_1e14_bottleneck.hdf5','a') as f:
     #     # Create or access groups of the merger tree file
