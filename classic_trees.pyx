@@ -236,6 +236,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_desc = NULL
         int node_ID
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
+    print(n_halo_max)
     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
@@ -255,9 +256,16 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         #print('tree ID : ',arr_treeid[node_ID])
         arr_time[node_ID]  = this_node.jlevel
         #print('time level : ',arr_time[node_ID])
+        #print('node_ID = ',node_ID)
         if this_node.child is not NULL:
+            #print('if node_ID = ',node_ID)
+            if this_node.child is NULL:
+                print('----ERROR----')
+            #print(this_node.child.mhalo)
+            #print('child_index = ',this_node.child.index)
             arr_1prog[node_ID] = this_node.child.index
         else:
+            #print('else node_ID = ',node_ID)
             arr_1prog[node_ID] = -1
         #print('index_ch : ',arr_1prog[node_ID])
         if this_node.parent is not NULL:
@@ -327,25 +335,26 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
     '''
     cdef:
         int child_index, i_frag, k, j
-        Tree_Node* temp # temporary node to store the ones to change for mass ordering
-    
+        Tree_Node* temp #= <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
+    if this_node.nchild<0:
+        print('number of children = ',this_node.nchild)
+        print('node index = ',this_node.index)
     if this_node.nchild > 1:
         child_index = tree_index(this_node.child)
-        #print('child_index = ',child_index)
+        print('Begin sorting')
         # 1. Sort siblings in-place using mhalo
-        for i_frag in range(child_index, child_index + this_node.nchild - 2):
+        for i_frag in range(child_index, child_index + this_node.nchild - 1):
             #print('i_frag = ',i_frag)
-            for j in range(child_index, child_index + this_node.nchild - 2 - i_frag):
+            for j in range(child_index, child_index + this_node.nchild - 1 - (i_frag-child_index)):
                 if merger_tree[j + 1].mhalo < merger_tree[j + 2].mhalo:
                     # Swap pointers
                     temp = merger_tree[j + 1]
                     merger_tree[j + 1] = merger_tree[j + 2]
                     merger_tree[j + 2] = temp
-        
         # 2. Update sibling pointers
         for k in range(child_index, child_index + this_node.nchild - 1):
             merger_tree[k].sibling = merger_tree[k + 1]
-    
+
     return merger_tree
 
 cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
@@ -363,6 +372,11 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     for i in range(n_frag_tot):
         #print(i,'. call of associated_siblings')
         merger_tree = associated_siblings(merger_tree[i],merger_tree)
+        #print('Build_sibling index: ',i)
+        #if merger_tree[i].child is not NULL:
+        #    print('In child build')
+        #    print(merger_tree[i].child.mhalo)
+        #    print(merger_tree[i].child.index)
     return merger_tree
 
 cdef class functions:
@@ -902,7 +916,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
     cdef:
         split_result split_fct
         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
-        Tree_Node* node = <Tree_Node*>malloc(sizeof(Tree_Node))
+        Tree_Node* node
         int n_v = 20000
         int i_err = 0
         int j_frag = -1
@@ -935,6 +949,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
     n_frag_tot = 0
 
     for i_frag in range(n_frag_max):
+        node = <Tree_Node*>malloc(sizeof(Tree_Node))
         node.mhalo = 0.0
         node.jlevel = 0
         node.nchild = 0
@@ -943,7 +958,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
         node.child  = NULL
         node.sibling= NULL
         merger_tree[i_frag] = node
-        node = <Tree_Node*>malloc(sizeof(Tree_Node))
         i_par[i_frag] = 0
         i_sib[i_frag] = 0
         i_child[i_frag] = 0
@@ -1113,9 +1127,15 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 i_frag_c = i_sib[i_frag_c]
 
             merger_tree[j_frag].nchild = n_ch
+            if n_ch<0:
+                print('n_ch = ',n_ch)
     print('Going into build_sibling')
     merger_tree = build_sibling(merger_tree,n_frag_tot)
-    
+    free(i_par)
+    free(i_sib)
+    free(i_child)
+    free(node)
+
     i_err = 0
     return merger_tree
 
