@@ -28,7 +28,7 @@ n_halo_lev = 10
 
 mp_halo = 1e14
 m_res   = 1e8
-n_tree  = 100
+n_tree  = 1
 
 G_0=0.57
 gamma_1=0.38
@@ -49,7 +49,7 @@ k_ref = 1
 sigma_8 = 0.9
 
 i_err = 1
-n_halo_max = int(1000000)
+n_halo_max = int(10000000)
 n_halo = 1
 i_seed_0 = -8635
 i_seed = i_seed_0
@@ -58,18 +58,21 @@ a_halo = 1
 z_max  = 4
 
 a_lev = []
+w_lev = []
 for i_lev in range(1,n_lev+1):
     a_lev.append(1/(1 + z_max*(i_lev-1)/(n_lev-1)))
     #print(a_lev)
     d_c = DELTA.delta_crit(a_lev[i_lev-1])
+    w_lev.append(d_c)
     print('z = ',1/a_lev[i_lev-1]-1,' at which delta_crit = ',d_c)
 a_lev = np.array(a_lev)
+w_lev = np.array(w_lev)
 jp_halo = []
 n_frag_max = 10
 start_offset = 0
 start = time.time()
-for i in range(49,n_tree):
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,a_lev,n_lev,n_halo_max,n_halo)
+for i in range(n_tree):
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
     # with h5py.File('./Code_own/Trees/tree_selftestfast_r10_1e14_bottleneck.hdf5','a') as f:
     #     # Create or access groups of the merger tree file
     #     if 'TreeHalos' not in f:
