@@ -236,7 +236,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_desc = NULL
         int node_ID
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
-    print(n_halo_max)
+    #print(n_halo_max)
     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
@@ -276,7 +276,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         count +=1
         #print('count = ',count)
         this_node = walk_tree(this_node)
-    print('out of while loop')
+    #print('out of while loop')
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
@@ -321,7 +321,7 @@ cdef int tree_index(Tree_Node* node):
 #    sibs_left = Sibling.sibling
 #    return Sibling, sibs_left
 
-cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree):
+cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i):
     '''
     Function to associate the siblings of a certain node and as well sort them by their mass
     in descending order.
@@ -335,26 +335,29 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
     '''
     cdef:
         int child_index, i_frag, k, j
-        Tree_Node* temp #= <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
-    if this_node.nchild<0:
-        print('number of children = ',this_node.nchild)
-        print('node index = ',this_node.index)
+        Tree_Node* temp = <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
+    
     if this_node.nchild > 1:
         child_index = tree_index(this_node.child)
-        print('Begin sorting')
+        #print('Begin sorting')
         # 1. Sort siblings in-place using mhalo
-        for i_frag in range(child_index, child_index + this_node.nchild - 1):
+        for i_frag in range(child_index, child_index + this_node.nchild - 2):
             #print('i_frag = ',i_frag)
-            for j in range(child_index, child_index + this_node.nchild - 1 - (i_frag-child_index)):
+            for j in range(child_index, child_index + this_node.nchild - 2 - i_frag):
                 if merger_tree[j + 1].mhalo < merger_tree[j + 2].mhalo:
                     # Swap pointers
                     temp = merger_tree[j + 1]
                     merger_tree[j + 1] = merger_tree[j + 2]
                     merger_tree[j + 2] = temp
+                    #if temp.index<0:
+                        #count +=1
+                        #print('index: ',temp.index,' at ',i)
+                        #print('index of tree: ',merger_tree[j+1].index,' at ',i)
+                        #print('# children: ',temp.nchild,' at ',i)
+                        #print('# children of tree: ',merger_tree[j+1].nchild,' at ',i)
         # 2. Update sibling pointers
         for k in range(child_index, child_index + this_node.nchild - 1):
             merger_tree[k].sibling = merger_tree[k + 1]
-
     return merger_tree
 
 cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
@@ -371,12 +374,18 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     cdef int i
     for i in range(n_frag_tot):
         #print(i,'. call of associated_siblings')
-        merger_tree = associated_siblings(merger_tree[i],merger_tree)
+        merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
         #print('Build_sibling index: ',i)
         #if merger_tree[i].child is not NULL:
         #    print('In child build')
         #    print(merger_tree[i].child.mhalo)
         #    print(merger_tree[i].child.index)
+    #cdef list X = []
+    #cdef list Y = []
+    #for i in range(n_frag_tot):
+    #    X.append(merger_tree[i].index)
+    #    Y.append(merger_tree[i].nchild)
+    #np.savetxt('compare_numbers.txt',[X,Y])
     return merger_tree
 
 cdef class functions:
@@ -487,7 +496,7 @@ cdef int i_k
 #    k_0[i_k] = k_0_np[i_k]
 #    Pk_0[i_k] = Pk_0_np[i_k]
 # Precompute sigma values for interpolation
-cdef np.ndarray m_rough = np.geomspace(1e7, 1e15, 500)
+cdef np.ndarray m_rough = np.geomspace(1e7, 1e16, 1000)
 cdef np.ndarray Sig = np.zeros_like(m_rough)
 
 # Helper function for integrand calculation
@@ -506,23 +515,23 @@ def sig_int(double m):
 
 # Sigma function
 
-cdef double* log_m_r = <double*>malloc(500*sizeof(double))
-cdef double* sigma_temp = <double*>malloc(500*sizeof(double))
-cdef double* alpha_temp = <double*>malloc(500*sizeof(double))
+cdef double* log_m_r = <double*>malloc(1000*sizeof(double))
+cdef double* sigma_temp = <double*>malloc(1000*sizeof(double))
+cdef double* alpha_temp = <double*>malloc(1000*sizeof(double))
 cdef int i
 for i in range(m_rough.shape[0]):
     log_m_r[i] = np.log(m_rough[i])
     sigma_temp[i] = sig_int(m_rough[i])
     Sig[i] = sig_int(m_rough[i])
-cdef cspline* sigma_spline = cspline_alloc(500,log_m_r,sigma_temp)
+cdef cspline* sigma_spline = cspline_alloc(1000,log_m_r,sigma_temp)
 # Interpolated sigma function
 cdef double sigma_cdm(double m):
     return cspline_eval(sigma_spline, log(m))#exp(np.interp(log(m),np.log(m_rough),np.log(Sig)))
 
 
 cdef double m_min=1e8
-cdef double m_max=1e15
-cdef int num_points=500
+cdef double m_max=1e16
+cdef int num_points=1000
 cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
 cdef log_sig = compute_log_sig(m_array)
 log_m = np.log(m_array)
@@ -532,14 +541,14 @@ deriv = interp.derivative(n=1)
 cdef compute_log_sig(np.ndarray m_array):
     cdef int i
     cdef int n = m_array.shape[0]
-    cdef double log_sig[500]
+    cdef double log_sig[1000]
     
     for i in range(n):
         log_sig[i] = log(sigma_cdm(m_array[i]))
     return np.asarray(log_sig)
 for i in range(m_rough.shape[0]):
     alpha_temp[i] = interp(log(m_rough[i]))
-cdef cspline* alpha_spline = cspline_alloc(500,log_m_r,alpha_temp)
+cdef cspline* alpha_spline = cspline_alloc(1000,log_m_r,alpha_temp)
 cdef double alpha(double m):
     return cspline_deriv(alpha_spline,log(m))#float(deriv(log(m)))
 
@@ -807,7 +816,7 @@ cdef split_result split(
     return res
 
 
-cdef locate(double* xx,int n,double x):
+cdef locate(double[:] xx,int n,double x):
     # Function to locate an element x inside a pointer xx of size n
     cdef int jl = 0
     cdef int ju = n+1
@@ -894,10 +903,10 @@ cdef int* indexsh(int n,double[:] arr,int* indx):
                         done3 = True
     return indx
 '''
-cdef str filename = './CLASSIC-trees/Data/flat.txt'
-cdef DELTA = functions(filename)
+#cdef str filename = './CLASSIC-trees/Data/flat.txt'
+#cdef DELTA = functions(filename)
 
-cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
+cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
     '''
     Function to make the merger tree of a certain mass.
     ----------------------
@@ -917,7 +926,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
         split_result split_fct
         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
         Tree_Node* node
-        int n_v = 20000
+        int n_v = 200000
         int i_err = 0
         int j_frag = -1
         int n_ch
@@ -938,7 +947,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
         int* i_par = <int*>malloc(n_frag_max*sizeof(int))
         int* i_sib = <int*>malloc(n_frag_max*sizeof(int))
         int* i_child = <int*>malloc(n_frag_max*sizeof(int))
-        double* w_lev = <double*>malloc(n_lev*sizeof(double))
+        #double* w_lev = <double*>malloc(n_lev*sizeof(double))
         int* n_frag_lev = <int*>malloc(n_lev*sizeof(int))
         int* jp_frag = <int*>malloc(n_lev*sizeof(int))
         double* m_left = <double*>malloc(n_v*sizeof(double))
@@ -965,9 +974,9 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
         j_index[i_frag] = 0
         m_tr[i_frag] = 0
 
-    a_lev[0] = a_0
+    #a_lev[0] = a_0
     for i_lev in range(n_lev):
-        w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
+        #w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
         i_frag_lev[i_lev] = -1
         jp_frag[i_lev] = -1
         n_frag_lev[i_lev] = -1
@@ -1017,15 +1026,17 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
             m_left[i_node] = -1
         if w == w_lev[i_lev] and  n_prog > 0:
             if i_frag+2 > n_frag_max:
+                print('Here!!!')
+                print(i_frag)
                 i_err = 1
                 return NULL
 
-            i_frag += 1
+            i_frag += 1     
             m_tr[i_frag] = m_prog[0]
             i_par[i_frag] = i_frag_lev[i_lev-1]
             i_sib[i_frag] = -1
             i_child[i_frag] = -1
-
+        
             i_frag_prev = i_frag_lev[i_lev]
             if i_frag_prev > 0:
                 i_par_prev = i_par[i_frag_prev]
@@ -1037,7 +1048,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 i_child[i_par[i_frag]] = i_frag
             
             i_frag_lev[i_lev] = i_frag
-
+        
             if n_prog == 2:
                 i_frag += 1
                 m_tr[i_frag] = m_prog[1]
@@ -1048,9 +1059,8 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 l_node[i_node] = 1
                 if i_lev == n_lev-1:
                     i_frag_lev[i_lev] = i_frag
-            if i_lev < n_lev-1:
+            if i_lev < n_lev:
                 i_lev +=1
-            
         if w >= w_fin:
             if n_prog == 2:
                 m_left[i_node] = -1
@@ -1113,7 +1123,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 i_frag = i_sib[i_frag]
             else:
                 i_frag = -1
-    print('did this for-loop')
     for i_frag in range(n_frag_tot):
         j_frag = j_index[i_frag]
         i_frag_c = i_child[i_frag]
@@ -1127,9 +1136,12 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,in
                 i_frag_c = i_sib[i_frag_c]
 
             merger_tree[j_frag].nchild = n_ch
-            if n_ch<0:
-                print('n_ch = ',n_ch)
-    print('Going into build_sibling')
+    #cdef list X = []
+    #cdef list Y = []
+    #for i in range(n_frag_tot):
+    #    X.append(merger_tree[i].index)
+    #    Y.append(merger_tree[i].nchild)
+    #np.savetxt('correct_numbers.txt',[
     merger_tree = build_sibling(merger_tree,n_frag_tot)
     free(i_par)
     free(i_sib)
@@ -1145,6 +1157,7 @@ def get_tree_vals(
     double m_0,
     double a_0,
     double m_min,
+    double[:] w_lev,
     double[:] a_lev,
     int n_lev,
     int n_frag_max,
@@ -1180,10 +1193,10 @@ def get_tree_vals(
         Tree_Node* this_node
         int count = 0
     srand(i_seed)
-    print('Going into make_tree')
-    merger_tree = make_tree(m_0,a_0,m_min,a_lev,n_lev,n_frag_max,n_frag_tot)
+    #print('Going into make_tree')
+    merger_tree = make_tree(m_0,a_0,m_min,w_lev,n_lev,n_frag_max,n_frag_tot)
 
-    print('Made a tree ',i+1)
+    #print('Made a tree ',i+1)
     this_node = merger_tree[0]
     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
@@ -1194,7 +1207,6 @@ def get_tree_vals(
     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
     this_node = this_node.child
     print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    this_node = this_node.sibling
-    print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    
+    free(merger_tree)
+    free(this_node)
     return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
