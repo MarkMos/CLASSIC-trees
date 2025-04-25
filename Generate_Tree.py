@@ -27,13 +27,13 @@ def append_create_dataset(grp,name,data):
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e14
+mp_halo = 7e14
 m_res   = 1e8
-n_tree  = 10
+n_tree  = 1
 
-u_ST = np.random.rand(n_tree)
-m_halos = ppf_ST(u_ST)
-print(m_halos)
+u_PS = np.random.rand(n_tree)
+m_halos = ppf_PS(u_PS)
+print(type(m_halos))
 
 G_0=0.57
 gamma_1=0.38
@@ -77,7 +77,7 @@ n_frag_max = 10
 start_offset = 0
 start = time.time()
 for i in range(n_tree):
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,m_halos[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
     # with h5py.File('./Code_own/Trees/tree_selftestfast_r10_1e14_bottleneck.hdf5','a') as f:
     #     # Create or access groups of the merger tree file
     #     if 'TreeHalos' not in f:
