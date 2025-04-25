@@ -8,14 +8,14 @@ from scipy.stats import rv_continuous
 from scipy.integrate import simpson, cumulative_trapezoid
 from scipy.interpolate import interp1d
 
-n = 1000
+n = 500
 p = 0.3
 q = 0.75
 A_p = 0.3222
 delta_c = delta_crit(1)
 
 rho_bar = rho_crit
-masses = np.logspace(8,16,n)
+masses = np.geomspace(1e8,2e15,n)
 alph_m = np.zeros(n)
 sigm_m = np.zeros(n)
 
@@ -62,7 +62,7 @@ class HaloMassFunction_ST(rv_continuous):
         return nST/summ_nST
 
 
-hmf_ST = HaloMassFunction_ST(a=1e8,b=1e16,name='hmf_ST')
+hmf_ST = HaloMassFunction_ST(a=1e8,b=2e15,name='hmf_ST')
 
 # print(hmf_ST.rvs(size=10))
 # print(hmf_ST.pdf(masses))
@@ -74,11 +74,11 @@ for i in range(n):
 cdf_ST = cumulative_trapezoid(temp_ST,masses,initial=0)
 cdf_ST /= cdf_ST[-1]
 
-ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e10,2e15))
+ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e8,2e15))
 
-# u_ST = np.random.rand(1000000)
+# u_ST = np.random.rand(10000000)
 # samples = ppf_ST(u_ST)
-# plt.hist(samples)
+# plt.hist(samples,bins=masses)
 # plt.xscale('log')
 # plt.yscale('log')
 # plt.xlabel('m')
@@ -97,7 +97,7 @@ class HaloMassFunction_PS(rv_continuous):
         return nPS/summ_nPS
 
 
-hmf_PS = HaloMassFunction_PS(a=1e9,b=1e16,name='hmf_PS')
+hmf_PS = HaloMassFunction_PS(a=1e8,b=2e15,name='hmf_PS')
 
 # print(hmf_ST.rvs(size=10))
 # print(hmf_ST.pdf(masses))
@@ -109,7 +109,7 @@ for i in range(n):
 cdf_PS = cumulative_trapezoid(temp_PS,masses,initial=0)
 cdf_PS /= cdf_PS[-1]
 
-ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(1e10,2e15))
+ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(1e8,2e15))
 
 # u_PS = np.random.rand(1000000)
 # samples = ppf_PS(u_PS)
