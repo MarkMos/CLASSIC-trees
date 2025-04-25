@@ -74,16 +74,52 @@ for i in range(n):
 cdf_ST = cumulative_trapezoid(temp_ST,masses,initial=0)
 cdf_ST /= cdf_ST[-1]
 
-ppf_ST = interp1d(cdf_ST,masses,bounds_error=False,fill_value=(1e8,2e15))
+ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e10,2e15))
 
-u_ST = np.random.rand(1000000)
-samples = ppf_ST(u_ST)
-plt.hist(samples)
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel('m')
-plt.ylabel('Dist')
-plt.savefig('DistCheck.png')
+# u_ST = np.random.rand(1000000)
+# samples = ppf_ST(u_ST)
+# plt.hist(samples)
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.xlabel('m')
+# plt.ylabel('Dist')
+# plt.savefig('DistCheck.png')
+# plt.show()
+
+class HaloMassFunction_PS(rv_continuous):
+    def _pdf(self,m):
+        alph_m = -alpha(m)
+        sigm_m = sigma_cdm(m)
+        nu = delta_c**2/(sigm_m)**2
+        dln_nu_dln_m = 4*np.log(delta_c)*alph_m
+        nu_f_PS = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
+        nPS = rho_bar/(m**2)*nu_f_PS*dln_nu_dln_m
+        return nPS/summ_nPS
+
+
+hmf_PS = HaloMassFunction_PS(a=1e9,b=1e16,name='hmf_PS')
+
+# print(hmf_ST.rvs(size=10))
+# print(hmf_ST.pdf(masses))
+temp_PS = np.zeros(n)
+
+for i in range(n):
+    temp_PS[i] = hmf_ST.pdf(masses[i])
+
+cdf_PS = cumulative_trapezoid(temp_PS,masses,initial=0)
+cdf_PS /= cdf_PS[-1]
+
+ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(1e10,2e15))
+
+# u_PS = np.random.rand(1000000)
+# samples = ppf_PS(u_PS)
+# plt.hist(samples)
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.xlabel('m')
+# plt.ylabel('Dist')
+# plt.savefig('DistCheckPS.png')
+# plt.show()
 
 # dn_dm_PS_fct = UnivariateSpline(masses[::2],n_PS[::2]).derivative(n=1)
 # dn_dm_ST_fct = UnivariateSpline(masses[::2],n_ST[::2]).derivative(n=1)
