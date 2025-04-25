@@ -4,6 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import get_tree_vals, functions
+from random_masses import ppf_ST, ppf_PS
 import numpy as np
 import h5py
 import time
@@ -103,12 +104,12 @@ def append_create_dataset(grp,name,data):
 
 # Parallel execution:
 def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset):
-    args_list = [(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
         results = pool.starmap(tree_process, args_list)
     print('Here')
-    # with h5py.File('./Code_own/Trees/tree_selftestfast_r100_1e14.hdf5','a',libver='latest') as f:
+    # with h5py.File('./Code_own/Trees/tree_selftestfast_random_masses3.hdf5','a',libver='latest') as f:
     #     # Create or access groups of the merger tree file
     #     if 'TreeHalos' not in f:
     #         grp1 = f.create_group('TreeHalos')
@@ -140,7 +141,7 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
 if __name__ == '__main__':
     n_tree = 30
     i_seed_0 = -8635
-    mp_halo = 1e14
+    # mp_halo = 1e14
     a_halo = 1
     m_res = 1e8
     z_max  = 4
@@ -148,8 +149,10 @@ if __name__ == '__main__':
     n_halo_max = 1000000
     n_halo = 1
 
-    n_part = 4
-
+    n_part = 40000
+    u_ST = np.random.rand(int(n_part*n_tree))
+    mp_halo = ppf_ST(u_ST)
+    mp_halo = np.sort(mp_halo)[::-1]
     a_lev = []
     w_lev = []
     for i_lev in range(1,n_lev+1):
