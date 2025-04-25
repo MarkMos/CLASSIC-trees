@@ -1205,8 +1205,11 @@ def get_tree_vals(
     print('Example information from tree:')
     this_node = merger_tree[0]
     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-    this_node = this_node.child
-    print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    if count>1:
+        this_node = this_node.child
+        print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print('No Progenitors.')
     free(merger_tree)
     free(this_node)
     return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
