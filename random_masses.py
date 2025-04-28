@@ -78,7 +78,31 @@ ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e8,
 
 # u_ST = np.random.rand(10000000)
 # samples = ppf_ST(u_ST)
-# plt.hist(samples,bins=masses)
+
+
+# def pdf_ST(m):
+#     alph_m = -alpha(m)
+#     sigm_m = sigma_cdm(m)
+#     nu = delta_c**2/(sigm_m)**2
+#     dln_nu_dln_m = 4*np.log(delta_c)*alph_m
+#     nu_f_ST = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
+#     nST = rho_bar/(m**2)*nu_f_ST*dln_nu_dln_m
+#     return nST/summ_nST
+
+# m_min, m_max = 1e8,2e15
+# y_max = pdf_ST(m_min)
+
+# samples = []
+# n_sample = 100
+# while len(samples) < n_sample:
+#     m_cand = np.random.uniform(m_min,m_max)
+#     y_cand = np.random.uniform(0,y_max)
+
+#     if y_cand <= pdf_ST(m_cand):
+#         samples.append(m_cand)
+
+# plt.hist(samples,bins=masses,density=True)
+# plt.plot(masses,n_ST)
 # plt.xscale('log')
 # plt.yscale('log')
 # plt.xlabel('m')
@@ -104,16 +128,17 @@ hmf_PS = HaloMassFunction_PS(a=1e8,b=2e15,name='hmf_PS')
 temp_PS = np.zeros(n)
 
 for i in range(n):
-    temp_PS[i] = hmf_ST.pdf(masses[i])
+    temp_PS[i] = hmf_PS.pdf(masses[i])
 
 cdf_PS = cumulative_trapezoid(temp_PS,masses,initial=0)
 cdf_PS /= cdf_PS[-1]
 
 ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(1e8,2e15))
 
-# u_PS = np.random.rand(1000000)
+# u_PS = np.random.rand(10000000)
 # samples = ppf_PS(u_PS)
-# plt.hist(samples)
+# plt.hist(samples,bins=masses,density=True)
+# plt.plot(masses,n_PS)
 # plt.xscale('log')
 # plt.yscale('log')
 # plt.xlabel('m')
