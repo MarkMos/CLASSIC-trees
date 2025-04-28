@@ -5,6 +5,7 @@ import scipy.interpolate as intp
 import matplotlib.pyplot as plt
 from alpha_func import *
 from functions import *
+import h5py
 
 a_here = 1
 mass = 1e10 #4/3*np.pi*rho_crit*8**3
@@ -180,3 +181,12 @@ print('alpha = ',alpha(mass))
 # plt.legend()
 # plt.savefig('J_unresolved.png')
 
+with h5py.File('./Code_own/Trees/tree_selftestfast_random_masses2.hdf5','a') as f:
+     grp = f.create_group('Header')
+     grp.attrs['LastSnapShotNr'] = 9
+     grp.attrs['Nhalos_ThisFile'] = 120000
+     grp.attrs['Nhalos_ThisFile'] = 1433267
+     grp.attrs['Nhalos_Total'] = 1433267
+     grp.attrs['Ntrees_ThisFile'] = 120000
+     grp.attrs['Ntrees_Total'] = 120000
+     grp.attrs['NumFiles'] = 1
