@@ -827,84 +827,6 @@ cdef locate(double[:] xx,int n,double x):
         else:
             ju = jm
     return int(jl-1)
-'''
-cdef int n_switch = 60
-cdef double tiny = 1e-5
-cdef double aln2I = 1.0/log(2.0)
-
-cdef int* indexxx(int n,double[:] arr,int* indx):
-    if n > n_switch:
-        indx = indexx(n, arr, indx)
-    else:
-        indx = indexsh(n, arr, indx)
-    return indx
-
-cdef int* indexx(int n,double[:] arr,int* indx):
-'''
-    #Indexing or array arr[n] using numerical recipes heapsort.
-'''
-    cdef int l,ir,idnxt
-    cdef double q
-    if n <= 1:
-        return indx
-    l = n//2
-    ir = n-1
-    while True:
-        if l > 0:
-            l -= 1
-            indxt = indx[l]
-            q = arr[indxt]
-        else:
-            indxt = indx[ir]
-            q = arr[indxt]
-            indx[ir] = indx[0]
-            ir -= 1
-            if ir == 0:
-                indx[0] = indxt
-                break
-        i = l
-        j = 2*l + 1
-        while j <= ir:
-            if j < ir and arr[indx[j]] < arr[indx[j+1]]:
-                j += 1
-            if q < arr[indx[j]]:
-                indx[i] = indx[j]
-                i = j
-                j = 2*j+1
-            else:
-                break
-        indx[i] = indxt
-    return indx
-
-cdef int* indexsh(int n,double[:] arr,int* indx):
-'''
-    #Indexing or array arr[n] using shell sort.
-'''
-    cdef int m,log_nb2,k,i,j
-    if n >= 2:
-        log_nb2 = int(log(n)*aln2I+tiny)
-        m = n
-        for n_n in range(log_nb2):
-            m = m//2
-            k = n - m
-            for j in range(int(k)):
-                i=j
-                done3 = False
-                while done3 is False:
-                    l = i + m
-                    if arr[indx[l]] < arr[indx[i]]:
-                        t_index = indx[i]
-                        indx[i] = indx[l]
-                        indx[l] = t_index
-                        i = i - m
-                        if i < 0:
-                            done3 = True
-                    else:
-                        done3 = True
-    return indx
-'''
-#cdef str filename = './CLASSIC-trees/Data/flat.txt'
-#cdef DELTA = functions(filename)
 
 cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
     '''
@@ -947,7 +869,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         int* i_par = <int*>malloc(n_frag_max*sizeof(int))
         int* i_sib = <int*>malloc(n_frag_max*sizeof(int))
         int* i_child = <int*>malloc(n_frag_max*sizeof(int))
-        #double* w_lev = <double*>malloc(n_lev*sizeof(double))
         int* n_frag_lev = <int*>malloc(n_lev*sizeof(int))
         int* jp_frag = <int*>malloc(n_lev*sizeof(int))
         double* m_left = <double*>malloc(n_v*sizeof(double))
@@ -974,9 +895,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         j_index[i_frag] = 0
         m_tr[i_frag] = 0
 
-    #a_lev[0] = a_0
     for i_lev in range(n_lev):
-        #w_lev[i_lev] = DELTA.delta_crit(a_lev[i_lev])
         i_frag_lev[i_lev] = -1
         jp_frag[i_lev] = -1
         n_frag_lev[i_lev] = -1
@@ -1012,6 +931,8 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         m_prog = split_fct.m_prog
         m_minlast = split_fct.m_min_last
         w += dw
+        # Now setting some of the values to according to the number of progenitors
+        # n_prog (=2,1,0)
         if n_prog==2:
             i_node += 1
             w_node[i_node] = w
@@ -1024,6 +945,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         elif n_prog==0:
             m = 0.0
             m_left[i_node] = -1
+        # Asign indices to parents, siblings and children at the right point
         if w == w_lev[i_lev] and  n_prog > 0:
             if i_frag+2 > n_frag_max:
                 print('Here!!!')
@@ -1061,13 +983,15 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                     i_frag_lev[i_lev] = i_frag
             if i_lev < n_lev:
                 i_lev +=1
+        # Drop out values that are out of the chosen time-window
         if w >= w_fin:
             if n_prog == 2:
                 m_left[i_node] = -1
                 m_right[i_node] = -1
             else:
                 m_left[i_node] = -1
-            
+        # Reorder the masses to have the non-negative in the pointer for the 
+        # left masses or both =-1  
         while m_left[i_node] < 0.0 and i_node > 0:
             if m_right[i_node] > 0.0:
                 m_left[i_node] = m_right[i_node]
@@ -1085,9 +1009,10 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 i_node -= 1
                 m_left[i_node] = -1
 
-    n_frag_tot = i_frag
-    print('n_frag_tot = ',n_frag_tot)
+    n_frag_tot = i_frag # Number of nodes in merger tree - 1
 
+    # Asigning the parents of nodes in the merger tree, as well as masses
+    # and time-level
     for i_lev_wk in range(n_lev):
         i_lev = 0
         i_frag  = 0
@@ -1123,6 +1048,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 i_frag = i_sib[i_frag]
             else:
                 i_frag = -1
+    # Asigning children and the number of children of certain nodes
     for i_frag in range(n_frag_tot):
         j_frag = j_index[i_frag]
         i_frag_c = i_child[i_frag]
@@ -1136,12 +1062,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 i_frag_c = i_sib[i_frag_c]
 
             merger_tree[j_frag].nchild = n_ch
-    #cdef list X = []
-    #cdef list Y = []
-    #for i in range(n_frag_tot):
-    #    X.append(merger_tree[i].index)
-    #    Y.append(merger_tree[i].nchild)
-    #np.savetxt('correct_numbers.txt',[
+    # Build the siblings, also in decreasing mass order        
     merger_tree = build_sibling(merger_tree,n_frag_tot)
     free(i_par)
     free(i_sib)
