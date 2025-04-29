@@ -234,6 +234,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_time = NULL
         int* arr_1prog = NULL
         int* arr_desc = NULL
+        int* arr_nextprog = NULL
         int node_ID
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
     #print(n_halo_max)
@@ -243,7 +244,8 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     arr_time = <int*>malloc(n_halo_max*sizeof(int))
     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
     arr_desc = <int*>malloc(n_halo_max*sizeof(int))
-    if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc):
+    arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
+    if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog):
         malloc_failed = 1
     if malloc_failed:
         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
@@ -259,14 +261,17 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         #print('node_ID = ',node_ID)
         if this_node.child is not NULL:
             #print('if node_ID = ',node_ID)
-            if this_node.child is NULL:
-                print('----ERROR----')
+            if this_node.nchild > 1:
+                arr_nextprog[node_ID] = this_node.child.sibling.index
+            else:
+                arr_nextprog[node_ID] = -1
             #print(this_node.child.mhalo)
             #print('child_index = ',this_node.child.index)
             arr_1prog[node_ID] = this_node.child.index
         else:
             #print('else node_ID = ',node_ID)
             arr_1prog[node_ID] = -1
+            arr_nextprog[node_ID] = -1
         #print('index_ch : ',arr_1prog[node_ID])
         if this_node.parent is not NULL:
             arr_desc[node_ID] = this_node.parent.index
@@ -283,8 +288,9 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
+    np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
     
-    return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc)
+    return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog)
 
 cdef int tree_index(Tree_Node* node):
     '''
@@ -359,7 +365,15 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
         for k in range(child_index, child_index + this_node.nchild - 1):
             merger_tree[k].sibling = merger_tree[k + 1]
     return merger_tree
-
+'''
+cdef Tree_Node** associated_siblings(Tree_Node* this_node,Tree_Node** merger_tree,int i):
+    cdef int child_index, i_frag
+    if this_node.nchild > 1:
+        child_index = tree_index(this_node.child)
+        for i_frag in range(child_index, child_index + this_node.nchild -1):
+            merger_tree[i_frag].sibling = merger_tree[i_frag + 1]
+    return merger_tree
+'''
 cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     '''
     Function to go through the whole merger tree and build the siblings of each node.
@@ -1119,7 +1133,7 @@ def get_tree_vals(
 
     #print('Made a tree ',i+1)
     this_node = merger_tree[0]
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -1133,4 +1147,4 @@ def get_tree_vals(
         print('No Progenitors.')
     free(merger_tree)
     free(this_node)
-    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc
+    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog
