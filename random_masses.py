@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 from scipy.stats import rv_continuous
 from scipy.integrate import simpson, cumulative_trapezoid
 from scipy.interpolate import interp1d
+from tqdm import tqdm
 
-n = 500
+n = 100
 p = 0.3
 q = 0.75
 A_p = 0.3222
@@ -76,11 +77,16 @@ cdf_ST /= cdf_ST[-1]
 
 ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e8,2e15))
 
-# u_ST = np.random.rand(10000000)
+# N = 10000000
+# u_ST = np.random.rand(N)
 # samples = ppf_ST(u_ST)
 
+# counts, bin_edges = np.histogram(samples,bins=masses)
 
-# def pdf_ST(m):
+# ST_val = (bin_edges[:-1] + bin_edges[1:])/2
+# ST_err = np.sqrt(counts)
+# div = N*np.diff(masses)
+# def n_ST_func(m):
 #     alph_m = -alpha(m)
 #     sigm_m = sigma_cdm(m)
 #     nu = delta_c**2/(sigm_m)**2
@@ -88,26 +94,24 @@ ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e8,
 #     nu_f_ST = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
 #     nST = rho_bar/(m**2)*nu_f_ST*dln_nu_dln_m
 #     return nST/summ_nST
-
-# m_min, m_max = 1e8,2e15
-# y_max = pdf_ST(m_min)
-
-# samples = []
-# n_sample = 100
-# while len(samples) < n_sample:
-#     m_cand = np.random.uniform(m_min,m_max)
-#     y_cand = np.random.uniform(0,y_max)
-
-#     if y_cand <= pdf_ST(m_cand):
-#         samples.append(m_cand)
-
+# n_ST = []
+# for m in ST_val:
+#     n_ST.append(n_ST_func(m))
+# n_ST = np.array(n_ST)
 # plt.hist(samples,bins=masses,density=True)
-# plt.plot(masses,n_ST)
-# plt.xscale('log')
-# plt.yscale('log')
+# fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1]})
+
+# ax1.errorbar(ST_val,counts/div,xerr=ST_err,fmt='.',label='drawn')
+# ax1.plot(ST_val,n_ST,label='Sheth&Tormen')
+# ax1.set_xscale('log')
+# ax1.set_yscale('log')
+# ax1.set_ylabel('n(m)')
+# ax2.errorbar(ST_val,(counts/div-n_ST)/n_ST,xerr=ST_err,fmt='.',label='Difference')
 # plt.xlabel('m')
-# plt.ylabel('Dist')
-# plt.savefig('DistCheck.png')
+# ax2.set_ylabel(r'$\Delta$ n(m)')
+# plt.xlim(1e8,2e15)
+# plt.legend()
+# plt.savefig('DistCheckDiff.png')
 # plt.show()
 
 class HaloMassFunction_PS(rv_continuous):
@@ -165,3 +169,38 @@ ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(1e8,
 # plt.ylabel('dn/dm')
 # plt.legend()
 # plt.savefig('HaloMassFunctionDeriv.png')
+N = 10000000
+u_PS = np.random.rand(N)
+samples = ppf_PS(u_PS)
+
+counts, bin_edges = np.histogram(samples,bins=masses)
+
+PS_val = (bin_edges[:-1] + bin_edges[1:])/2
+PS_err = np.sqrt(counts)
+div = N*np.diff(masses)
+def n_PS_func(m):
+    alph_m = -alpha(m)
+    sigm_m = sigma_cdm(m)
+    nu = delta_c**2/(sigm_m)**2
+    dln_nu_dln_m = 4*np.log(delta_c)*alph_m
+    nu_f_PS = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
+    nPS = rho_bar/(m**2)*nu_f_PS*dln_nu_dln_m
+    return nPS/summ_nPS
+n_PS = []
+for m in PS_val:
+    n_PS.append(n_PS_func(m))
+n_PS = np.array(n_PS)
+# plt.hist(samples,bins=masses,density=True)
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1]})
+
+ax1.errorbar(PS_val,counts/div,xerr=PS_err,fmt='.',label='drawn')
+ax1.plot(PS_val,n_PS,label='Sheth&Tormen')
+ax1.set_xscale('log')
+ax1.set_yscale('log')
+ax1.set_ylabel('n(m)')
+ax2.errorbar(PS_val,(counts/div-n_PS)/n_PS,xerr=PS_err,fmt='.',label='Difference')
+plt.xlabel('m')
+ax2.set_ylabel(r'$\Delta$ n(m)')
+plt.xlim(1e8,2e15)
+plt.legend()
+plt.savefig('DistCheckPSDiff.png')
