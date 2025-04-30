@@ -250,7 +250,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     if malloc_failed:
         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
     while this_node is not NULL:
-        node_ID = count
+        node_ID = this_node.index
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
         #print('mass : ',arr_mhalo[node_ID])
@@ -327,7 +327,7 @@ cdef int tree_index(Tree_Node* node):
 #    sibs_left = Sibling.sibling
 #    return Sibling, sibs_left
 
-cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i):
+#cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i):
     '''
     Function to associate the siblings of a certain node and as well sort them by their mass
     in descending order.
@@ -339,6 +339,7 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
     Output:
         merger_tree: Updated merger tree
     '''
+'''
     cdef:
         int child_index, i_frag, k, j
         Tree_Node* temp = <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
@@ -368,12 +369,14 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
 '''
 cdef Tree_Node** associated_siblings(Tree_Node* this_node,Tree_Node** merger_tree,int i):
     cdef int child_index, i_frag
+    #print(this_node.nchild)
     if this_node.nchild > 1:
+        #print('In here')
         child_index = tree_index(this_node.child)
         for i_frag in range(child_index, child_index + this_node.nchild -1):
             merger_tree[i_frag].sibling = merger_tree[i_frag + 1]
     return merger_tree
-'''
+
 cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     '''
     Function to go through the whole merger tree and build the siblings of each node.
@@ -842,6 +845,84 @@ cdef locate(double[:] xx,int n,double x):
             ju = jm
     return int(jl-1)
 
+cdef int n_switch = 60
+cdef double tiny = 1e-5
+cdef double aln2I = 1.0/log(2.0)
+
+cdef int* indexxx(int n,double* arr,int* indx):
+    if n > n_switch:
+        indx = indexx(n, arr, indx)
+    else:
+        indx = indexsh(n, arr, indx)
+    return indx
+
+cdef int* indexx(int n,double* arr,int* indx):
+    '''
+    Indexing or array arr[n] using numerical recipes heapsort.
+    '''
+    cdef int l,ir,idnxt
+    cdef double q
+    if n <= 1:
+        return indx
+    l = n//2
+    ir = n-1
+    while True:
+        if l > 0:
+            l -= 1
+            indxt = indx[l]
+            q = arr[indxt]
+        else:
+            indxt = indx[ir]
+            q = arr[indxt]
+            indx[ir] = indx[0]
+            ir -= 1
+            if ir == 0:
+                indx[0] = indxt
+                break
+        i = l
+        j = 2*l + 1
+        while j <= ir:
+            if j < ir and arr[indx[j]] < arr[indx[j+1]]:
+                j += 1
+            if q < arr[indx[j]]:
+                indx[i] = indx[j]
+                i = j
+                j = 2*j+1
+            else:
+                break
+        indx[i] = indxt
+    return indx
+ 
+cdef int* indexsh(int n,double* arr,int* indx):
+    '''
+    Indexing or array arr[n] using shell sort.
+    '''
+    cdef int m,log_nb2,k,i,j,t_index,n_n
+    for i in range(n):
+        indx[i] = i
+    if n >= 2:
+        log_nb2 = int(log(n)*aln2I+tiny)
+        m = n
+        for n_n in range(log_nb2):
+            m = m//2
+            k = n - m
+            i = 0
+            for j in range(int(k)):
+                i=j
+                done3 = False
+                while done3 is False:
+                    l = i + m
+                    if arr[indx[l]] < arr[indx[i]]:
+                        t_index = indx[i]
+                        indx[i] = indx[l]
+                        indx[l] = t_index
+                        i = i - m
+                        if i < 0:
+                            done3 = True
+                    else:
+                        done3 = True
+    return indx
+
 cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
     '''
     Function to make the merger tree of a certain mass.
@@ -902,18 +983,17 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         node.child  = NULL
         node.sibling= NULL
         merger_tree[i_frag] = node
-        i_par[i_frag] = 0
-        i_sib[i_frag] = 0
-        i_child[i_frag] = 0
-        child_ref[i_frag] = 0
-        j_index[i_frag] = 0
+        #i_par[i_frag] = 0
+        #i_sib[i_frag] = 0
+        #i_child[i_frag] = 0
+        #child_ref[i_frag] = 0
+        #j_index[i_frag] = 0
         m_tr[i_frag] = 0
 
     for i_lev in range(n_lev):
         i_frag_lev[i_lev] = -1
         jp_frag[i_lev] = -1
-        n_frag_lev[i_lev] = -1
-        i_frag_lev[i_lev] = -1
+        n_frag_lev[i_lev] = 0
 
     for i in range(n_v):
         m_left[i] = 0       
@@ -974,7 +1054,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
             i_child[i_frag] = -1
         
             i_frag_prev = i_frag_lev[i_lev]
-            if i_frag_prev > 0:
+            if i_frag_prev >= 0:
                 i_par_prev = i_par[i_frag_prev]
                 if i_par_prev == i_par[i_frag]:
                     i_sib[i_frag_prev] = i_frag
@@ -995,7 +1075,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 l_node[i_node] = 1
                 if i_lev == n_lev-1:
                     i_frag_lev[i_lev] = i_frag
-            if i_lev < n_lev:
+            if i_lev < n_lev-1:
                 i_lev +=1
         # Drop out values that are out of the chosen time-window
         if w >= w_fin:
@@ -1024,7 +1104,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 m_left[i_node] = -1
 
     n_frag_tot = i_frag # Number of nodes in merger tree - 1
-
+    
     # Asigning the parents of nodes in the merger tree, as well as masses
     # and time-level
     for i_lev_wk in range(n_lev):
@@ -1076,6 +1156,67 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 i_frag_c = i_sib[i_frag_c]
 
             merger_tree[j_frag].nchild = n_ch
+    
+    cdef:
+        int k_frag_p, n_child1, j_child1
+        int k_frag = 0
+        int n_ch_max = 100000
+        int* indx_ch = <int*>malloc(n_ch_max*sizeof(int))
+        double* temp
+    j_index[0] = 0
+    m_tr[0] = merger_tree[0].mhalo
+    for i_lev in range(n_lev-1):
+        #print('start point range: ',jp_frag[i_lev])
+        #print('end point range: ',jp_frag[i_lev]+n_frag_lev[i_lev])
+        for k_frag_p in range(jp_frag[i_lev],jp_frag[i_lev]+n_frag_lev[i_lev]):
+            #print('k_frag_p = ',k_frag_p)
+            j_frag_p = j_index[k_frag_p]
+            n_child1 = merger_tree[j_frag_p].nchild
+            #print(n_child1)
+            i_sib[k_frag_p] = n_child1
+            j_child1 = child_ref[j_frag_p]
+            if n_child1==1:
+                #print('In here')
+                indx_ch[0] = 0
+                #print('After this')
+            elif n_child1 >= 2:
+                if n_child1 > n_ch_max:
+                    print('make_tree: n_child1 > n_ch_max increase n_ch_max \n n_child1 = ',n_child1)
+                temp = <double*>malloc(n_child1*sizeof(double))
+                for i in range(n_child1):
+                    temp[i] = merger_tree[i+j_child1].mhalo
+                    #print(temp[i])
+                indx_ch = indexxx(n_child1,temp,indx_ch)
+                free(temp)
+            if n_child1 >= 1:
+                #print('Made it till here')
+                i_child[k_frag_p] = k_frag + 1
+            else:
+                i_child[k_frag_p] = -1
+            #print('We are here')
+            for k_child in range(n_child1-1,-1,-1):
+                j_frag_c = indx_ch[k_child] + j_child1  # Adjust for Python's 0-based indexing
+                #print('j_frag_c = ',j_frag_c)
+                k_frag += 1
+                j_index[k_frag] = j_frag_c  # Adjust for Python's 0-based indexing
+                merger_tree[k_frag].parent = merger_tree[k_frag_p]  # Assign parent as a reference
+                m_tr[k_frag] = merger_tree[j_frag_c].mhalo  # Store mhalo value in mtr array
+    for k_frag in range(jp_frag[n_lev-1],jp_frag[n_lev-1]+n_frag_lev[n_lev-1]):
+        i_sib[k_frag] = 0
+        i_child[k_frag] = -1
+    for j in range(n_frag_tot):
+        merger_tree[j].mhalo = m_tr[j]
+        #print(merger_tree[j].mhalo)
+    for i_frag in range(n_frag_tot):
+        if i_child[i_frag] > 0:
+            merger_tree[i_frag].child = merger_tree[i_child[i_frag]]
+        else:
+            merger_tree[i_frag].child = NULL    
+    for k in range(n_frag_tot):
+       merger_tree[k].nchild = i_sib[k]
+       #print(merger_tree[k].nchild)
+    
+    
     # Build the siblings, also in decreasing mass order        
     merger_tree = build_sibling(merger_tree,n_frag_tot)
     free(i_par)
