@@ -24,10 +24,10 @@ def append_create_dataset(grp,name,data):
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
 
-n_lev = 10
+n_lev = 20
 n_halo_lev = 10
 
-mp_halo = 1e12
+mp_halo = 1e10
 m_res   = 1e8
 n_tree  = 1
 
@@ -78,7 +78,7 @@ start_offset = 0
 start = time.time()
 for i in range(n_tree):
     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
-    with h5py.File('./Code_own/Trees/tree_selftestfast_1e12_ytree.h5','a') as f:
+    with h5py.File('./Code_own/Trees/tree_selftestfast_1e10_ytree1.h5','a') as f:
         # Create or access groups of the merger tree file
         if 'TreeHalos' not in f:
             grp1 = f.create_group('TreeHalos')
