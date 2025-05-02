@@ -262,7 +262,7 @@ def build_tree(h5_file, tree_id=0):
     return G
 
 # Visualize
-G = build_tree('./Code_own/Trees/tree_selftestfast_1e12_ytree.h5')
+G = build_tree('./Code_own/Trees/tree_selftestfast_1e10_ytree1.h5')
 pos = nx.nx_agraph.graphviz_layout(G, prog='dot',args='-Grankdir=TB -Gnodesep=0.1')
 # pos = nx.planar_layout(G)
 # pos = nx.multipartite_layout(G)
@@ -272,7 +272,7 @@ pos = nx.nx_agraph.graphviz_layout(G, prog='dot',args='-Grankdir=TB -Gnodesep=0.
 nx.draw_networkx_edges(G, pos, connectionstyle='arc3,rad=0.1')
 node_sizes = [np.log10(data['mass'])  for _, data in G.nodes(data=True)]
 nx.draw(G, pos, node_size=node_sizes, alpha=0.3)
-plt.savefig('goodTree6.png')
+plt.savefig('goodTree_1e10_longer.png')
 
 
 
