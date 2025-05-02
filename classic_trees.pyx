@@ -327,7 +327,7 @@ cdef int tree_index(Tree_Node* node):
 #    sibs_left = Sibling.sibling
 #    return Sibling, sibs_left
 
-#cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i):
+cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i):
     '''
     Function to associate the siblings of a certain node and as well sort them by their mass
     in descending order.
@@ -339,7 +339,6 @@ cdef int tree_index(Tree_Node* node):
     Output:
         merger_tree: Updated merger tree
     '''
-'''
     cdef:
         int child_index, i_frag, k, j
         Tree_Node* temp = <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
@@ -376,7 +375,7 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node,Tree_Node** merger_tre
         for i_frag in range(child_index, child_index + this_node.nchild -1):
             merger_tree[i_frag].sibling = merger_tree[i_frag + 1]
     return merger_tree
-
+'''
 cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     '''
     Function to go through the whole merger tree and build the siblings of each node.
@@ -1156,7 +1155,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
                 i_frag_c = i_sib[i_frag_c]
 
             merger_tree[j_frag].nchild = n_ch
-    
+    '''
     cdef:
         int k_frag_p, n_child1, j_child1
         int k_frag = 0
@@ -1215,7 +1214,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     for k in range(n_frag_tot):
        merger_tree[k].nchild = i_sib[k]
        #print(merger_tree[k].nchild)
-    
+    '''
     
     # Build the siblings, also in decreasing mass order        
     merger_tree = build_sibling(merger_tree,n_frag_tot)
