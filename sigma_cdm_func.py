@@ -25,7 +25,7 @@ from numba import njit
 
 G_used = G.value*M_sun.value/(1e6*pc.value*(1e3**2))
 #print('G_used = ',G_used)
-H_0100 = 100*0.73
+H_0100 = 100*0.67810
 rho_crit = 3*H_0100**2/(8*pi*G_used)
 #print(rho_crit)
 m_8crit  = rho_crit*4*pi*8**3/3
@@ -33,10 +33,10 @@ m_8crit  = rho_crit*4*pi*8**3/3
 # file_name = './Code_own/Data/pk_Mill.txt'
 # pk_data   = np.loadtxt(file_name)
 
-file_name = './Code_own/pk_CLASS.txt'
+file_name = './CLASSIC-trees/pk_CLASS_default.txt'
 pk_data   = np.loadtxt(file_name)
 k_0  = pk_data[0]
-Pk_0 = pk_data[1]*0.73**3
+Pk_0 = pk_data[1]*0.67810**3
 
 @njit
 def my_int(R,k,Pk):
