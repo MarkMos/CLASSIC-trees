@@ -79,27 +79,68 @@ import h5py
 
 # # print('here: ',np.exp(interpolation(np.log(mass))))
 # # print('alpha = ', alpha(np.log(mass/2)))
+# from tqdm import tqdm
+
+# m_array = np.logspace(8,15,1000)
 
 # Sig = []
-# for i in range(len(m_array)):
+# for i in tqdm(range(len(m_array))):
 #     Sig.append(sigma_cdm(m_array[i]))
 # Sig = np.array(Sig)
 # sig_inter = intp.interp1d(np.log(m_array),np.log(Sig))
 # print('sigma = ',np.exp(sig_inter(np.log(mass))))
 
-# Sig_inter = []
+# cosmo = Class()
+# cosmo.set({'output':'mPk','P_k_max_h/Mpc':10000,'h':0.67810})
+# cosmo.compute()
+
+# Sig_Class = []
+
 # for m in m_array:
-#     Sig_inter.append(np.exp(sig_inter(np.log(m))))
-# Sig_inter = np.array(Sig_inter)
-# # plt.plot(m_array,Sig,label='original',marker='.',lw=0)
-# # plt.plot(m_array,Sig_inter,label='interpolated',marker='.',lw=0)
-# plt.plot(m_array,abs(Sig-Sig_inter)/Sig,label='Difference',marker='.',lw=0)
+#     R = (3*m/(4*np.pi*rho_crit))**(1/3)
+#     Sig_Class.append(cosmo.sigma(R,0,h_units=True))
+# print(rho_critical,' = ',rho_crit)
+# Sig_Class = np.array(Sig_Class)
+# plt.figure(figsize=(15,10))
+# plt.plot(m_array,Sig,label='original',marker='.',lw=0)
+# plt.plot(m_array,Sig_Class,label='Class',marker='.',lw=0)
+# plt.plot(m_array,abs(Sig-Sig_Class)/Sig,label='Difference',marker='.',lw=0)
 # plt.xlabel('m')
 # plt.ylabel(r'$\Delta\sigma/\sigma$')
 # plt.xscale('log')
 # plt.yscale('log')
 # plt.legend()
-# plt.savefig('Sigma_comp.png')
+# plt.savefig('Sigma_comp_w_Class.png')
+# m_rough = np.logspace(8,15,500)
+# logSig_Class = []
+# for m in m_rough:
+#     R = (3*m/(4*np.pi*rho_crit))**(1/3)
+#     logSig_Class.append(np.log(cosmo.sigma(R,0,h_units=True)))
+# log_M = np.log(m_rough)
+
+# interp = intp.UnivariateSpline(log_M,logSig_Class)
+# def alpha_cl(m):
+#     alpha_ret = interp.derivative(n=1)
+#     return alpha_ret(np.log(m))
+
+# Alpha = []
+# Alpha_Class = []
+# for m in m_array:
+#     Alpha.append(alpha(m))
+#     Alpha_Class.append(alpha_cl(m))
+# Alpha = np.array(Alpha)
+# Alpha_Class = np.array(Alpha_Class)
+
+# plt.plot(m_array,Alpha,label='original',marker='.',lw=0)
+# plt.plot(m_array,Alpha_Class,label='Class',marker='.',lw=0)
+# plt.plot(m_array,abs(Alpha-Alpha_Class)/abs(Alpha),label='Difference',marker='.',lw=0)
+# plt.xlabel('m')
+# plt.ylabel(r'$\Delta\alpha/\alpha$')
+# plt.ylabel(r'$\alpha$')
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.legend()
+# plt.savefig('Alpha_comp_w_Class.png')
 
 
 # file_name = './Code_own/Data/pk_Mill.txt'
@@ -112,14 +153,15 @@ import h5py
 # k_array[:,0,0] = np.logspace(-6,3,N_k)
 
 # cosmo = Class()
-# cosmo.set({'output':'mPk','P_k_max_h/Mpc':10000})
+# cosmo.set({'output':'mPk','P_k_max_h/Mpc':10000,'h':h,'Omega_m':0.25})
 # cosmo.compute()
 # Pk_0 = cosmo.get_pk(k_array*h,z,N_k,1,1)[:,0,0]
 # k_0 = k_array[:,0,0]
-# np.savetxt('pk_CLASS.txt',[k_0,Pk_0])
-
+# np.savetxt('./CLASSIC-trees/pk_CLASS_h_73.txt',[k_0,Pk_0])
+# print(k_0-pk_data[:,0])
 # plt.plot(pk_data[:,0],pk_data[:,1],label='FORTRAN')
 # plt.plot(k_0,Pk_0*h**3,label='CLASS')
+# plt.plot(k_0,abs(pk_data[:,1]-Pk_0)/pk_data[:,1],marker='.',lw=0,label='Diff.')
 # plt.xlabel('k')
 # plt.ylabel('P_k')
 # plt.xscale('log')
@@ -198,9 +240,7 @@ import h5py
 #      f['Parameters'].attrs['OmegaLambda'] = 0.75
 #      f['Parameters'].attrs['BoxSize'] = 479.0
 
-from tqdm import tqdm
-import pandas as pd
-import seaborn as sns
+# from tqdm import tqdm
 
 # f = h5py.File('./Code_own/Trees/tree_selftestfast_1e14_ytree6.h5')
 
@@ -240,39 +280,39 @@ import seaborn as sns
 # plt.yscale('log')
 # plt.savefig('tree_hist.png')
 
-import networkx as nx
+# import networkx as nx
 
-def build_tree(h5_file, tree_id=0):
-    G = nx.DiGraph()
-    with h5py.File(h5_file, 'r') as f:
-        # Load tree data (adjust paths as needed)
-        descendant = f[f'TreeHalos/Descendant'][:]
-        mass = f[f'TreeHalos/Mass'][:]
+# def build_tree(h5_file, tree_id=0):
+#     G = nx.DiGraph()
+#     with h5py.File(h5_file, 'r') as f:
+#         # Load tree data (adjust paths as needed)
+#         descendant = f[f'TreeHalos/Descendant'][:]
+#         mass = f[f'TreeHalos/Mass'][:]
         
-        # Create nodes
-        for i in tqdm(range(len(descendant))):
-            G.add_node(i, mass=mass[i])
-        print('1. here')
-        # Create edges
-        for i, desc in enumerate(tqdm(descendant)):
-            if desc >= 0:  # Valid descendant
-                G.add_edge(i, desc)
-        print('Then here')
-    print('And finally here!')
-    return G
+#         # Create nodes
+#         for i in tqdm(range(len(descendant))):
+#             G.add_node(i, mass=mass[i])
+#         print('1. here')
+#         # Create edges
+#         for i, desc in enumerate(tqdm(descendant)):
+#             if desc >= 0:  # Valid descendant
+#                 G.add_edge(i, desc)
+#         print('Then here')
+#     print('And finally here!')
+#     return G
 
 # Visualize
-G = build_tree('./Code_own/Trees/tree_selftestfast_1e10_ytree1.h5')
-pos = nx.nx_agraph.graphviz_layout(G, prog='dot',args='-Grankdir=TB -Gnodesep=0.1')
+# G = build_tree('./Code_own/Trees/tree_selftestfast_1e10_ytree1.h5')
+# pos = nx.nx_agraph.graphviz_layout(G, prog='dot',args='-Grankdir=TB -Gnodesep=0.1')
 # pos = nx.planar_layout(G)
 # pos = nx.multipartite_layout(G)
 # pos = nx.spring_layout(G, k=0.3, iterations=50, seed=42)
 # edge_alphas = [0.3 if G.in_degree(v) > 1 else 1.0 for u, v in G.edges()]
 # nx.draw_networkx_edges(G, pos, alpha=edge_alphas, width=0.3)
-nx.draw_networkx_edges(G, pos, connectionstyle='arc3,rad=0.1')
-node_sizes = [np.log10(data['mass'])  for _, data in G.nodes(data=True)]
-nx.draw(G, pos, node_size=node_sizes, alpha=0.3)
-plt.savefig('goodTree_1e10_longer.png')
+# nx.draw_networkx_edges(G, pos, connectionstyle='arc3,rad=0.1')
+# node_sizes = [np.log10(data['mass'])  for _, data in G.nodes(data=True)]
+# nx.draw(G, pos, node_size=node_sizes, alpha=0.3)
+# plt.savefig('goodTree_1e10_longer.png')
 
 
 
