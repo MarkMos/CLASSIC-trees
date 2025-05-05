@@ -2,6 +2,7 @@ import cython
 import numpy as np
 cimport numpy as np
 import bisect
+from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
 #import random
 #from libc.stdlib cimport rand, srand
 from scipy.integrate import simpson
@@ -411,7 +412,7 @@ cdef class functions:
     cdef np.ndarray data
     def __init__(self,str filename):
         self.data = np.loadtxt(filename)
-    def delta_crit(self,double a,double l_0=0.75,double omega_0=0.25):
+    def delta_crit(self,double a,double l_0=l_0,double omega_0=omega_0):
         '''
         Function to compute the critical delta.
         '''
@@ -496,41 +497,46 @@ cdef class functions:
 
 # Constants
 cdef double G_used = G.value * M_sun.value / (1e6 * pc.value * (1e3**2))
-cdef double H_0100 = 100 * 0.73
+cdef double H_0100 = 100 * h_0
 cdef double rho_crit = 3 * H_0100**2 / (8 * pi * G_used)
 
-# Load data from file
-cdef np.ndarray pk_data = np.loadtxt('./CLASSIC-trees/pk_CLASS.txt')
-cdef np.ndarray k_0_np = pk_data[0]
-cdef np.ndarray Pk_0_np = pk_data[1] * 0.73**3
-cdef int n_Pk_k = len(pk_data[0])
+cdef np.ndarray pk_data
+cdef np.ndarray k_0_np
+cdef np.ndarray Pk_0_np
 
-cdef double[:] Pk_0 = Pk_0_np
-cdef double[:] k_0 = k_0_np
-cdef int i_k
-#for i_k in range(n_Pk_k):
-#    k_0[i_k] = k_0_np[i_k]
-#    Pk_0[i_k] = Pk_0_np[i_k]
+cdef double[:] Pk_0
+cdef double[:] k_0
+
+# Helper function for integrand calculation
+cdef double my_int(double R, double k, double Pk) nogil:
+    return 9.0 * (k * R * cos(k * R) - sin(k * R))**2.0 * Pk / k**4.0 / R**6.0 / (2.0 * pi**2.0)
+# Load data from file
+if file_name_pk!=None:
+    pk_data = np.loadtxt(file_name_pk)
+    k_0_np = pk_data[0]
+    Pk_0_np = pk_data[1] * h_0**3
+
+    Pk_0 = Pk_0_np
+    k_0 = k_0_np
+
+    # Function to compute the sigma using simpson
+    def sig_int(double m):
+        cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
+        cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
+        cdef int i
+        for i in range(k_0.shape[0]):
+            my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
+        return sqrt(simpson(my_integrand, k_0))
+elif file_name_pk==None:
+    from values import cosmo
+    def sig_int(double m):
+        cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
+        return cosmo.sigma(m,0,h_units=True)
 # Precompute sigma values for interpolation
 cdef np.ndarray m_rough = np.geomspace(1e7, 1e16, 1000)
 cdef np.ndarray Sig = np.zeros_like(m_rough)
 
-# Helper function for integrand calculation
-cdef double my_int(double R, double k, double Pk) nogil:
-    
-    return 9.0 * (k * R * cos(k * R) - sin(k * R))**2.0 * Pk / k**4.0 / R**6.0 / (2.0 * pi**2.0)
-    
-# Function to compute the sigma using simpson
-def sig_int(double m):
-    cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
-    cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
-    cdef int i
-    for i in range(k_0.shape[0]):
-        my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
-    return sqrt(simpson(my_integrand, k_0))
-
 # Sigma function
-
 cdef double* log_m_r = <double*>malloc(1000*sizeof(double))
 cdef double* sigma_temp = <double*>malloc(1000*sizeof(double))
 cdef double* alpha_temp = <double*>malloc(1000*sizeof(double))
@@ -539,12 +545,12 @@ for i in range(m_rough.shape[0]):
     log_m_r[i] = np.log(m_rough[i])
     sigma_temp[i] = sig_int(m_rough[i])
     Sig[i] = sig_int(m_rough[i])
+    
 cdef cspline* sigma_spline = cspline_alloc(1000,log_m_r,sigma_temp)
 # Interpolated sigma function
 cdef double sigma_cdm(double m):
-    return cspline_eval(sigma_spline, log(m))#exp(np.interp(log(m),np.log(m_rough),np.log(Sig)))
-
-
+    return cspline_eval(sigma_spline, log(m))
+    
 cdef double m_min=1e8
 cdef double m_max=1e16
 cdef int num_points=1000
@@ -572,7 +578,7 @@ cdef double alpha(double m):
 cdef double eps = 1e-5
 cdef double z_max = 10
 cdef int N_TAB = 10000
-cdef double gamma_1=0.38
+#cdef double gamma_1=0.38
 
 cdef double J_pre(double z):
     cdef float J_tab[10000]
@@ -688,9 +694,9 @@ cdef split_result split(
         double* m_prog = <double*>malloc(2*sizeof(double))
         double eps_eta = 1e-6
         double eps_q = 6e-6
-        double gamma_1 = 0.38
-        double gamma_2 = -0.01
-        double G_0 = 0.57
+        #double gamma_1 = 0.38
+        #double gamma_2 = -0.01
+        #double G_0 = 0.57
 
         double sig_q_min, sigsq_q_min, sigma_m2, sigsq_m2
         double sig_hf, sigsq_hf, alpha_hf, q_min, g_fac0
@@ -1018,7 +1024,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     i_child[0] = -1
     while m_left[i_node] > 0.0:
         dw_max = w_lev[i_lev] - w
-        split_fct = split(m, w, m_min, dw_max, 0.1, 0.1,m_minlast)
+        split_fct = split(m, w, m_min, dw_max, eps_1, eps_2,m_minlast)
         dw = split_fct.dw
         n_prog = split_fct.n_prog
         m_prog = split_fct.m_prog
