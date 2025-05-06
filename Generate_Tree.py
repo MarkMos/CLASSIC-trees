@@ -4,6 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import functions, get_tree_vals
+from values import omega_0, l_0, h_0
 from random_masses import ppf_PS, ppf_ST
 import numpy as np
 import h5py
@@ -66,7 +67,7 @@ start_offset = 0
 start = time.time()
 for i in range(n_tree):
     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
-    # with h5py.File('./Code_own/Trees/tree_selftestfast_1e10_ytree1.h5','a') as f:
+    # with h5py.File('./Code_own/Trees/tree_selftestfast_1e11_ytree_nice_long.h5','a') as f:
     #     # Create or access groups of the merger tree file
     #     if 'TreeHalos' not in f:
     #         grp1 = f.create_group('TreeHalos')
@@ -84,8 +85,8 @@ for i in range(n_tree):
     #         d_time= grp3.create_dataset('Time',data=a_lev)
         
     #     append_create_dataset(grp1,'SnapNum',arr_time)
-    #     append_create_dataset(grp1,'Mass',data=arr_mhalo)
-    #     append_create_dataset(grp1,'Descendant',arr_desc)
+    #     append_create_dataset(grp1,'mass',data=arr_mhalo)
+    #     append_create_dataset(grp1,'TreeDescendant',arr_desc)
     #     append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
     #     append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
     #     append_create_dataset(grp1,'TreeID',data=arr_treeid)
@@ -93,20 +94,19 @@ for i in range(n_tree):
     #     append_create_dataset(grp2,'Length',data=np.array([count]))
     #     append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
     #     append_create_dataset(grp2,'TreeID',data=np.array([i]))
-    #     grp = f.create_group('Header')
-    #     grp.attrs['LastSnapShotNr'] = 9
-    #     grp.attrs['Nhalos_ThisFile'] = 120000
-    #     grp.attrs['Nhalos_ThisFile'] = 1433267
-    #     grp.attrs['Nhalos_Total'] = 1433267
-    #     grp.attrs['Ntrees_ThisFile'] = 120000
-    #     grp.attrs['Ntrees_Total'] = 120000
-    #     grp.attrs['NumFiles'] = 1
     #     if 'Parameters' not in f:
     #         f.create_group('Parameters')
-    #         f['Parameters'].attrs['HubbleParam'] = 0.73
-    #         f['Parameters'].attrs['Omega0'] = 0.25
-    #         f['Parameters'].attrs['OmegaLambda'] = 0.75
+    #         f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
+    #         f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
+    #         f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
     #         f['Parameters'].attrs['BoxSize'] = 479.0
+    #     grp = f.create_group('Header')
+    #     grp.attrs['LastSnapShotNr'] = 19
+    #     grp.attrs['Nhalos_ThisFile'] = count
+    #     grp.attrs['Nhalos_Total'] = count
+    #     grp.attrs['Ntrees_ThisFile'] = n_tree
+    #     grp.attrs['Ntrees_Total'] = n_tree
+    #     grp.attrs['NumFiles'] = 1
     # with h5py.File('ytree_compatible.h5', 'w') as f:
     #     # Required groups
     #     tree = f.create_group('Tree0')
@@ -127,5 +127,13 @@ for i in range(n_tree):
     #     header.attrs['Omega0'] = 0.25
     #     header.attrs['OmegaLambda'] = 0.75
     start_offset += count
+# with h5py.File('./Code_own/Trees/tree_selftestfast_1e10_ytree1_longer.h5','a') as f:
+    # grp = f.create_group('Header')
+    # grp.attrs['LastSnapShotNr'] = 19
+    # grp.attrs['Nhalos_ThisFile'] = start_offset
+    # grp.attrs['Nhalos_Total'] = start_offset
+    # grp.attrs['Ntrees_ThisFile'] = n_tree
+    # grp.attrs['Ntrees_Total'] = n_tree
+    # grp.attrs['NumFiles'] = 1
 end = time.time()
 print(f"Elapsed time: {end - start} seconds")
