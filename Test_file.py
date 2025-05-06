@@ -4,7 +4,7 @@ import numpy as np
 import scipy.interpolate as intp
 import matplotlib.pyplot as plt
 from alpha_func import *
-from functions import *
+# from functions import *
 import h5py
 
 # a_here = 1
@@ -81,7 +81,7 @@ import h5py
 # # print('alpha = ', alpha(np.log(mass/2)))
 # from tqdm import tqdm
 
-# m_array = np.logspace(8,15,1000)
+# m_array = np.logspace(8,15,3000)
 
 # Sig = []
 # for i in tqdm(range(len(m_array))):
@@ -111,14 +111,14 @@ import h5py
 # plt.yscale('log')
 # plt.legend()
 # plt.savefig('Sigma_comp_w_Class.png')
-# m_rough = np.logspace(8,15,500)
+# m_rough = np.logspace(7,16,1500)
 # logSig_Class = []
 # for m in m_rough:
 #     R = (3*m/(4*np.pi*rho_crit))**(1/3)
 #     logSig_Class.append(np.log(cosmo.sigma(R,0,h_units=True)))
 # log_M = np.log(m_rough)
 
-# interp = intp.UnivariateSpline(log_M,logSig_Class)
+# interp = intp.UnivariateSpline(log_M,logSig_Class,k=4,s=1)
 # def alpha_cl(m):
 #     alpha_ret = interp.derivative(n=1)
 #     return alpha_ret(np.log(m))
