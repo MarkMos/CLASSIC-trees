@@ -4,6 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import get_tree_vals, functions
+from values import omega_0, l_0, h_0
 from random_masses import ppf_ST, ppf_PS
 import numpy as np
 import h5py
@@ -47,13 +48,13 @@ def append_create_dataset(grp,name,data):
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
 # Parallel execution:
-def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset):
+def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name):
     args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
         results = pool.starmap(tree_process, args_list)
     print('Here')
-    with h5py.File('./Code_own/Trees/tree_selftestfast_random_masses3.hdf5','a',libver='latest') as f:
+    with h5py.File(file_name,'a',libver='latest') as f:
         # Create or access groups of the merger tree file
         if 'TreeHalos' not in f:
             grp1 = f.create_group('TreeHalos')
@@ -69,6 +70,12 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
             grp3 = f.create_group('TreeTimes')
             d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
             d_time= grp3.create_dataset('Time',data=a_lev)
+        if 'Parameters' not in f:
+            f.create_group('Parameters')
+            f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
+            f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
+            f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
+            f['Parameters'].attrs['BoxSize'] = 479.0
         for result in results:
             append_create_dataset(grp1,'SnapNum',result['arr_time'])
             append_create_dataset(grp1,'SubhaloMass',data=result['arr_mhalo'])
@@ -110,8 +117,17 @@ if __name__ == '__main__':
     w_lev = np.array(w_lev)
     nth_run = False
     start_offset = 0
+    file_name = './Code_own/Trees/tree_selftestfast_random_masses3.hdf5'
     for j in range(n_part):
-        start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset)
+        start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name)
+    with h5py.File('./Code_own/Trees/tree_selftestfast_random_masses3.hdf5','a') as f:
+        grp = f.create_group('Header')
+        grp.attrs['LastSnapShotNr'] = int(n_lev - 1)
+        grp.attrs['Nhalos_ThisFile'] = start_offset
+        grp.attrs['Nhalos_Total'] = start_offset
+        grp.attrs['Ntrees_ThisFile'] = int(n_tree*n_part)
+        grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
+        grp.attrs['NumFiles'] = 1
 
 
 end = time.time()
