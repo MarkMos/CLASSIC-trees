@@ -2,6 +2,7 @@ from numpy import pi
 import numpy as np
 import scipy.integrate as itg
 from astropy.constants import G,M_sun,pc
+from values import h_0, file_name_pk
 from classy import Class # type: ignore
 from numba import njit
 #from classy import DTYPE_t
@@ -25,7 +26,7 @@ from numba import njit
 
 G_used = G.value*M_sun.value/(1e6*pc.value*(1e3**2))
 #print('G_used = ',G_used)
-H_0100 = 100*0.67810
+H_0100 = 100*h_0
 rho_crit = 3*H_0100**2/(8*pi*G_used)
 #print(rho_crit)
 m_8crit  = rho_crit*4*pi*8**3/3
@@ -33,10 +34,15 @@ m_8crit  = rho_crit*4*pi*8**3/3
 # file_name = './Code_own/Data/pk_Mill.txt'
 # pk_data   = np.loadtxt(file_name)
 
-file_name = './CLASSIC-trees/pk_CLASS_default.txt'
-pk_data   = np.loadtxt(file_name)
-k_0  = pk_data[0]
-Pk_0 = pk_data[1]*0.67810**3
+if file_name_pk==None:
+    from values import k_0_np,Pk_0_np
+    k_0  = k_0_np
+    Pk_0 = Pk_0_np
+else:
+    file_name = file_name_pk
+    pk_data   = np.loadtxt(file_name)
+    k_0  = pk_data[0]
+    Pk_0 = pk_data[1]*h_0**3
 
 @njit
 def my_int(R,k,Pk):
