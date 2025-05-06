@@ -3,8 +3,6 @@ import numpy as np
 cimport numpy as np
 import bisect
 from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
-#import random
-#from libc.stdlib cimport rand, srand
 from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
 from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh
@@ -154,23 +152,6 @@ cdef void cspline_free(cspline * s):
     free(s.c)
     free(s.d)
     free(s)
-'''
-cdef class Tree_Node:
-    # definition of the class of Tree Nodes
-    cdef public Tree_Node child, sibling, parent
-    cdef public int jlevel, nchild
-    cdef public float mhalo
-
-    def __init__(self):
-        # starting values of the different elements of Tree Nodes
-        self.mhalo = 0.0
-        self.jlevel = 0
-        self.nchild = 0
-    
-        self.child = None
-        self.parent = None
-        self.sibling = None
-'''
 
 cdef struct Tree_Node:
     Tree_Node* child
@@ -238,7 +219,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_nextprog = NULL
         int node_ID
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
-    #print(n_halo_max)
+
     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
@@ -254,35 +235,24 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         node_ID = this_node.index
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
-        #print('mass : ',arr_mhalo[node_ID])
         arr_treeid[node_ID]= i
-        #print('tree ID : ',arr_treeid[node_ID])
         arr_time[node_ID]  = this_node.jlevel
-        #print('time level : ',arr_time[node_ID])
-        #print('node_ID = ',node_ID)
         if this_node.child is not NULL:
-            #print('if node_ID = ',node_ID)
             if this_node.nchild > 1:
                 arr_nextprog[node_ID] = this_node.child.sibling.index
             else:
                 arr_nextprog[node_ID] = -1
-            #print(this_node.child.mhalo)
-            #print('child_index = ',this_node.child.index)
             arr_1prog[node_ID] = this_node.child.index
         else:
-            #print('else node_ID = ',node_ID)
             arr_1prog[node_ID] = -1
             arr_nextprog[node_ID] = -1
-        #print('index_ch : ',arr_1prog[node_ID])
         if this_node.parent is not NULL:
             arr_desc[node_ID] = this_node.parent.index
         else:
             arr_desc[node_ID] = -1
-        #print('index_p : ',arr_desc[node_ID])
         count +=1
-        #print('count = ',count)
         this_node = walk_tree(this_node)
-    #print('out of while loop')
+    
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
@@ -346,22 +316,14 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
     
     if this_node.nchild > 1:
         child_index = tree_index(this_node.child)
-        #print('Begin sorting')
         # 1. Sort siblings in-place using mhalo
         for i_frag in range(child_index, child_index + this_node.nchild - 2):
-            #print('i_frag = ',i_frag)
             for j in range(child_index, child_index + this_node.nchild - 2 - i_frag):
                 if merger_tree[j + 1].mhalo < merger_tree[j + 2].mhalo:
                     # Swap pointers
                     temp = merger_tree[j + 1]
                     merger_tree[j + 1] = merger_tree[j + 2]
                     merger_tree[j + 2] = temp
-                    #if temp.index<0:
-                        #count +=1
-                        #print('index: ',temp.index,' at ',i)
-                        #print('index of tree: ',merger_tree[j+1].index,' at ',i)
-                        #print('# children: ',temp.nchild,' at ',i)
-                        #print('# children of tree: ',merger_tree[j+1].nchild,' at ',i)
         # 2. Update sibling pointers
         for k in range(child_index, child_index + this_node.nchild - 1):
             merger_tree[k].sibling = merger_tree[k + 1]
@@ -390,19 +352,7 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     '''
     cdef int i
     for i in range(n_frag_tot):
-        #print(i,'. call of associated_siblings')
         merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
-        #print('Build_sibling index: ',i)
-        #if merger_tree[i].child is not NULL:
-        #    print('In child build')
-        #    print(merger_tree[i].child.mhalo)
-        #    print(merger_tree[i].child.index)
-    #cdef list X = []
-    #cdef list Y = []
-    #for i in range(n_frag_tot):
-    #    X.append(merger_tree[i].index)
-    #    Y.append(merger_tree[i].nchild)
-    #np.savetxt('compare_numbers.txt',[X,Y])
     return merger_tree
 
 cdef class functions:
@@ -514,24 +464,22 @@ cdef double my_int(double R, double k, double Pk) nogil:
 if file_name_pk!=None:
     pk_data = np.loadtxt(file_name_pk)
     k_0_np = pk_data[0]
-    Pk_0_np = pk_data[1] * h_0**3
+    Pk_0_np = pk_data[1]
 
-    Pk_0 = Pk_0_np
-    k_0 = k_0_np
-
-    # Function to compute the sigma using simpson
-    def sig_int(double m):
-        cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
-        cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
-        cdef int i
-        for i in range(k_0.shape[0]):
-            my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
-        return sqrt(simpson(my_integrand, k_0))
 elif file_name_pk==None:
-    from values import cosmo
-    def sig_int(double m):
-        cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
-        return cosmo.sigma(m,0,h_units=True)
+    from values import Pk_0_np,k_0_np
+
+Pk_0 = Pk_0_np*h_0**3
+k_0 = k_0_np
+
+# Function to compute the sigma using simpson
+def sig_int(double m):
+    cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
+    cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
+    cdef int i
+    for i in range(k_0.shape[0]):
+        my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
+    return sqrt(simpson(my_integrand, k_0))
 # Precompute sigma values for interpolation
 cdef np.ndarray m_rough = np.geomspace(1e7, 1e16, 1000)
 cdef np.ndarray Sig = np.zeros_like(m_rough)
@@ -572,13 +520,12 @@ for i in range(m_rough.shape[0]):
     alpha_temp[i] = interp(log(m_rough[i]))
 cdef cspline* alpha_spline = cspline_alloc(1000,log_m_r,alpha_temp)
 cdef double alpha(double m):
-    return cspline_deriv(alpha_spline,log(m))#float(deriv(log(m)))
+    return cspline_deriv(alpha_spline,log(m))
 
 
 cdef double eps = 1e-5
 cdef double z_max = 10
 cdef int N_TAB = 10000
-#cdef double gamma_1=0.38
 
 cdef double J_pre(double z):
     cdef float J_tab[10000]
@@ -628,13 +575,10 @@ cdef double* J_arr = compute_J_arr(z_arr)
 cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))
 for i in range(n):
     log_z_arr[i] = log(z_arr[i])
-#compute_J_arr(z_arr, J_arr)
 
-#log_J_used = CubicSpline(np.log(z_arr),J_arr,bc_type='natural') 
 cdef cspline* J_spline = cspline_alloc(n,log_z_arr,J_arr)
 cdef double J_unresolved(double z):
     log_J_used = cspline_eval(J_spline,log(z))
-    #return J_pre(z)
     return exp(log_J_used)
 
 cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
@@ -694,10 +638,7 @@ cdef split_result split(
         double* m_prog = <double*>malloc(2*sizeof(double))
         double eps_eta = 1e-6
         double eps_q = 6e-6
-        #double gamma_1 = 0.38
-        #double gamma_2 = -0.01
-        #double G_0 = 0.57
-
+        
         double sig_q_min, sigsq_q_min, sigma_m2, sigsq_m2
         double sig_hf, sigsq_hf, alpha_hf, q_min, g_fac0
         double diff_q_min, diff12_q_min, diff32_q_min, v_q_min
@@ -988,11 +929,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         node.child  = NULL
         node.sibling= NULL
         merger_tree[i_frag] = node
-        #i_par[i_frag] = 0
-        #i_sib[i_frag] = 0
-        #i_child[i_frag] = 0
-        #child_ref[i_frag] = 0
-        #j_index[i_frag] = 0
         m_tr[i_frag] = 0
 
     for i_lev in range(n_lev):
