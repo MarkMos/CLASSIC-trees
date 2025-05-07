@@ -4,7 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import functions, get_tree_vals
-from values import omega_0, l_0, h_0
+from values import omega_0, l_0, h_0, random_mass
 from random_masses import ppf_PS, ppf_ST
 import numpy as np
 import h5py
@@ -25,16 +25,20 @@ def append_create_dataset(grp,name,data):
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
 
-n_lev = 10
+n_lev = 50
 n_halo_lev = 10
 
-mp_halo = 1e11
 m_res   = 1e8
 n_tree  = 1
 
-# u_PS = np.random.rand(n_tree)
-# m_halos = ppf_PS(u_PS)
-# print(type(m_halos))
+if random_mass=='PS':
+    u_PS = np.random.rand(n_tree)
+    mp_halo = ppf_PS(u_PS)
+elif random_mass=='ST':
+    u_ST = np.random.rand(n_tree)
+    mp_halo = ppf_ST(u_ST)
+else:
+    mp_halo = 1e10
 
 n_spec = 1
 dn_dlnk = 0
@@ -43,7 +47,7 @@ k_ref = 1
 sigma_8 = 0.9
 
 i_err = 1
-n_halo_max = int(1000000)
+n_halo_max = int(10000000)
 n_halo = 1
 i_seed_0 = -8635
 i_seed = i_seed_0
@@ -66,47 +70,50 @@ n_frag_max = 10
 start_offset = 0
 start = time.time()
 for i in range(n_tree):
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
-    # with h5py.File('./Code_own/Trees/tree_selftestfast_1e11_ytree_nice_long.h5','a') as f:
-    #     # Create or access groups of the merger tree file
-    #     if 'TreeHalos' not in f:
-    #         grp1 = f.create_group('TreeHalos')
-    #     else:
-    #         grp1 = f['TreeHalos']
-    #         nth_run = True
-    #     if 'TreeTable' not in f:
-    #         grp2 = f.create_group('TreeTable')
-    #     else:
-    #         grp2 = f['TreeTable']
+    if random_mass==None:
+        count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    else:
+        count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    with h5py.File('./Code_own/Trees/tree_selftestfast_1e10_ytree_nice_long.h5','a') as f:
+        # Create or access groups of the merger tree file
+        if 'TreeHalos' not in f:
+            grp1 = f.create_group('TreeHalos')
+        else:
+            grp1 = f['TreeHalos']
+            nth_run = True
+        if 'TreeTable' not in f:
+            grp2 = f.create_group('TreeTable')
+        else:
+            grp2 = f['TreeTable']
         
-    #     if nth_run is False:
-    #         grp3 = f.create_group('TreeTimes')
-    #         d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
-    #         d_time= grp3.create_dataset('Time',data=a_lev)
+        if nth_run is False:
+            grp3 = f.create_group('TreeTimes')
+            d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
+            d_time= grp3.create_dataset('Time',data=a_lev)
         
-    #     append_create_dataset(grp1,'SnapNum',arr_time)
-    #     append_create_dataset(grp1,'mass',data=arr_mhalo)
-    #     append_create_dataset(grp1,'TreeDescendant',arr_desc)
-    #     append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
-    #     append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
-    #     append_create_dataset(grp1,'TreeID',data=arr_treeid)
-    #     append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
-    #     append_create_dataset(grp2,'Length',data=np.array([count]))
-    #     append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
-    #     append_create_dataset(grp2,'TreeID',data=np.array([i]))
-    #     if 'Parameters' not in f:
-    #         f.create_group('Parameters')
-    #         f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
-    #         f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
-    #         f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
-    #         f['Parameters'].attrs['BoxSize'] = 479.0
-    #     grp = f.create_group('Header')
-    #     grp.attrs['LastSnapShotNr'] = 19
-    #     grp.attrs['Nhalos_ThisFile'] = count
-    #     grp.attrs['Nhalos_Total'] = count
-    #     grp.attrs['Ntrees_ThisFile'] = n_tree
-    #     grp.attrs['Ntrees_Total'] = n_tree
-    #     grp.attrs['NumFiles'] = 1
+        append_create_dataset(grp1,'SnapNum',arr_time)
+        append_create_dataset(grp1,'mass',data=arr_mhalo)
+        append_create_dataset(grp1,'TreeDescendant',arr_desc)
+        append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
+        append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
+        append_create_dataset(grp1,'TreeID',data=arr_treeid)
+        append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
+        append_create_dataset(grp2,'Length',data=np.array([count]))
+        append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
+        append_create_dataset(grp2,'TreeID',data=np.array([i]))
+        if 'Parameters' not in f:
+            f.create_group('Parameters')
+            f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
+            f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
+            f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
+            f['Parameters'].attrs['BoxSize'] = 479.0
+        grp = f.create_group('Header')
+        grp.attrs['LastSnapShotNr'] = 19
+        grp.attrs['Nhalos_ThisFile'] = count
+        grp.attrs['Nhalos_Total'] = count
+        grp.attrs['Ntrees_ThisFile'] = n_tree
+        grp.attrs['Ntrees_Total'] = n_tree
+        grp.attrs['NumFiles'] = 1
     # with h5py.File('ytree_compatible.h5', 'w') as f:
     #     # Required groups
     #     tree = f.create_group('Tree0')

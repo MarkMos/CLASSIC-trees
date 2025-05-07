@@ -4,7 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import get_tree_vals, functions
-from values import omega_0, l_0, h_0
+from values import omega_0, l_0, h_0, random_mass
 from random_masses import ppf_ST, ppf_PS
 import numpy as np
 import h5py
@@ -20,6 +20,7 @@ DELTA = functions(filename)
 
 def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo):
     if mp_halo[i] > 6e14:
+        # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
     count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
     count = np.array([count],dtype='int_')
@@ -102,9 +103,16 @@ if __name__ == '__main__':
     n_halo = 1
 
     n_part = 40000
-    u_ST = np.random.rand(int(n_part*n_tree))
-    mp_halo = ppf_ST(u_ST)
-    mp_halo = np.sort(mp_halo)[::-1]
+    if random_mass=='PS':
+        u_PS = np.random.rand(int(n_part*n_tree))
+        mp_halo = ppf_PS(u_PS)
+        mp_halo = np.sort(mp_halo)[::-1]
+    elif random_mass=='ST':
+        u_ST = np.random.rand(int(n_part*n_tree))
+        mp_halo = ppf_ST(u_ST)
+        mp_halo = np.sort(mp_halo)[::-1]
+    else:
+        mp_halo = 1e11*np.ones(int(n_part*n_tree))
     a_lev = []
     w_lev = []
     for i_lev in range(1,n_lev+1):
@@ -120,7 +128,7 @@ if __name__ == '__main__':
     file_name = './Code_own/Trees/tree_selftestfast_random_masses3.hdf5'
     for j in range(n_part):
         start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name)
-    with h5py.File('./Code_own/Trees/tree_selftestfast_random_masses3.hdf5','a') as f:
+    with h5py.File(file_name,'a') as f:
         grp = f.create_group('Header')
         grp.attrs['LastSnapShotNr'] = int(n_lev - 1)
         grp.attrs['Nhalos_ThisFile'] = start_offset
