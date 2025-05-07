@@ -9,10 +9,17 @@ For adding a file:
     Powerspectrum (not in h-units!!!)
 '''
 
-# file_name_pk = './CLASSIC-trees/pk_CLASS_default.txt'
+# Choose here if the mass input should be generated using 'PS' = Press&Schechter,
+# 'ST' = Sheth&Tormen or None = constant
+# random_mass = 'PS'
+# random_mass = 'ST'
+random_mass = None
+
+# Choose here from two precomputed files or None and adjust yourself the cosmology
+# you want in the elif-statement in the following.
+file_name_pk = './CLASSIC-trees/pk_CLASS_default.txt'
 # file_name_pk = './CLASSIC-trees/pk_CLASS_h_73.txt'
-# file_name_pk = './CLASSIC-trees/pk_CLASS.txt'
-file_name_pk = None
+# file_name_pk = None
 
 if file_name_pk=='./CLASSIC-trees/pk_CLASS_default.txt':
     cosmo = Class()
@@ -23,6 +30,7 @@ if file_name_pk=='./CLASSIC-trees/pk_CLASS_default.txt':
     h_0=cosmo.h()
 elif file_name_pk==None:
     h_0 = 0.73
+    # Choose omega_0 and l_0 such that it adds up to exact 1.0!
     omega_0 = 0.25
     l_0 = 0.75
     z = np.array([0],dtype='float64')
@@ -39,6 +47,8 @@ else:
     omega_0=0.25
     l_0=0.75
     h_0=0.73
+
+# Some constants that are used for the calculations.
 G_0=0.57
 gamma_1=0.38
 gamma_2=-0.01
