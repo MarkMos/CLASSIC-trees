@@ -4,6 +4,7 @@ import numpy as np
 import scipy.interpolate as intp
 import matplotlib.pyplot as plt
 from alpha_func import *
+from halo_velo_func import sig_halo_func
 # from functions import *
 import h5py
 
@@ -334,3 +335,5 @@ import h5py
 #         json.dump(data, f)
 
 # export_to_d3('./Code_own/Trees/tree_selftestfast_1e14_ytree7.h5', 'tree.json')
+
+print(np.sqrt(sig_halo_func(1e15)))
