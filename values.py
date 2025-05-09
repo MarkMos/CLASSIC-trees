@@ -7,6 +7,7 @@ File to set cosmological parameters initially and add different cases.
 For adding a file:
     - filestyle needs to be data[0] = k-values and data[1] = values of the 
     Powerspectrum (not in h-units!!!)
+    - choose the right omega_0, l_0 and h_0 (see if-statements below)
 '''
 
 # Choose here if the mass input should be generated using 'PS' = Press&Schechter,
@@ -17,9 +18,15 @@ random_mass = None
 
 # Choose here from two precomputed files or None and adjust yourself the cosmology
 # you want in the elif-statement in the following.
-file_name_pk = './CLASSIC-trees/pk_CLASS_default.txt'
-# file_name_pk = './CLASSIC-trees/pk_CLASS_h_73.txt'
-# file_name_pk = None
+
+pk_method = 'class'
+# pk_method = 'file'
+
+if pk_method=='class':
+    file_name_pk = None
+elif pk_method=='file':
+    file_name_pk = './CLASSIC-trees/pk_CLASS_default.txt'
+    # file_name_pk = './CLASSIC-trees/pk_CLASS_h_73.txt'
 
 if file_name_pk=='./CLASSIC-trees/pk_CLASS_default.txt':
     cosmo = Class()
@@ -39,7 +46,7 @@ elif file_name_pk==None:
     k_array[:,0,0] = np.logspace(-6,3,N_k)
 
     cosmo = Class()
-    cosmo.set({'output':'mPk','P_k_max_h/Mpc':10000,'h':h_0,'Omega_m':omega_0,'Omega_Lambda':l_0})
+    cosmo.set({'output':'mPk','P_k_max_h/Mpc':1000,'h':h_0,'Omega_m':omega_0,'Omega_Lambda':l_0})
     cosmo.compute()
     Pk_0_np = cosmo.get_pk(k_array*h_0,z,N_k,1,1)[:,0,0]
     k_0_np = k_array[:,0,0]
