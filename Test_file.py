@@ -1,10 +1,10 @@
-from sigma_cdm_func import *
-from classy import Class
-import numpy as np
-import scipy.interpolate as intp
-import matplotlib.pyplot as plt
-from alpha_func import *
-from halo_velo_func import sig_halo_func
+# from sigma_cdm_func import *
+# from classy import Class
+# import numpy as np
+# import scipy.interpolate as intp
+# import matplotlib.pyplot as plt
+# from alpha_func import *
+# from halo_velo_func import sig_halo_func
 # from functions import *
 import h5py
 
@@ -336,4 +336,10 @@ import h5py
 
 # export_to_d3('./Code_own/Trees/tree_selftestfast_1e14_ytree7.h5', 'tree.json')
 
-print(np.sqrt(sig_halo_func(1e15)))
+# print(np.sqrt(sig_halo_func(1e15)))
+
+import CLASSIC_trees as ct
+
+tree = ct.trees()
+tree.set(pk_method='default')
+tree.compute_fast(random_mass='ST',file_name='tree_test.hdf5',n_part=4000)
