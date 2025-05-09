@@ -2,7 +2,8 @@ import cython
 import numpy as np
 cimport numpy as np
 import bisect
-from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
+from CLASSIC_trees import trees
+#from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
 from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
 from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh
@@ -11,6 +12,17 @@ from libc.stdlib cimport malloc, free, rand, srand
 
 ctypedef np.float64_t DTYPE_t
 DTYPE = np.float64
+
+trees = trees()
+omega_0 = trees.omega_0
+l_0 = trees.l_0
+h_0 = trees.h_0
+gamma_1 = trees.gamma_1
+gamma_2 = trees.gamma_2
+G_0 = trees.G_0
+eps_1 = trees.eps_1
+eps_2 = trees.eps_2
+file_name_pk = trees.file_name_pk
 
 
 cdef double* c_logspace(double start, double stop,int n):
