@@ -1,7 +1,7 @@
 import numpy as np
 from alpha_func import alpha
 from sigma_cdm_func import sigma_cdm, rho_crit
-from Delta_crit import delta_crit
+from classic_trees import functions
 # from classy import Class
 import matplotlib.pyplot as plt
 from scipy.stats import rv_continuous
@@ -13,7 +13,10 @@ n = 100
 p = 0.3
 q = 0.75
 A_p = 0.3222
-delta_c = delta_crit(1)
+
+filename = './CLASSIC-trees/Data/flat.txt'
+DELTA = functions(filename)
+delta_c = DELTA.delta_crit(1)
 
 rho_bar = rho_crit
 masses = np.geomspace(1e8,2e15,n)
