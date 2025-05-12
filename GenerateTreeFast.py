@@ -88,6 +88,7 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
         return start_offset
 
 def compute_tree_fast(random_mass,
+                      mass,
                       file_name,
                       omega_0,
                       l_0,
@@ -111,7 +112,7 @@ def compute_tree_fast(random_mass,
         mp_halo = ppf_ST(u_ST)
         mp_halo = np.sort(mp_halo)[::-1]
     else:
-        mp_halo = 1e11*np.ones(int(n_part*n_tree))
+        mp_halo = mass*np.ones(int(n_part*n_tree))
     a_lev = []
     w_lev = []
     for i_lev in range(1,n_lev+1):
