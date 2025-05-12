@@ -339,7 +339,20 @@ import h5py
 # print(np.sqrt(sig_halo_func(1e15)))
 
 import CLASSIC_trees as ct
+# import numpy as np
+from classic_trees import set_trees
+
+# file = 'test_trees_fancy_1e10_50_N_ncdm_2.h5'
 
 tree = ct.trees()
-tree.set(pk_method='default')
-tree.compute_fast(random_mass='ST',file_name='tree_test.hdf5',n_part=4000)
+tree.set(pk_method='class')#,add_cosmo_params={'N_ncdm':2})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+set_trees(tree)
+tree.compute_slow(mass=1e10,n_lev=50)#,file_name=file)
+# tree2 = ct.trees()
+# tree2.set(pk_method='default')
+# print(np.all(abs(tree.Pk_0_np-tree2.Pk_0_np)/tree2.Pk_0_np<1e-2))
+
+# import ytree
+# a = ytree.load(file)
+# p = ytree.TreePlot(a[0],dot_kwargs={'rankdir': 'LR', 'size': '"12,4"'})
+# p.save('A_ytree1e10_50_default_N_ncdm_2.png')
