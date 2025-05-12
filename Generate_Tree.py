@@ -22,7 +22,8 @@ def append_create_dataset(grp,name,data):
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
 
-def compute_tree(random_mass,
+def compute_tree(mass,
+                 random_mass,
                  file_name,
                  omega_0,
                  l_0,
@@ -35,6 +36,28 @@ def compute_tree(random_mass,
                  i_seed_0 = -8635,
                  a_halo = 1,
                  z_max = 4):
+    '''
+    Function to call the routines of classic_trees for small numbers of trees to 
+    compute. Ideally to see what different starting values yield.
+    ----------------------
+    Input:
+        mass        : Mass of the base node of a merger tree (only if random_mass=None)
+        random_mass : Distribution to draw the mass of the base node(s) of merger tree(s)
+        file_name   : Name of hdf5-file (optional)
+        omega_0     : Relative density of matter in the universe
+        l_0         : Relative cosmological constant
+        h_0         : Reduced Hubble-parameter
+        BoxSize     : Size of the volume
+        n_lev       : Number of time levels
+        m_res       : Mass resolution limit; minimum mass
+        n_tree      : Number of trees that are computed
+        n_halo      : Start of counter of nodes inside the tree(s)
+        i_seed_0    : Used for seed to generate random numbers
+        a_halo      : Value of scale factor today (default) or up to which time the tree is calculated
+        z_max       : Maximum redshift for lookback
+    ----------------------
+    Output:
+    '''
     if random_mass=='PS':
         u_PS = np.random.rand(n_tree)
         mp_halo = ppf_PS(u_PS)
@@ -44,7 +67,7 @@ def compute_tree(random_mass,
         mp_halo = ppf_ST(u_ST)
         n_halo_max = int(1000000)
     else:
-        mp_halo = 1e11
+        mp_halo = mass
         if mp_halo>6e14:
             n_halo_max = int(10000000)
         else:
