@@ -2,7 +2,7 @@ import cython
 import numpy as np
 cimport numpy as np
 import bisect
-from CLASSIC_trees import trees
+#from CLASSIC_trees import trees
 #from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
 from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
@@ -13,16 +13,16 @@ from libc.stdlib cimport malloc, free, rand, srand
 ctypedef np.float64_t DTYPE_t
 DTYPE = np.float64
 
-trees = trees()
-omega_0 = trees.omega_0
-l_0 = trees.l_0
-h_0 = trees.h_0
-gamma_1 = trees.gamma_1
-gamma_2 = trees.gamma_2
-G_0 = trees.G_0
-eps_1 = trees.eps_1
-eps_2 = trees.eps_2
-file_name_pk = trees.file_name_pk
+trees = None
+def set_trees(obj):
+    global trees
+    trees = obj
+
+cdef double G_0=0.57
+cdef double gamma_1=0.38
+cdef double gamma_2=-0.01
+cdef double eps_1=0.1
+cdef double eps_2=0.1
 
 
 cdef double* c_logspace(double start, double stop,int n):
@@ -372,12 +372,15 @@ cdef class functions:
     cdef int n_table, n_v, n_sum
     cdef float a, a_min, delta_c
     cdef np.ndarray data
+    cdef double l_0, omega_0
     def __init__(self,str filename):
         self.data = np.loadtxt(filename)
-    def delta_crit(self,double a,double l_0=l_0,double omega_0=omega_0):
+    def delta_crit(self,double a):
         '''
         Function to compute the critical delta.
         '''
+        l_0 = trees.l_0
+        omega_0 = trees.omega_0
         cdef:
             double[:] omega_flat= self.data[:,0]
             double[:] delflat   = self.data[:,-1] 
@@ -456,83 +459,84 @@ cdef class functions:
         #free(delta_flat)
         #free(a_flat)
         return delta_c
+cdef class sig_alph:
+    cdef object trees
+    cdef double G_used
+    cdef np.ndarray k_0_np
+    cdef np.ndarray Pk_0_np
+    cdef double[:] Pk_0
+    cdef double[:] k_0
+    cdef double* log_m_r
+    cdef double* sigma_temp
+    cdef double* alpha_temp
+    cdef cspline* sigma_spline
+    cdef cspline* alpha_spline
+    cdef int num_points
+    cdef np.ndarray m_rough
+    cdef np.ndarray m_array
+    cdef np.ndarray log_m
+    cdef np.ndarray Sig
 
-# Constants
-cdef double G_used = G.value * M_sun.value / (1e6 * pc.value * (1e3**2))
-cdef double H_0100 = 100 * h_0
-cdef double rho_crit = 3 * H_0100**2 / (8 * pi * G_used)
+    def __init__(self, object trees_obj):
+        self.trees = trees_obj
+        self.G_used = G.value * M_sun.value / (1e6 * pc.value * (1e3**2))
+        self.k_0_np = np.asarray(self.trees.k_0_np, dtype=np.float64)
+        self.Pk_0_np = np.asarray(self.trees.Pk_0_np, dtype=np.float64)
+        self.k_0 = self.k_0_np
+        self.Pk_0 = self.Pk_0_np
+        self.num_points = 1000
+        self.m_rough = np.geomspace(1e7, 1e16, self.num_points)
+        self.m_array = np.geomspace(1e8, 1e16, self.num_points)
+        self.Sig = np.zeros_like(self.m_rough)
+        self.log_m = np.zeros(self.num_points)
+        self.log_m_r = <double*>malloc(self.num_points * sizeof(double))
+        self.sigma_temp = <double*>malloc(self.num_points * sizeof(double))
+        self.alpha_temp = <double*>malloc(self.num_points * sizeof(double))
+        self._precompute_sigma()
+        self._precompute_alpha()
 
-cdef np.ndarray pk_data
-cdef np.ndarray k_0_np
-cdef np.ndarray Pk_0_np
+    # Helper function for integrand calculation
+    cdef double my_int(self,double R, double k, double Pk) nogil:
+        return 9.0 * (k * R * cos(k * R) - sin(k * R))**2.0 * Pk / k**4.0 / R**6.0 / (2.0 * pi**2.0)
 
-cdef double[:] Pk_0
-cdef double[:] k_0
+    # Function to compute the sigma using simpson
+    def sig_int(self,double m):
+        h_0 = self.trees.h_0
+        cdef double H_0100 = 100 * h_0
+        cdef double rho_crit = 3 * H_0100**2 / (8 * pi * self.G_used)
+        cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
+        cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(self.k_0)
+        cdef int i
+        for i in range(self.k_0.shape[0]):
+            my_integrand[i] = self.my_int(R, self.k_0[i], self.Pk_0[i])
+        return sqrt(simpson(my_integrand, self.k_0))
 
-# Helper function for integrand calculation
-cdef double my_int(double R, double k, double Pk) nogil:
-    return 9.0 * (k * R * cos(k * R) - sin(k * R))**2.0 * Pk / k**4.0 / R**6.0 / (2.0 * pi**2.0)
-# Load data from file
-if file_name_pk!=None:
-    pk_data = np.loadtxt(file_name_pk)
-    k_0_np = pk_data[0]
-    Pk_0_np = pk_data[1]
+    # Sigma function
+    cdef void _precompute_sigma(self):
+        cdef int i
+        for i in range(self.num_points):
+            self.log_m_r[i] = np.log(self.m_rough[i])
+            self.sigma_temp[i] = self.sig_int(self.m_rough[i])
+            self.Sig[i] = log(self.sig_int(self.m_array[i]))
+            self.log_m[i] = log(self.m_array[i])
+        self.sigma_spline = cspline_alloc(self.num_points,self.log_m_r,self.sigma_temp)
+    cdef void _precompute_alpha(self):
+        cdef i
+        for i in range(self.num_points):
+            self.Sig[i] = log(self.sigma_cdm(self.m_array[i]))
+            self.log_m[i] = log(self.m_array[i])
+        interp = UnivariateSpline(self.log_m, self.Sig, k=4, s=0.1)
+        for i in range(self.num_points):
+            self.alpha_temp[i] = interp(log(self.m_rough[i]))
+            self.log_m_r[i] = log(self.m_rough[i])
+        self.alpha_spline = cspline_alloc(self.num_points,self.log_m_r,self.alpha_temp)
+        
+    # Interpolated sigma function
+    cdef double sigma_cdm(self,double m):
+        return cspline_eval(self.sigma_spline, log(m))
 
-elif file_name_pk==None:
-    from values import Pk_0_np,k_0_np
-
-Pk_0 = Pk_0_np*h_0**3
-k_0 = k_0_np
-
-# Function to compute the sigma using simpson
-def sig_int(double m):
-    cdef double R = (3 * m / (4 * pi * rho_crit))**(1/3)
-    cdef np.ndarray[double, ndim=1] my_integrand = np.empty_like(k_0)
-    cdef int i
-    for i in range(k_0.shape[0]):
-        my_integrand[i] = my_int(R, k_0[i], Pk_0[i])
-    return sqrt(simpson(my_integrand, k_0))
-# Precompute sigma values for interpolation
-cdef np.ndarray m_rough = np.geomspace(1e7, 1e16, 1000)
-cdef np.ndarray Sig = np.zeros_like(m_rough)
-
-# Sigma function
-cdef double* log_m_r = <double*>malloc(1000*sizeof(double))
-cdef double* sigma_temp = <double*>malloc(1000*sizeof(double))
-cdef double* alpha_temp = <double*>malloc(1000*sizeof(double))
-cdef int i
-for i in range(m_rough.shape[0]):
-    log_m_r[i] = np.log(m_rough[i])
-    sigma_temp[i] = sig_int(m_rough[i])
-    Sig[i] = sig_int(m_rough[i])
-    
-cdef cspline* sigma_spline = cspline_alloc(1000,log_m_r,sigma_temp)
-# Interpolated sigma function
-cdef double sigma_cdm(double m):
-    return cspline_eval(sigma_spline, log(m))
-    
-cdef double m_min=1e8
-cdef double m_max=1e16
-cdef int num_points=1000
-cdef np.ndarray m_array = np.geomspace(m_min, m_max, num_points, dtype=DTYPE)
-cdef log_sig = compute_log_sig(m_array)
-log_m = np.log(m_array)
-interp = UnivariateSpline(log_m, log_sig, k=4, s=0.1)
-deriv = interp.derivative(n=1)
-
-cdef compute_log_sig(np.ndarray m_array):
-    cdef int i
-    cdef int n = m_array.shape[0]
-    cdef double log_sig[1000]
-    
-    for i in range(n):
-        log_sig[i] = log(sigma_cdm(m_array[i]))
-    return np.asarray(log_sig)
-for i in range(m_rough.shape[0]):
-    alpha_temp[i] = interp(log(m_rough[i]))
-cdef cspline* alpha_spline = cspline_alloc(1000,log_m_r,alpha_temp)
-cdef double alpha(double m):
-    return cspline_deriv(alpha_spline,log(m))
+    cdef double alpha(self,double m):
+        return cspline_deriv(self.alpha_spline,log(m))
 
 
 cdef double eps = 1e-5
@@ -618,6 +622,7 @@ cdef struct split_result:
     double m_min_last
 
 cdef split_result split(
+    sig_alph sig,
     double m_2,
     double w,
     double m_min,
@@ -661,18 +666,18 @@ cdef split_result split(
         int n_prog = 0
 
     if fabs(m_min - m_min_last) > eps_eta:
-        sig_q_min = sigma_cdm(m_min)
+        sig_q_min = sig.sigma_cdm(m_min)
         sigsq_q_min = sig_q_min**2
         m_min_last = m_min
     else:
-        sig_q_min = sigma_cdm(m_min)
+        sig_q_min = sig.sigma_cdm(m_min)
         sigsq_q_min = sig_q_min**2
         
-    sigma_m2 = sigma_cdm(m_2)
+    sigma_m2 = sig.sigma_cdm(m_2)
     sigsq_m2 = sigma_m2**2
-    sig_hf = sigma_cdm(0.5*m_2)
+    sig_hf = sig.sigma_cdm(0.5*m_2)
     sigsq_hf = sig_hf**2
-    alpha_hf = -alpha(0.5*m_2)
+    alpha_hf = -sig.alpha(0.5*m_2)
     q_min = m_min/m_2 # Minimum mass ratio
 
     g_fac0 = G_0*((w/sigma_m2)**gamma_2)
@@ -731,9 +736,9 @@ cdef split_result split(
                 q = q_pow_eta**eta_inv
             else:
                 q = q_min*(2*q_min)**(-randy)
-            sig_q = sigma_cdm(q*m_2)
+            sig_q = sig.sigma_cdm(q*m_2)
             sigsq_q = sig_q**2
-            alpha_q = -alpha(q*m_2)
+            alpha_q = -sig.alpha(q*m_2)
             diff12_q = sqrt(sigsq_q - sigsq_m2)
             v_q = sigsq_q/diff12_q**3
 
@@ -890,7 +895,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         a_0       : Value of scale factor today or up to which time the tree should be calculated
         m_min     : Minimum mass; scale at which the mass is not resolveable
         a_lev     : Array of the different times for which to take snapshots of the tree
-        n_lev     : Maximum time level
+        n_lev     : Number of time levels
         n_frag_max: Maximum number of halos in one tree
         n_frag_tot: Start of counter of nodes inside the tree
     ----------------------
@@ -901,6 +906,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         split_result split_fct
         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
         Tree_Node* node
+        sig_alph Sig
         int n_v = 200000
         int i_err = 0
         int j_frag = -1
@@ -930,7 +936,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         int* l_node = <int*>malloc(n_v*sizeof(int))
 
     n_frag_tot = 0
-
+    Sig = sig_alph(trees)
     for i_frag in range(n_frag_max):
         node = <Tree_Node*>malloc(sizeof(Tree_Node))
         node.mhalo = 0.0
@@ -972,7 +978,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     i_child[0] = -1
     while m_left[i_node] > 0.0:
         dw_max = w_lev[i_lev] - w
-        split_fct = split(m, w, m_min, dw_max, eps_1, eps_2,m_minlast)
+        split_fct = split(Sig, m, w, m_min, dw_max, eps_1, eps_2,m_minlast)
         dw = split_fct.dw
         n_prog = split_fct.n_prog
         m_prog = split_fct.m_prog
@@ -1201,7 +1207,7 @@ def get_tree_vals(
         a_0       : Value of scale factor today or up to which time the tree should be calculated
         m_min     : Minimum mass; scale at which the mass is not resolveable
         a_lev     : Array of the different times for which to take snapshots of the tree
-        n_lev     : Maximum time level
+        n_lev     : Number of time levels
         n_frag_max: Maximum number of halos in one tree
         n_frag_tot: Start of counter of nodes inside the tree
     ----------------------
