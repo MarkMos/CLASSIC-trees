@@ -10,13 +10,10 @@ class trees:
         self.cosmo_params = {'h':self.h_0,
                              'Omega_m':self.omega_0,
                              'Omega_Lambda':self.l_0}
-        self.G_0=0.57
-        self.gamma_1=0.38
-        self.gamma_2=-0.01
-        self.eps_1=0.1
-        self.eps_2=0.1
         self.file_name_pk = None
-    def set(self,pk_method='class',cosmo_params=None,random_mass='constant',
+        self.k_0_np = None
+        self.Pk_0_np = None
+    def set(self,pk_method='class',cosmo_params=None,
             add_cosmo_params=None,file=None,P_values='uncorrected'):
         if pk_method=='class':
             pk_method = self.pk_method
@@ -40,6 +37,9 @@ class trees:
             h_0 = cosmo_params['h']
             omega_0 = cosmo_params['Omega_m']
             l_0 = cosmo_params['Omega_Lambda']
+            pk_data = np.loadtxt(file_name_pk)
+            self.k_0_np = pk_data[0]
+            self.Pk_0_np = pk_data[1]*h_0**3
         elif file_name_pk==None:
             from classy import Class
 
@@ -53,8 +53,14 @@ class trees:
             if add_cosmo_params!=None:
                 cosmo.set(add_cosmo_params)
             cosmo.compute()
-            Pk_0_np = cosmo.get_pk(k_array*cosmo_params['h'],z,N_k,1,1)[:,0,0]
-            k_0_np = k_array[:,0,0]
+            h_0 = cosmo_params['h']
+            omega_0 = cosmo_params['Omega_m']
+            l_0 = cosmo_params['Omega_Lambda']
+            self.h_0 = h_0
+            self.omega_0 = omega_0
+            self.l_0 = l_0
+            self.Pk_0_np = cosmo.get_pk(k_array*h_0,z,N_k,1,1)[:,0,0]*h_0**3
+            self.k_0_np = k_array[:,0,0]
         elif file_name_pk==file:
             h_0 = cosmo_params['h']
             omega_0 = cosmo_params['Omega_m']
@@ -62,10 +68,17 @@ class trees:
             self.h_0 = h_0
             self.omega_0 = omega_0
             self.l_0 = l_0
+            pk_data = np.loadtxt(file_name_pk)
+            self.k_0_np = pk_data[0]
+            if P_values=='corrected':
+                self.Pk_0_np = pk_data[1]
+            elif P_values=='uncorrected':
+                self.Pk_0_np = pk_data[1]*h_0**3
 
     def compute_fast(self,
                      file_name,
                      random_mass = None,
+                     mass = None,
                      BoxSize = 479.0,
                      n_tree = 30,
                      i_seed_0 = -8635,
@@ -80,9 +93,10 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         from GenerateTreeFast import compute_tree_fast
-        compute_tree_fast(random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,
+        compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,
                           i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part)
     def compute_slow(self,
+                     mass = None,
                      file_name = None,
                      random_mass = None,
                      BoxSize = 479.0,
@@ -97,5 +111,5 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         from Generate_Tree import compute_tree
-        compute_tree(random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
+        compute_tree(mass,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
                      n_tree,n_halo,i_seed_0,a_halo,z_max)
