@@ -57,6 +57,7 @@ def compute_tree(mass,
         z_max       : Maximum redshift for lookback
     ----------------------
     Output:
+        hdf5-file if file_name is not None
     '''
     if random_mass=='PS':
         u_PS = np.random.rand(n_tree)

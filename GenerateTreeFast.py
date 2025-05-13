@@ -103,6 +103,31 @@ def compute_tree_fast(random_mass,
                       n_halo_max = 1000000,
                       n_halo = 1,
                       n_part = 40000):
+    '''
+    Function to call the routines of classic_trees for huge numbers of trees to 
+    compute. Ideally to produce large merger tree files.
+    ----------------------
+    Input:
+        random_mass : Distribution to draw the mass of the base node(s) of merger tree(s)
+        mass        : Mass of the base node of a merger tree (only if random_mass=None)
+        file_name   : Name of hdf5-file
+        omega_0     : Relative density of matter in the universe
+        l_0         : Relative cosmological constant
+        h_0         : Reduced Hubble-parameter
+        BoxSize     : Size of the volume
+        n_tree      : Number of trees that are computed in one Pool
+        i_seed_0    : Used for seed to generate random numbers
+        a_halo      : Value of scale factor today (default) or up to which time the tree is calculated
+        m_res       : Mass resolution limit; minimum mass
+        z_max       : Maximum redshift for lookback
+        n_lev       : Number of time levels
+        n_halo_max  : Maximum number of nodes per tree; used for preallocation 
+        n_halo      : Start of counter of nodes inside the tree(s)
+        n_part      : Number of runs of a Pool
+    ----------------------
+    Output:
+        hdf5-file with values of random or constant mass merger trees
+    '''
     if random_mass=='PS':
         u_PS = np.random.rand(int(n_part*n_tree))
         mp_halo = ppf_PS(u_PS)
