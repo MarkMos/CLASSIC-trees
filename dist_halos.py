@@ -51,16 +51,16 @@ for str in filenames:
         else:
             sub_bin10 += np.ndarray.tolist(f['Subhalo/SubhaloMass'][c+1:c+nsubs[j]]*1e10)
         c += nsubs[j]
-    sub_bin1 = np.log(np.array(sub_bin1))
-    sub_bin2 = np.log(np.array(sub_bin2))
-    sub_bin3 = np.log(np.array(sub_bin3))
-    sub_bin4 = np.log(np.array(sub_bin4))
-    sub_bin5 = np.log(np.array(sub_bin5))
-    sub_bin6 = np.log(np.array(sub_bin6))
-    sub_bin7 = np.log(np.array(sub_bin7))
-    sub_bin8 = np.log(np.array(sub_bin8))
-    sub_bin9 = np.log(np.array(sub_bin9))
-    sub_bin10 = np.log(np.array(sub_bin10))
+    # sub_bin1 = np.log(np.array(sub_bin1))
+    # sub_bin2 = np.log(np.array(sub_bin2))
+    # sub_bin3 = np.log(np.array(sub_bin3))
+    # sub_bin4 = np.log(np.array(sub_bin4))
+    # sub_bin5 = np.log(np.array(sub_bin5))
+    # sub_bin6 = np.log(np.array(sub_bin6))
+    # sub_bin7 = np.log(np.array(sub_bin7))
+    # sub_bin8 = np.log(np.array(sub_bin8))
+    # sub_bin9 = np.log(np.array(sub_bin9))
+    # sub_bin10 = np.log(np.array(sub_bin10))
     f.close()
     bin1_m = []
     bin1_n = []
@@ -135,7 +135,7 @@ for i in range(10):
     # name = 'SubhaloMasses'+str(i+1)+'.png'
     plt.hist(sub_bin_arr[i],density=True,histtype='step')    
     plt.grid()
-    # plt.xscale('log')
+    plt.xscale('log')
     plt.yscale('log')
     plt.xlabel('m')
     plt.ylabel('Count')
