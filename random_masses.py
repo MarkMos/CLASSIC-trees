@@ -1,13 +1,15 @@
 import numpy as np
-from alpha_func import alpha
-from sigma_cdm_func import sigma_cdm, rho_crit
-from classic_trees import functions
+# from alpha_func import alpha
+# from sigma_cdm_func import sigma_cdm, rho_crit
+from classic_trees import functions, sig_alph, trees
 # from classy import Class
 import matplotlib.pyplot as plt
 from scipy.stats import rv_continuous
 from scipy.integrate import simpson, cumulative_trapezoid
 from scipy.interpolate import interp1d
 from tqdm import tqdm
+
+Sig = sig_alph(trees)
 
 n = 100
 p = 0.3
@@ -18,14 +20,14 @@ filename = './CLASSIC-trees/Data/flat.txt'
 DELTA = functions(filename)
 delta_c = DELTA.delta_crit(1)
 
-rho_bar = rho_crit
+rho_bar = 1 #rho_crit
 masses = np.geomspace(1e8,2e15,n)
 alph_m = np.zeros(n)
 sigm_m = np.zeros(n)
 
 for i in range(n):
-    alph_m[i] = -alpha(masses[i])
-    sigm_m[i] = sigma_cdm(masses[i])
+    alph_m[i] = -Sig.alpha(masses[i])
+    sigm_m[i] = Sig.sigma_cdm(masses[i])
 
 nu = delta_c**2/(sigm_m)**2
 dln_nu_dln_m = 4*np.log(delta_c)*alph_m
@@ -57,8 +59,8 @@ n_ST = n_ST/summ_nST
 
 class HaloMassFunction_ST(rv_continuous):
     def _pdf(self,m):
-        alph_m = -alpha(m)
-        sigm_m = sigma_cdm(m)
+        alph_m = -Sig.alpha(m)
+        sigm_m = Sig.sigma_cdm(m)
         nu = delta_c**2/(sigm_m)**2
         dln_nu_dln_m = 4*np.log(delta_c)*alph_m
         nu_f_ST = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
@@ -119,8 +121,8 @@ ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e8,
 
 class HaloMassFunction_PS(rv_continuous):
     def _pdf(self,m):
-        alph_m = -alpha(m)
-        sigm_m = sigma_cdm(m)
+        alph_m = -Sig.alpha(m)
+        sigm_m = Sig.sigma_cdm(m)
         nu = delta_c**2/(sigm_m)**2
         dln_nu_dln_m = 4*np.log(delta_c)*alph_m
         nu_f_PS = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
@@ -182,8 +184,8 @@ PS_val = (bin_edges[:-1] + bin_edges[1:])/2
 PS_err = np.sqrt(counts)
 div = N*np.diff(masses)
 def n_PS_func(m):
-    alph_m = -alpha(m)
-    sigm_m = sigma_cdm(m)
+    alph_m = -Sig.alpha(m)
+    sigm_m = Sig.sigma_cdm(m)
     nu = delta_c**2/(sigm_m)**2
     dln_nu_dln_m = 4*np.log(delta_c)*alph_m
     nu_f_PS = A_p*(1+(q*nu)**(-p))*np.sqrt((q*nu)/(2*np.pi))*np.exp(-(q*nu)/2)
