@@ -4,7 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import get_tree_vals, functions
-from random_masses import ppf_ST, ppf_PS
+# from random_masses import ppf_ST, ppf_PS
 import numpy as np
 import h5py
 from multiprocessing import Pool, Lock
@@ -129,10 +129,12 @@ def compute_tree_fast(random_mass,
         hdf5-file with values of random or constant mass merger trees
     '''
     if random_mass=='PS':
+        from random_masses import ppf_PS
         u_PS = np.random.rand(int(n_part*n_tree))
         mp_halo = ppf_PS(u_PS)
         mp_halo = np.sort(mp_halo)[::-1]
     elif random_mass=='ST':
+        from random_masses import ppf_ST
         u_ST = np.random.rand(int(n_part*n_tree))
         mp_halo = ppf_ST(u_ST)
         mp_halo = np.sort(mp_halo)[::-1]

@@ -4,7 +4,7 @@
 # from Delta_crit import *
 # from sigma_cdm_func import *
 from classic_trees import functions, get_tree_vals
-from random_masses import ppf_PS, ppf_ST
+# from random_masses import ppf_PS, ppf_ST
 import numpy as np
 import h5py
 
@@ -60,10 +60,12 @@ def compute_tree(mass,
         hdf5-file if file_name is not None
     '''
     if random_mass=='PS':
+        from random_masses import ppf_PS
         u_PS = np.random.rand(n_tree)
         mp_halo = ppf_PS(u_PS)
         n_halo_max = int(1000000)
     elif random_mass=='ST':
+        from random_masses import ppf_ST
         u_ST = np.random.rand(n_tree)
         mp_halo = ppf_ST(u_ST)
         n_halo_max = int(1000000)
