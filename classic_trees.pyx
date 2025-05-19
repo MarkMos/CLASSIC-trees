@@ -532,10 +532,10 @@ cdef class sig_alph:
         self.alpha_spline = cspline_alloc(self.num_points,self.log_m_r,self.alpha_temp)
         
     # Interpolated sigma function
-    cdef double sigma_cdm(self,double m):
+    cpdef double sigma_cdm(self,double m):
         return cspline_eval(self.sigma_spline, log(m))
 
-    cdef double alpha(self,double m):
+    cpdef double alpha(self,double m):
         return cspline_deriv(self.alpha_spline,log(m))
 
 
