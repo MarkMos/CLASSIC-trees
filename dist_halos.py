@@ -47,7 +47,7 @@ for k in TreeID:
             pCM2 = sum(vel2)
             pCM3 = sum(vel3)
 
-            indx_sub = np.where(f['DescendantID'][i+1]+1==f['DescendantID'][:length])
+            indx_sub = np.where(f['DescendantID'][i+1]+1==f['DescendantID'][:length])[0]
             sub_mass = f['SubhaloMass'][indx_sub]
             sub_p1 = f['SubhaloVel'][indx_sub]*sub_mass
             sub_p2 = f['SubhaloVel'][indx_sub]*sub_mass
