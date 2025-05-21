@@ -346,10 +346,10 @@ from classic_trees import set_trees
 
 tree = ct.trees()
 print('Hello')
-tree.set(pk_method='default',add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 set_trees(tree)
 print('Now here')
-tree.compute_slow(random_mass='ST',n_lev=50)#,file_name=file)
+tree.compute_slow(mass=5e15,n_lev=10)#,file_name=file)
 # tree2 = ct.trees()
 # tree2.set(pk_method='default')
 # print(np.all(abs(tree.Pk_0_np-tree2.Pk_0_np)/tree2.Pk_0_np<1e-2))
