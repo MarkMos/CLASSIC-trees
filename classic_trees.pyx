@@ -484,9 +484,9 @@ cdef class sig_alph:
         self.Pk_0_np = np.asarray(self.trees.Pk_0_np, dtype=np.float64)
         self.k_0 = self.k_0_np
         self.Pk_0 = self.Pk_0_np
-        self.num_points = 1000
-        self.m_rough = np.geomspace(1e7, 1e16, self.num_points)
-        self.m_array = np.geomspace(1e8, 1e16, self.num_points)
+        self.num_points = 2000
+        self.m_rough = np.geomspace(1e7, 1e17, self.num_points)
+        self.m_array = np.geomspace(1e8, 1e17, self.num_points)
         self.Sig = np.zeros_like(self.m_rough)
         self.log_m = np.zeros(self.num_points)
         self.log_m_r = <double*>malloc(self.num_points * sizeof(double))
@@ -586,7 +586,7 @@ cdef double* compute_J_arr(double* z_arr):
     for i in range(n):
         J_arr[i] = log(J_pre(z_arr[i]))
     return J_arr
-cdef double* z_arr = c_logspace(-3.0,3.0,n)
+cdef double* z_arr = c_logspace(-3.0,4.0,n)
 cdef double* J_arr = compute_J_arr(z_arr)
 cdef double* log_z_arr = <double*>malloc(n*sizeof(double*))
 for i in range(n):
@@ -902,12 +902,14 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     Output:
         merger_tree: Merger tree of given mass, with parents, siblings, children and mass
     '''
+    cdef int n_v = 200000
+    if m_0>2e15:
+        n_v = 2000000
     cdef:
         split_result split_fct
         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
         Tree_Node* node
         sig_alph Sig
-        int n_v = 200000
         int i_err = 0
         int j_frag = -1
         int n_ch
@@ -934,7 +936,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         double* m_right = <double*>malloc(n_v*sizeof(double))
         double* w_node = <double*>malloc(n_v*sizeof(double))
         int* l_node = <int*>malloc(n_v*sizeof(int))
-
     n_frag_tot = 0
     Sig = sig_alph(trees)
     for i_frag in range(n_frag_max):
