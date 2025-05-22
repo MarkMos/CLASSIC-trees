@@ -6,7 +6,7 @@ from tqdm import tqdm
 f = h5py.File('tree_extended.hdf5')
 
 Snapnum = f['SnapNum'][:]
-times = np.arange(0,91,1)
+times = [90] #np.arange(0,91,1)
 TreeID = [0]
 
 
@@ -17,7 +17,8 @@ psub_abs = []
 # ax = fig.add_subplot(projection='3d')
 # c_arr = ['b','r']
 for k in TreeID:
-    length = np.where(k==f['TreeID'][:])[0][-1]
+    start = np.where(k==f['TreeID'][:])[0][0]
+    end   = np.where(k==f['TreeID'][:])[0][-1]
     for n,number in enumerate(tqdm(times)):
         # sub_p1 = []
         # sub_p2 = []
@@ -25,7 +26,7 @@ for k in TreeID:
         # vel1 = []
         # vel2 = []
         # vel3 = []
-        for i,s in enumerate(Snapnum):
+        # for i,s in enumerate(Snapnum):
             # if s==number:
             #     mass = f['GroupMass'][i]
             #     vel1.append(f['GroupVel'][i][0]*mass)
@@ -38,27 +39,44 @@ for k in TreeID:
             #         sub_p1.append(f['SubhaloVel'][j][0]*sub_mass)
             #         sub_p2.append(f['SubhaloVel'][j][1]*sub_mass)
             #         sub_p3.append(f['SubhaloVel'][j][2]*sub_mass)
-            indx_CM = np.where(Snapnum==number)[0]
-            mass = f['GroupMass'][indx_CM]
-            vel1 = f['GroupVel'][indx_CM]*mass
-            vel2 = f['GroupVel'][indx_CM]*mass
-            vel3 = f['GroupVel'][indx_CM]*mass
-            pCM1 = sum(vel1)
-            pCM2 = sum(vel2)
-            pCM3 = sum(vel3)
-
-            indx_sub = np.where(f['DescendantID'][i+1]+1==f['DescendantID'][:length])[0]
-            sub_mass = f['SubhaloMass'][indx_sub]
-            sub_p1 = f['SubhaloVel'][indx_sub]*sub_mass
-            sub_p2 = f['SubhaloVel'][indx_sub]*sub_mass
-            sub_p3 = f['SubhaloVel'][indx_sub]*sub_mass            
-            p_sub1 = sum(sub_p1)
-            p_sub2 = sum(sub_p2)
-            p_sub3 = sum(sub_p3)
-            pCM_abs.append(abs(pCM1+pCM1+pCM3))
-            psub_abs.append(abs(p_sub1+p_sub2+p_sub3))
-plt.plot(pCM_abs,psub_abs)
-plt.savefig('momentum_comparison.png')
+        indx_CM = np.where(Snapnum==number)[0]
+        print(indx_CM)
+        mass = f['SubhaloMass'][indx_CM]
+        # vel = f['GroupVel'][indx_CM]
+        print(f['FirstSubhaloInFOFGroupID'][:])
+        indx = [] 
+        for i in indx_CM:
+            ind = np.where(f['FirstSubhaloInFOFGroupID'][i]==f['FirstSubhaloInFOFGroupID'][:])[0][0]
+            if ind in indx:
+                continue
+            else:
+                indx.append(int(ind))
+        indx = np.sort(np.array(indx))
+        print(indx)
+        vel = f['GroupVel'][indx]
+        cen_mass = f['SubhaloMass'][indx]*1e10
+        # indx_sub = np.where(f['DescendantID'][i+1]+1==f['DescendantID'][:length])[0]
+        # sub_mass = f['SubhaloMass'][indx_CM]
+        sub_p = f['SubhaloVel'][indx_CM]
+        for i in range(len(vel)):
+            pCM_abs.append(sum(np.sqrt(vel**2)[i]))
+            psub_abs.append(sum(np.sqrt(sub_p**2)[i]))
+# plt.hexbin(pCM_abs,psub_abs,cmap='inferno',bins='log',xscale='log',yscale='log')
+# plt.plot(Snapnum[:length],pCM_abs,label='Central',marker='.',lw=0)
+# plt.plot(Snapnum[:length],psub_abs,label='Sub',marker='.',lw=0)
+# plt.plot(Snapnum[:length],(np.array(pCM_abs)-np.array(psub_abs))/np.array(psub_abs),marker='.',lw=0)
+plt.hexbin(cen_mass,pCM_abs,cmap='inferno',bins='log',xscale='log',yscale='log')
+plt.colorbar()
+plt.grid()
+# plt.xlabel(r'$p_{cen}$')
+plt.xlabel(r'$M_{cen}$')
+plt.ylabel(r'$V_{cen}$')
+# plt.xlabel('Snapshot')
+# plt.ylabel(r'$\Delta V$')
+# plt.legend()
+# plt.xscale('log')
+# plt.yscale('log')
+plt.savefig('Velocity_comparison.png')
 
 # filenames = ['groups_088.hdf5']#,'groups_090.hdf5','groups_038.hdf5','groups_032.hdf5','groups_058.hdf5','groups_062.hdf5','groups_042.hdf5','groups_028.hdf5','groups_048.hdf5','groups_084.hdf5']
 # # sub_masses = []
