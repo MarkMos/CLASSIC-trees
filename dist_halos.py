@@ -63,14 +63,17 @@ pCM_abs  = []
         #     # pCM_abs.append(np.sqrt(sum(vel_sq[i])))
         #     psub_abs.append(np.sqrt(sum(sub_p_sq[i])))
 
-indx_CM = np.where(Snapnum==0)[0]
+indx_CM = np.where(Snapnum==90)[0]
+print(indx_CM)
 # mass = f['SubhaloMass'][:]*1e10
-sub_p = f['SubhaloPos'][indx_CM]
+cen_pos = f['GroupVel'][indx_CM]
+sub_p = f['SubhaloVel'][indx_CM]
 psub_abs = []
 # sub_p_sq = sub_p**2
 for i in tqdm(range(len(sub_p))):
     # pCM_abs.append(np.sqrt(sum(vel_sq[i])))
-    psub_abs.append(sub_p[i][2])
+    value = sum(cen_pos[i]*sub_p[i])/(abs(sum(cen_pos[i]**2))*abs(sum(sub_p[i]**2)))
+    psub_abs.append(value)
     # /np.sqrt(sum(sub_p_sq[i])))
 # plt.hexbin(pCM_abs,psub_abs,cmap='inferno',bins='log',xscale='log',yscale='log')
 # plt.plot(Snapnum[:length],pCM_abs,label='Central',marker='.',lw=0)
@@ -82,14 +85,14 @@ plt.hist(psub_abs,bins=100,density=True)
 plt.grid()
 # plt.xlabel(r'$p_{cen}$')
 plt.ylabel(r'Count')
-plt.xlabel(r'$\bar{x}_3$')
+plt.xlabel(r'$\cos(\theta)$')
 # plt.xlabel('Snapshot')
 # plt.ylabel(r'$\Delta V$')
 # plt.legend()
 # plt.xscale('log')
-# plt.yscale('log')
-plt.title('At Snapshot 0')
-plt.savefig('Pos3DircNoNormAt0.png')
+plt.yscale('log')
+# plt.title('At Snapshot 0')
+plt.savefig('VelDisalignment.png')
 # plt.show()
 
 # filenames = ['groups_088.hdf5']#,'groups_090.hdf5','groups_038.hdf5','groups_032.hdf5','groups_058.hdf5','groups_062.hdf5','groups_042.hdf5','groups_028.hdf5','groups_048.hdf5','groups_084.hdf5']
