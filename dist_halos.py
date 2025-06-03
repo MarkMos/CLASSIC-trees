@@ -72,7 +72,7 @@ psub_abs = []
 # sub_p_sq = sub_p**2
 for i in tqdm(range(len(sub_p))):
     # pCM_abs.append(np.sqrt(sum(vel_sq[i])))
-    value = sum(cen_pos[i]*sub_p[i])/(abs(sum(cen_pos[i]**2))*abs(sum(sub_p[i]**2)))
+    value = sum(cen_pos[i]*sub_p[i])/(abs(np.sqrt(sum(cen_pos[i]**2)))*abs(np.sqrt(sum(sub_p[i]**2))))
     psub_abs.append(value)
     # /np.sqrt(sum(sub_p_sq[i])))
 # plt.hexbin(pCM_abs,psub_abs,cmap='inferno',bins='log',xscale='log',yscale='log')
