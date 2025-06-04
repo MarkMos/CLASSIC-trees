@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 f = h5py.File('tree_extended.hdf5')
 
-Snapnum = f['SnapNum'][:]
+# Snapnum = f['SnapNum'][:]
 times = [90,89,88] #np.arange(0,91,1)
 TreeID = [0]
 
@@ -63,17 +63,23 @@ pCM_abs  = []
         #     # pCM_abs.append(np.sqrt(sum(vel_sq[i])))
         #     psub_abs.append(np.sqrt(sum(sub_p_sq[i])))
 
-indx_CM = np.where(Snapnum==90)[0]
-print(indx_CM)
+last_prog = len(np.where(f['TreeID'][:]==0)[0])
+first_subs = f['FirstSubhaloInFOFGroupID'][:last_prog]
+Snapnum = f['SnapNum'][:last_prog]
+indx_CM = np.where(Snapnum==89)[0]
+des_89 = f['DescendantID'][indx_CM]
+
+print(len(np.where(des_89==-1)[0]))
+
 # mass = f['SubhaloMass'][:]*1e10
-cen_pos = f['GroupVel'][indx_CM]
-sub_p = f['SubhaloVel'][indx_CM]
-psub_abs = []
+# cen_pos = f['GroupVel'][indx_CM]
+# sub_p = f['SubhaloVel'][indx_CM]
+# psub_abs = []
 # sub_p_sq = sub_p**2
-for i in tqdm(range(len(sub_p))):
+# for i in tqdm(range(len(sub_p))):
     # pCM_abs.append(np.sqrt(sum(vel_sq[i])))
-    value = sum(cen_pos[i]*sub_p[i])/(abs(np.sqrt(sum(cen_pos[i]**2)))*abs(np.sqrt(sum(sub_p[i]**2))))
-    psub_abs.append(value)
+    # value = sum(cen_pos[i]*sub_p[i])/(abs(np.sqrt(sum(cen_pos[i]**2)))*abs(np.sqrt(sum(sub_p[i]**2))))
+    # psub_abs.append(value)
     # /np.sqrt(sum(sub_p_sq[i])))
 # plt.hexbin(pCM_abs,psub_abs,cmap='inferno',bins='log',xscale='log',yscale='log')
 # plt.plot(Snapnum[:length],pCM_abs,label='Central',marker='.',lw=0)
@@ -81,18 +87,18 @@ for i in tqdm(range(len(sub_p))):
 # plt.plot(Snapnum[:length],(np.array(pCM_abs)-np.array(psub_abs))/np.array(psub_abs),marker='.',lw=0)
 # plt.hexbin(mass,psub_abs,cmap='inferno',bins='log',xscale='log',yscale='log')
 # plt.colorbar()
-plt.hist(psub_abs,bins=100,density=True)
-plt.grid()
+# plt.hist(psub_abs,bins=100,density=True)
+# plt.grid()
 # plt.xlabel(r'$p_{cen}$')
-plt.ylabel(r'Count')
-plt.xlabel(r'$\cos(\theta)$')
+# plt.ylabel(r'Count')
+# plt.xlabel(r'$\cos(\theta)$')
 # plt.xlabel('Snapshot')
 # plt.ylabel(r'$\Delta V$')
 # plt.legend()
 # plt.xscale('log')
-plt.yscale('log')
+# plt.yscale('log')
 # plt.title('At Snapshot 0')
-plt.savefig('VelDisalignment.png')
+# plt.savefig('VelDisalignment.png')
 # plt.show()
 
 # filenames = ['groups_088.hdf5']#,'groups_090.hdf5','groups_038.hdf5','groups_032.hdf5','groups_058.hdf5','groups_062.hdf5','groups_042.hdf5','groups_028.hdf5','groups_048.hdf5','groups_084.hdf5']
