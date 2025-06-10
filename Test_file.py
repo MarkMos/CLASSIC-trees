@@ -342,14 +342,14 @@ import CLASSIC_trees as ct
 # import numpy as np
 from classic_trees import set_trees
 
-file = 'Code_own/Trees/tree_selftestfast_r1000_1e13.hdf5'
+# file = 'TreeTest_FortranOrdering_1e11Longer.hdf5'
 
-# tree = ct.trees()
-# print('Hello')
-# tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
-# set_trees(tree)
-# print('Now here')
-# tree.compute_slow(mass=1e12,file_name=file)
+tree = ct.trees()
+print('Hello')
+tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+set_trees(tree)
+print('Now here')
+tree.compute_slow(mass=1e14) #,file_name=file)
 # tree2 = ct.trees()
 # tree2.set(pk_method='default')
 # print(np.all(abs(tree.Pk_0_np-tree2.Pk_0_np)/tree2.Pk_0_np<1e-2))
@@ -357,18 +357,18 @@ file = 'Code_own/Trees/tree_selftestfast_r1000_1e13.hdf5'
 # import ytree
 # a = ytree.load(file)
 # p = ytree.TreePlot(a[0],dot_kwargs={'rankdir': 'LR', 'size': '"12,4"'})
-# p.save('A_ytree1e10_50_default_N_ncdm_2.png')
+# p.save('A_ytree1e11_withFortranOrderingLonger.png')
 
-f = h5py.File(file)
+# f = h5py.File(file)
 
-# indx = np.where(f['TreeHalos/SnapNum']==1)[0]
-coll = []
-for i in f['TreeTable/StartOffset'][:]:
-    first_1= f['TreeHalos/TreeFirstProgenitor'][i]
-    coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
-plt.hist(coll,bins=50,density=True)
-# plt.xscale('log')
-plt.yscale('log')
-plt.grid()
-plt.show()
+# # indx = np.where(f['TreeHalos/SnapNum']==1)[0]
+# coll = []
+# for i in f['TreeTable/StartOffset'][:]:
+#     first_1= f['TreeHalos/TreeFirstProgenitor'][i]
+#     coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
+# plt.hist(coll,bins=50,density=True)
+# # plt.xscale('log')
+# plt.yscale('log')
+# plt.grid()
+# plt.show()
 # print(np.log10(f['TreeHalos/SubhaloMass'][first_1]/f['TreeHalos/SubhaloMass'][0]))
