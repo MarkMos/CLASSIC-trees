@@ -800,6 +800,7 @@ cdef locate(double[:] xx,int n,double x):
     # Function to locate an element x inside a pointer xx of size n
     cdef int jl = 0
     cdef int ju = n+1
+    cdef int jm
     while ju-jl > 1:
         jm = (ju+jl)//2
         if ((xx[n-1] > xx[0]) == (x > xx[jm-1])):
@@ -902,9 +903,8 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     Output:
         merger_tree: Merger tree of given mass, with parents, siblings, children and mass
     '''
-    cdef int n_v = 200000
-    if m_0>2e15:
-        n_v = 2000000
+    cdef int n_v
+    n_v = int(n_frag_max/5)
     cdef:
         split_result split_fct
         Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
