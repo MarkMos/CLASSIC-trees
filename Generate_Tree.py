@@ -89,9 +89,9 @@ def compute_tree(mass,
     nth_run = False
     for i in range(n_tree):
         if random_mass==None:
-            count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+            count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
         else:
-            count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+            count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
         if file_name!=None:    
             with h5py.File(file_name,'a') as f:
                 # Create or access groups of the merger tree file
@@ -115,6 +115,8 @@ def compute_tree(mass,
                 append_create_dataset(grp1,'TreeDescendant',arr_desc)
                 append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
                 append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
+                append_create_dataset(grp1,'TreeFirstHaloInFOFgroup',arr_1FoF)
+                append_create_dataset(grp1,'TreeNextHaloInFOFgroup',arr_nextFoF)
                 append_create_dataset(grp1,'TreeID',data=arr_treeid)
                 append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
                 append_create_dataset(grp2,'Length',data=np.array([count]))
