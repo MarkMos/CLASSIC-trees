@@ -169,6 +169,8 @@ cdef struct Tree_Node:
     Tree_Node* child
     Tree_Node* sibling
     Tree_Node* parent
+    Tree_Node* FirstInFoF
+    Tree_Node* NextInFoF
     int jlevel
     int nchild
     int index
@@ -229,6 +231,8 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_1prog = NULL
         int* arr_desc = NULL
         int* arr_nextprog = NULL
+        int* arr_1FoF = NULL
+        int* arr_nextFoF = NULL
         int node_ID
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
 
@@ -239,7 +243,9 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
     arr_desc = <int*>malloc(n_halo_max*sizeof(int))
     arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
-    if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog):
+    arr_1FoF = <int*>malloc(n_halo_max*sizeof(int))
+    arr_nextFoF = <int*>malloc(n_halo_max*sizeof(int))
+    if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_1FoF and arr_nextFoF):
         malloc_failed = 1
     if malloc_failed:
         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
@@ -262,6 +268,14 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
             arr_desc[node_ID] = this_node.parent.index
         else:
             arr_desc[node_ID] = -1
+        if this_node.FirstInFoF is not NULL:
+            arr_1FoF[node_ID] = this_node.FirstInFoF.index
+        else:
+            arr_1FoF[node_ID] = -1
+        if this_node.NextInFoF is not NULL:
+            arr_nextFoF[node_ID] = this_node.NextInFoF.index
+        else:
+            arr_nextFoF[node_ID] = -1
         count +=1
         this_node = walk_tree(this_node)
     
@@ -272,8 +286,9 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
     np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
-    
-    return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog)
+    np_arr_1FoF = np.array([arr_1FoF[j] for j in range(count)],dtype='int_')
+    np_arr_nextFoF = np.array([arr_nextFoF[j] for j in range(count)],dtype='int_')
+    return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_1FoF,np_arr_nextFoF)
 
 cdef int tree_index(Tree_Node* node):
     '''
@@ -365,6 +380,30 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     cdef int i
     for i in range(n_frag_tot):
         merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
+    for i in range(n_frag_tot):
+        merger_tree = build_FoFs(merger_tree,merger_tree[i])
+    return merger_tree
+
+cdef Tree_Node** build_FoFs(Tree_Node** merger_tree,Tree_Node* this_node):
+    cdef int child_index, i_frag
+    if this_node.nchild > 1:
+        child_index = tree_index(this_node.child)
+        for i_frag in range(child_index, child_index + this_node.nchild):
+            merger_tree[i_frag].FirstInFoF = merger_tree[child_index]
+        if merger_tree[child_index+1].mhalo > 0.7*merger_tree[child_index].mhalo:
+            merger_tree[child_index+1].FirstInFoF = merger_tree[child_index+1]
+            merger_tree[child_index+1].NextInFoF = NULL
+            merger_tree[child_index].NextInFoF = merger_tree[child_index+2]
+            for i_frag in range(child_index+2, child_index + this_node.nchild -1):
+                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+        else:
+            for i_frag in range(child_index, child_index + this_node.nchild -1):
+                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+        merger_tree[child_index+this_node.nchild].NextInFoF = NULL
+    elif this_node.nchild==1:
+        child_index = tree_index(this_node.child)
+        merger_tree[child_index].FirstInFoF= merger_tree[child_index]
+        merger_tree[child_index].NextInFoF = NULL
     return merger_tree
 
 cdef class functions:
@@ -947,6 +986,8 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
         node.parent = NULL
         node.child  = NULL
         node.sibling= NULL
+        node.FirstInFoF= NULL
+        node.NextInFoF = NULL
         merger_tree[i_frag] = node
         m_tr[i_frag] = 0
 
@@ -1234,7 +1275,7 @@ def get_tree_vals(
 
     #print('Made a tree ',i+1)
     this_node = merger_tree[0]
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -1248,4 +1289,4 @@ def get_tree_vals(
         print('No Progenitors.')
     free(merger_tree)
     free(this_node)
-    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog
+    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
