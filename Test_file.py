@@ -342,14 +342,14 @@ import CLASSIC_trees as ct
 # import numpy as np
 from classic_trees import set_trees
 
-# file = 'TreeTest_FortranOrdering_1e11Longer.hdf5'
+file = 'TreeTest_FoF_1e12_12000.hdf5'
 
-tree = ct.trees()
-print('Hello')
-tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
-set_trees(tree)
-print('Now here')
-tree.compute_slow(mass=1e14) #,file_name=file)
+# tree = ct.trees()
+# print('Hello')
+# tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+# set_trees(tree)
+# print('Now here')
+# tree.compute_fast(mass=1e12,file_name=file,n_part=400)
 # tree2 = ct.trees()
 # tree2.set(pk_method='default')
 # print(np.all(abs(tree.Pk_0_np-tree2.Pk_0_np)/tree2.Pk_0_np<1e-2))
@@ -359,9 +359,9 @@ tree.compute_slow(mass=1e14) #,file_name=file)
 # p = ytree.TreePlot(a[0],dot_kwargs={'rankdir': 'LR', 'size': '"12,4"'})
 # p.save('A_ytree1e11_withFortranOrderingLonger.png')
 
-# f = h5py.File(file)
+f = h5py.File(file)
 
-# # indx = np.where(f['TreeHalos/SnapNum']==1)[0]
+# indx = np.where(f['TreeHalos/SnapNum']==1)[0]
 # coll = []
 # for i in f['TreeTable/StartOffset'][:]:
 #     first_1= f['TreeHalos/TreeFirstProgenitor'][i]
@@ -370,5 +370,35 @@ tree.compute_slow(mass=1e14) #,file_name=file)
 # # plt.xscale('log')
 # plt.yscale('log')
 # plt.grid()
+# plt.xlabel(r'$\log(M_1/M2)$')
+# plt.ylabel(r'$\log(f_{cmf})$')
+# plt.savefig('TreeTest_M1M2_1e12_1.png')
 # plt.show()
 # print(np.log10(f['TreeHalos/SubhaloMass'][first_1]/f['TreeHalos/SubhaloMass'][0]))
+from tqdm import tqdm
+
+TreeID = f['TreeHalos/TreeID'][:]
+FoF1_tot = f['TreeHalos/TreeFirstHaloInFOFgroup'][:]
+SnapNum = f['TreeHalos/SnapNum'][:]
+
+Nprog = []
+N_1pr = []
+for i in tqdm(f['TreeTable/TreeID'][:]):
+    indx = np.where(TreeID==i)
+    FoF1 = FoF1_tot[indx]
+    first_1 = FoF1[1]
+    indx1 = np.where(SnapNum[indx]==1)[0]
+    n_pr = len(indx1)
+    Nprog.append(n_pr)
+    indx2 = np.where(FoF1==first_1)[0]
+    n_1 = len(indx2)
+    N_1pr.append(n_1/n_pr)
+# print(len(N_1pr),' = ',len(Nprog))
+plt.scatter(Nprog,N_1pr)
+# plt.xscale('log')
+plt.yscale('log')
+plt.grid()
+plt.xlabel(r'$N_{prog}$')
+plt.ylabel(r'N_{subs}$')
+plt.savefig('TreeTest_NFoF1Nprog_1e12_1.png')
+plt.show()
