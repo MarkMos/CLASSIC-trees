@@ -18,7 +18,7 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
     count = np.array([count],dtype='int_')
     i = np.array([i],dtype='int_')
 
@@ -30,6 +30,8 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
         "arr_1prog": arr_1prog,
         "arr_desc": arr_desc,
         "arr_nextprog": arr_nextprog,
+        'arr_1FoF': arr_1FoF,
+        'arr_nextFoF': arr_nextFoF,
         "count": count,
         "tree_index": i
     }
@@ -79,6 +81,8 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
             append_create_dataset(grp1,'TreeDescendant',result['arr_desc'])
             append_create_dataset(grp1,'TreeFirstProgenitor',result['arr_1prog'])
             append_create_dataset(grp1,'NextProgenitor',result['arr_nextprog'])
+            append_create_dataset(grp1,'TreeFirstHaloInFOFgroup',result['arr_1FoF'])
+            append_create_dataset(grp1,'TreeNextHaloInFOFgroup',result['arr_nextFoF'])
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
             append_create_dataset(grp1,'TreeIndex',data=result['arr_nodid'])
             append_create_dataset(grp2,'Length',data=result['count'])
