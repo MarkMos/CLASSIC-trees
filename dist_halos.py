@@ -63,13 +63,13 @@ pCM_abs  = []
         #     # pCM_abs.append(np.sqrt(sum(vel_sq[i])))
         #     psub_abs.append(np.sqrt(sum(sub_p_sq[i])))
 
-last_prog = len(np.where(f['TreeID'][:]==0)[0])
-first_subs = f['FirstSubhaloInFOFGroupID'][:last_prog]
-Snapnum = f['SnapNum'][:last_prog]
-indx_CM = np.where(Snapnum==89)[0]
-des_89 = f['DescendantID'][indx_CM]
+# last_prog = len(np.where(f['TreeID'][:]==0)[0])
+# first_subs = f['FirstSubhaloInFOFGroupID'][:last_prog]
+# Snapnum = f['SnapNum'][:last_prog]
+# indx_CM = np.where(Snapnum==89)[0]
+# des_89 = f['DescendantID'][indx_CM]
 
-print(len(np.where(des_89==-1)[0]))
+# print(len(np.where(des_89==-1)[0]))
 
 # mass = f['SubhaloMass'][:]*1e10
 # cen_pos = f['GroupVel'][indx_CM]
@@ -240,3 +240,31 @@ print(len(np.where(des_89==-1)[0]))
 # #     plt.ylabel('Count')
 # #     # plt.savefig(name)
 # #     plt.show()
+
+indx_90 = np.where(f['SnapNum'][:]==73)[0]
+
+base_nodes = f['SubhaloID'][indx_90]
+all_nodes = f['SubhaloID'][:]
+all_roots = f['RootDescendantID'][:]
+all_mass = f['SubhaloMass'][:]*1e10
+
+coll = []
+for i in tqdm(base_nodes):
+    indx_root = np.where(all_roots==i)
+    root_desc = all_roots[indx_root]
+    root_mass = all_mass[indx_root]
+    indx_desc = np.where(all_nodes==i)
+    desc_mass = all_mass[indx_desc]
+    if (desc_mass-1e12)/1e12<0.1:
+        coll += [np.log10(m_root/desc_mass) for m_root in root_mass]
+    else:
+        continue
+plt.hist(coll,bins=100,density=True)
+# plt.plot(comp,comp_y)
+# plt.xscale('log')
+plt.yscale('log')
+plt.grid()
+plt.xlabel(r'$\log(M_1/M2)$')
+plt.ylabel(r'$\log(f_{cmf})$')
+# plt.savefig('TreeTest_M1M2_1e12_2.png')
+plt.show()
