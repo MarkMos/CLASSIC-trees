@@ -97,6 +97,7 @@ class trees:
                           i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part)
     def compute_slow(self,
                      mass = None,
+                     n_halo_max = 1000000,
                      file_name = None,
                      random_mass = None,
                      BoxSize = 479.0,
@@ -111,5 +112,5 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         from Generate_Tree import compute_tree
-        compute_tree(mass,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
+        compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
                      n_tree,n_halo,i_seed_0,a_halo,z_max)
