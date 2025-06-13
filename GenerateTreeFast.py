@@ -18,12 +18,13 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
     count = np.array([count],dtype='int_')
     i = np.array([i],dtype='int_')
 
     return {
         "arr_mhalo": arr_mhalo,
+        'arr_Vmax': arr_Vmax,
         "arr_nodid": arr_nodid,
         "arr_treeid": arr_treeid,
         "arr_time": arr_time,
@@ -78,6 +79,7 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
         for result in results:
             append_create_dataset(grp1,'SnapNum',result['arr_time'])
             append_create_dataset(grp1,'SubhaloMass',data=result['arr_mhalo'])
+            append_create_dataset(grp1,'SubhaloVmax',result['arr_Vmax'])
             append_create_dataset(grp1,'TreeDescendant',result['arr_desc'])
             append_create_dataset(grp1,'TreeFirstProgenitor',result['arr_1prog'])
             append_create_dataset(grp1,'NextProgenitor',result['arr_nextprog'])
