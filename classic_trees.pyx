@@ -2,6 +2,7 @@ import cython
 import numpy as np
 cimport numpy as np
 import bisect
+import random
 #from CLASSIC_trees import trees
 #from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
 from scipy.integrate import simpson
@@ -203,6 +204,14 @@ cdef Tree_Node* walk_tree(Tree_Node* this_node):
                 next_node = NULL
     return next_node
 
+cdef double halo_Vmax(double mass):
+    cdef double G_used = G.value * M_sun.value / (pc.value * (1e3**2))
+    cdef double a = 3.36713334
+    cdef double b = 0.61474034
+    cdef double val
+    val = sqrt(G_used*mass**b/a)
+    return val + random.gauss(0,0.1)*val
+
 cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
     '''
     Function to count the number of nodes in a merger tree and get values out of it.
@@ -225,6 +234,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     cdef:
         int count = 0
         double* arr_mhalo = NULL
+        double* arr_Vmax = NULL
         int* arr_nodid = NULL
         int* arr_treeid = NULL
         int* arr_time = NULL
@@ -237,6 +247,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
 
     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
+    arr_Vmax = <double*>malloc(n_halo_max*sizeof(double))
     arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
     arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
     arr_time = <int*>malloc(n_halo_max*sizeof(int))
@@ -245,7 +256,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
     arr_1FoF = <int*>malloc(n_halo_max*sizeof(int))
     arr_nextFoF = <int*>malloc(n_halo_max*sizeof(int))
-    if not (arr_mhalo and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_1FoF and arr_nextFoF):
+    if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_1FoF and arr_nextFoF):
         malloc_failed = 1
     if malloc_failed:
         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
@@ -253,6 +264,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         node_ID = this_node.index
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
+        arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
         arr_treeid[node_ID]= i
         arr_time[node_ID]  = this_node.jlevel
         if this_node.child is not NULL:
@@ -280,6 +292,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         this_node = walk_tree(this_node)
     
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+    np_arr_Vmax = np.array([arr_Vmax[j] for j in range(count)])
     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
     np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
     np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
@@ -288,7 +301,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
     np_arr_1FoF = np.array([arr_1FoF[j] for j in range(count)],dtype='int_')
     np_arr_nextFoF = np.array([arr_nextFoF[j] for j in range(count)],dtype='int_')
-    return (count,np_arr_mhalo,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_1FoF,np_arr_nextFoF)
+    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_1FoF,np_arr_nextFoF)
 
 cdef int tree_index(Tree_Node* node):
     '''
@@ -1019,6 +1032,8 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     i_sib[0] = -1
     i_child[0] = -1
     while m_left[i_node] > 0.0:
+        if i_frag+2 > n_frag_max:
+            raise MemoryError('Number of pre-allocated nodes is not enough! Increase n_halo_max!')
         dw_max = w_lev[i_lev] - w
         split_fct = split(Sig, m, w, m_min, dw_max, eps_1, eps_2,m_minlast)
         dw = split_fct.dw
@@ -1275,7 +1290,7 @@ def get_tree_vals(
 
     #print('Made a tree ',i+1)
     this_node = merger_tree[0]
-    count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -1289,4 +1304,4 @@ def get_tree_vals(
         print('No Progenitors.')
     free(merger_tree)
     free(this_node)
-    return count,arr_mhalo,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
+    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
