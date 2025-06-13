@@ -342,14 +342,14 @@ import CLASSIC_trees as ct
 # import numpy as np
 from classic_trees import set_trees
 
-file = 'TreeTest_FoF_1e12_12000.hdf5'
+# file = 'TreeTest_FoF_random_20000.hdf5'
 
 # tree = ct.trees()
-# print('Hello')
+# # print('Hello')
 # tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 # set_trees(tree)
-# print('Now here')
-# tree.compute_fast(mass=1e12,file_name=file,n_part=400)
+# # print('Now here')
+# tree.compute_slow(mass=1e12,n_halo_max=2000)
 # tree2 = ct.trees()
 # tree2.set(pk_method='default')
 # print(np.all(abs(tree.Pk_0_np-tree2.Pk_0_np)/tree2.Pk_0_np<1e-2))
@@ -359,46 +359,76 @@ file = 'TreeTest_FoF_1e12_12000.hdf5'
 # p = ytree.TreePlot(a[0],dot_kwargs={'rankdir': 'LR', 'size': '"12,4"'})
 # p.save('A_ytree1e11_withFortranOrderingLonger.png')
 
+'''
 f = h5py.File(file)
+comp = [-1.9,-1.7,-1.5,-1.3,-1.1,-9e-1,-7e-1,-5e-1,-3e-1,-1e-1,1e-1,3e-1,5e-1,7e-1]
 
+comp_y = 10**(np.array([-2.555,-1.627,-1.368,-1.274,-1.186,-1.083,-9.456e-1,-7.429e-1,-2.967e-1, 4.759e-1,-9.140e-1,-2.206,-3.438,-1.000e+1]))
 # indx = np.where(f['TreeHalos/SnapNum']==1)[0]
-# coll = []
-# for i in f['TreeTable/StartOffset'][:]:
-#     first_1= f['TreeHalos/TreeFirstProgenitor'][i]
-#     coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
-# plt.hist(coll,bins=50,density=True)
-# # plt.xscale('log')
-# plt.yscale('log')
-# plt.grid()
-# plt.xlabel(r'$\log(M_1/M2)$')
-# plt.ylabel(r'$\log(f_{cmf})$')
-# plt.savefig('TreeTest_M1M2_1e12_1.png')
-# plt.show()
-# print(np.log10(f['TreeHalos/SubhaloMass'][first_1]/f['TreeHalos/SubhaloMass'][0]))
-from tqdm import tqdm
-
-TreeID = f['TreeHalos/TreeID'][:]
-FoF1_tot = f['TreeHalos/TreeFirstHaloInFOFgroup'][:]
-SnapNum = f['TreeHalos/SnapNum'][:]
-
-Nprog = []
-N_1pr = []
-for i in tqdm(f['TreeTable/TreeID'][:]):
-    indx = np.where(TreeID==i)
-    FoF1 = FoF1_tot[indx]
-    first_1 = FoF1[1]
-    indx1 = np.where(SnapNum[indx]==1)[0]
-    n_pr = len(indx1)
-    Nprog.append(n_pr)
-    indx2 = np.where(FoF1==first_1)[0]
-    n_1 = len(indx2)
-    N_1pr.append(n_1/n_pr)
-# print(len(N_1pr),' = ',len(Nprog))
-plt.scatter(Nprog,N_1pr)
+coll = []
+for i in f['TreeTable/StartOffset'][:]:
+    first_1= f['TreeHalos/TreeFirstProgenitor'][i]
+    coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
+plt.hist(coll,bins=50,density=True,label='Our')
+# plt.plot(comp[:-2],comp_y[:-2])
+coll_fortran = np.log10(np.loadtxt('/home/markus/code/Fortran_MassOver1e12.txt'))
+plt.hist(coll_fortran,bins=50,density=True,label='Fortran')
 # plt.xscale('log')
 plt.yscale('log')
 plt.grid()
-plt.xlabel(r'$N_{prog}$')
-plt.ylabel(r'N_{subs}$')
-plt.savefig('TreeTest_NFoF1Nprog_1e12_1.png')
+plt.xlabel(r'$\log(M_1/M_2)$')
+plt.ylabel(r'$\log(f_{cmf})$')
+plt.legend(title=r'For $M_2 = 1e12$ at $z = 0.444$')
+plt.savefig('TreeTest_M1M2_1e12_2.png')
+'''
+
+# plt.show()
+# print(np.log10(f['TreeHalos/SubhaloMass'][first_1]/f['TreeHalos/SubhaloMass'][0]))
+# from tqdm import tqdm
+
+# TreeID = f['TreeHalos/TreeID'][:]
+# FoF1_tot = f['TreeHalos/TreeFirstHaloInFOFgroup'][:]
+# SnapNum = f['TreeHalos/SnapNum'][:]
+
+# Nprog = []
+# N_1pr = []
+# for i in tqdm(f['TreeTable/TreeID'][:]):
+#     indx = np.where(TreeID==i)
+#     FoF1 = FoF1_tot[indx]
+#     first_1 = FoF1[1]
+#     indx1 = np.where(SnapNum[indx]==1)[0]
+#     n_pr = len(indx1)
+#     Nprog.append(n_pr)
+#     indx2 = np.where(FoF1==first_1)[0]
+#     n_1 = len(indx2)
+#     N_1pr.append(n_1/n_pr)
+# # print(len(N_1pr),' = ',len(Nprog))
+# plt.scatter(Nprog,N_1pr)
+# # plt.xscale('log')
+# plt.yscale('log')
+# plt.grid()
+# plt.xlabel(r'$N_{prog}$')
+# plt.ylabel(r'N_{subs}$')
+# plt.savefig('TreeTest_NFoF1Nprog_1e12_1.png')
+# plt.show()
+
+
+# f = h5py.File(file)
+
+# mass = f['TreeHalos/SubhaloMass'][:]
+# Vmax = f['TreeHalos/SubhaloVmax'][:]
+
+# plt.hexbin(mass,Vmax,xscale='log',yscale='log',bins='log')
+# plt.grid()
+# # plt.xscale('log')
+# # plt.yscale('log')
+# plt.xlabel(r'$M$')
+# plt.ylabel(r'$V_{max}$')
+# plt.show()
+
+f = h5py.File('/home/markus/TreeTest_FoF_1e12_20000.hdf5')
+
+length = f['TreeTable/Length'][:]
+
+plt.hist(length,bins=50,density=True)
 plt.show()
