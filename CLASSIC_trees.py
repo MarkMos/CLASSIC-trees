@@ -88,13 +88,14 @@ class trees:
                      n_lev = 10,
                      n_halo_max = 1000000,
                      n_halo = 1,
-                     n_part = 40000):
+                     n_part = 40000,
+                     times = 'equal a'):
         omega_0 = self.omega_0
         l_0 = self.l_0
         h_0 = self.h_0
         from GenerateTreeFast import compute_tree_fast
         compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,
-                          i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part)
+                          i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part,times)
     def compute_slow(self,
                      mass = None,
                      n_halo_max = 1000000,
@@ -107,10 +108,11 @@ class trees:
                      n_halo = 1,
                      i_seed_0 = -8635,
                      a_halo = 1,
-                     z_max = 4):
+                     z_max = 4,
+                     times = 'equal a'):
         omega_0 = self.omega_0
         l_0 = self.l_0
         h_0 = self.h_0
         from Generate_Tree import compute_tree
         compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
-                     n_tree,n_halo,i_seed_0,a_halo,z_max)
+                     n_tree,n_halo,i_seed_0,a_halo,z_max,times)
