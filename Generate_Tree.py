@@ -36,7 +36,8 @@ def compute_tree(mass,
                  n_halo = 1,
                  i_seed_0 = -8635,
                  a_halo = 1,
-                 z_max = 4):
+                 z_max = 4,
+                 times = 'equal a'):
     '''
     Function to call the routines of classic_trees for small numbers of trees to 
     compute. Ideally to see what different starting values yield.
@@ -56,6 +57,7 @@ def compute_tree(mass,
         i_seed_0    : Used for seed to generate random numbers
         a_halo      : Value of scale factor today (default) or up to which time the tree is calculated
         z_max       : Maximum redshift for lookback
+        times       : Either equally spaced times in z or a, or a custom array of z or a
     ----------------------
     Output:
         hdf5-file if file_name is not None
@@ -70,16 +72,48 @@ def compute_tree(mass,
         mp_halo = ppf_ST(u_ST)
     else:
         mp_halo = mass
-
-    a_lev = []
-    w_lev = []
-    for i_lev in range(1,n_lev+1):
-        a_lev.append(1/(1 + z_max*(i_lev-1)/(n_lev-1)))
-        d_c = DELTA.delta_crit(a_lev[i_lev-1])
-        w_lev.append(d_c)
-        print('z = ',1/a_lev[i_lev-1]-1,' at which delta_crit = ',d_c)
-    a_lev = np.array(a_lev)
-    w_lev = np.array(w_lev)
+    if type(times)==str and times=='equal z':
+        a_lev = []
+        w_lev = []
+        for i_lev in range(n_lev):
+            a_lev.append(1/(1 + z_max*(i_lev)/(n_lev-1)))
+            d_c = DELTA.delta_crit(a_lev[i_lev])
+            w_lev.append(d_c)
+            print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+        a_lev = np.array(a_lev)
+        w_lev = np.array(w_lev)
+    elif type(times)==str and times=='equal a':
+        a_lev = np.linspace(1,1/(z_max+1),n_lev)
+        w_lev = []
+        for i_lev in range(n_lev):
+            # a_lev.append(1/(1+1/(z_max+1)*i_lev/(n_lev-1)))
+            d_c = DELTA.delta_crit(a_lev[i_lev])
+            w_lev.append(d_c)
+            print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+        a_lev = np.array(a_lev)
+        w_lev = np.array(w_lev)
+    elif type(times)!=str and len(times)>1:
+        if np.any(times>1):
+            a_lev = []
+            w_lev = []
+            for z in times:
+                a_temp = 1/(z+1)
+                a_lev.append(a_temp)
+                d_c = DELTA.delta_crit(a_temp)
+                w_lev.append(d_c)
+                print('z = ',1/a_temp-1,' at which delta_crit = ',d_c)
+            a_lev = np.array(a_lev)
+            w_lev = np.array(w_lev)
+        else:
+            a_lev = times
+            w_lev = []
+            for a in a_lev:
+                d_c = DELTA.delta_crit(a)
+                w_lev.append(d_c)
+                print('z = ',1/a-1,' at which delta_crit = ',d_c)
+            a_lev = np.array(a_lev)
+            w_lev = np.array(w_lev)
+            
     start_offset = 0
     nth_run = False
     for i in range(n_tree):

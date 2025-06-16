@@ -108,7 +108,8 @@ def compute_tree_fast(random_mass,
                       n_lev = 10,
                       n_halo_max = 1000000,
                       n_halo = 1,
-                      n_part = 40000):
+                      n_part = 40000,
+                      times = 'equal a'):
     '''
     Function to call the routines of classic_trees for huge numbers of trees to 
     compute. Ideally to produce large merger tree files.
@@ -130,6 +131,7 @@ def compute_tree_fast(random_mass,
         n_halo_max  : Maximum number of nodes per tree; used for preallocation 
         n_halo      : Start of counter of nodes inside the tree(s)
         n_part      : Number of runs of a Pool
+        times       : Either equally spaced times in z or a, or a custom array of z or a
     ----------------------
     Output:
         hdf5-file with values of random or constant mass merger trees
@@ -146,14 +148,47 @@ def compute_tree_fast(random_mass,
         mp_halo = np.sort(mp_halo)[::-1]
     else:
         mp_halo = mass*np.ones(int(n_part*n_tree))
-    a_lev = []
-    w_lev = []
-    for i_lev in range(1,n_lev+1):
-        a_lev.append(1/(1 + z_max*(i_lev-1)/(n_lev-1)))
-        #print(a_lev)
-        d_c = DELTA.delta_crit(a_lev[i_lev-1])
-        w_lev.append(d_c)
-        print('z = ',1/a_lev[i_lev-1]-1,' at which delta_crit = ',d_c)
+    if type(times)==str and times=='equal z':
+        a_lev = []
+        w_lev = []
+        for i_lev in range(n_lev):
+            a_lev.append(1/(1 + z_max*(i_lev)/(n_lev-1)))
+            d_c = DELTA.delta_crit(a_lev[i_lev])
+            w_lev.append(d_c)
+            print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+        a_lev = np.array(a_lev)
+        w_lev = np.array(w_lev)
+    elif type(times)==str and times=='equal a':
+        a_lev = np.linspace(1,1/(z_max+1),n_lev)
+        w_lev = []
+        for i_lev in range(n_lev):
+            # a_lev.append(1/(1+1/(z_max+1)*i_lev/(n_lev-1)))
+            d_c = DELTA.delta_crit(a_lev[i_lev])
+            w_lev.append(d_c)
+            print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+        a_lev = np.array(a_lev)
+        w_lev = np.array(w_lev)
+    elif type(times)!=str and len(times)>1:
+        if np.any(times>1):
+            a_lev = []
+            w_lev = []
+            for z in times:
+                a_temp = 1/(z+1)
+                a_lev.append(a_temp)
+                d_c = DELTA.delta_crit(a_temp)
+                w_lev.append(d_c)
+                print('z = ',1/a_temp-1,' at which delta_crit = ',d_c)
+            a_lev = np.array(a_lev)
+            w_lev = np.array(w_lev)
+        else:
+            a_lev = times
+            w_lev = []
+            for a in a_lev:
+                d_c = DELTA.delta_crit(a)
+                w_lev.append(d_c)
+                print('z = ',1/a-1,' at which delta_crit = ',d_c)
+            a_lev = np.array(a_lev)
+            w_lev = np.array(w_lev)
     a_lev = np.array(a_lev)
     w_lev = np.array(w_lev)
     nth_run = False
