@@ -40,9 +40,22 @@ from values import h_0, omega_0, file_name_pk
 
 def halo_pos(BoxSize,halo_type,cen_pos=np.array([0,0,0]),mean_linking_length=1,b=0.2):
     if halo_type=='cen':
-        return BoxSize*np.random.random(size=3)
+        return np.random.uniform(0,BoxSize,3)
     else:
         pos = mean_linking_length*b*np.random.uniform(-1,1,3)
         while np.sqrt(sum(pos**2))>mean_linking_length*b:
             pos = mean_linking_length*b*np.random.uniform(-1,1,3)
         return cen_pos+pos
+
+r = np.logspace(-5,2,100)
+
+rho_s = 1
+r_s = 1
+
+rho_r = rho_s/(r/r_s*(1+r/r_s)**2)
+
+plt.loglog(r,rho_r)
+plt.xlabel(r'$\log(r/r_s)$')
+plt.ylabel(r'$\log(\rho/\rho_s)$')
+plt.grid()
+plt.savefig('NFWprofile.png')
