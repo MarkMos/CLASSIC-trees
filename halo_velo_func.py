@@ -47,7 +47,7 @@ def halo_pos(BoxSize,halo_type,cen_pos=np.array([0,0,0]),mean_linking_length=1,b
             pos = mean_linking_length*b*np.random.uniform(-1,1,3)
         return cen_pos+pos
 
-r = np.logspace(-5,2,100)
+r = np.logspace(-4,3,100)
 
 rho_s = 1
 r_s = 1
@@ -59,3 +59,28 @@ plt.xlabel(r'$\log(r/r_s)$')
 plt.ylabel(r'$\log(\rho/\rho_s)$')
 plt.grid()
 plt.savefig('NFWprofile.png')
+
+
+def pos_prog_and_velo(this_node,merger_tree,a_lev):
+    timestep =  a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel]
+    if this_node.FirstInFoF==this_node:
+        this_node.pos = this_node.parent.pos + velo_routine(this_node,timestep,'pos','cen')
+        this_node.velo = this_node.parent.velo + velo_routine(this_node,timestep,'velo','cen')
+    else:
+        this_node.pos = this_node.parent.pos + velo_routine(this_node,timestep,'pos','sat')
+        this_node.velo = this_node.parent.velo + velo_routine(this_node,timestep,'velo','sat')
+    merger_tree[this_node.index] = this_node
+    return merger_tree
+
+def velo_routine(this_node,timestep,mode,halo_type):
+    # some routine incoming
+    if halo_type=='cen' and mode=='pos':
+        adding = this_node.parent.velo*timestep*np.random.random()
+        if np.random.random()<0.1:
+            adding = -adding
+        return adding + this_node.parent.pos
+    elif halo_type=='cen' and mode=='pos':
+        scale = np.random.random()
+        while scale >0.4:
+            scale = np.random.random()
+        return this_node.parent.velo*scale + this_node.parent.velo
