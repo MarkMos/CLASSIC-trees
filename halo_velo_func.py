@@ -64,11 +64,11 @@ plt.savefig('NFWprofile.png')
 def pos_prog_and_velo(this_node,merger_tree,a_lev):
     timestep =  a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel]
     if this_node.FirstInFoF==this_node:
-        this_node.pos = this_node.parent.pos + velo_routine(this_node,timestep,'pos','cen')
-        this_node.velo = this_node.parent.velo + velo_routine(this_node,timestep,'velo','cen')
+        this_node.pos = velo_routine(this_node,timestep,'pos','cen')
+        this_node.velo = velo_routine(this_node,timestep,'velo','cen')
     else:
-        this_node.pos = this_node.parent.pos + velo_routine(this_node,timestep,'pos','sat')
-        this_node.velo = this_node.parent.velo + velo_routine(this_node,timestep,'velo','sat')
+        this_node.pos = velo_routine(this_node,timestep,'pos','sat')
+        this_node.velo = velo_routine(this_node,timestep,'velo','sat')
     merger_tree[this_node.index] = this_node
     return merger_tree
 
@@ -79,8 +79,28 @@ def velo_routine(this_node,timestep,mode,halo_type):
         if np.random.random()<0.1:
             adding = -adding
         return adding + this_node.parent.pos
-    elif halo_type=='cen' and mode=='pos':
+    elif halo_type=='cen' and mode=='velo':
         scale = np.random.random()
         while scale >0.4:
             scale = np.random.random()
         return this_node.parent.velo*scale + this_node.parent.velo
+    elif halo_type=='sat' and mode=='pos':
+        return this_node.FirstInFoF.pos + satelite_pos_velo(this_node,'pos')
+    else:
+        return this_node.FirstInFoF.velo + satelite_pos_velo(this_node,'velo')
+
+def satelite_pos_velo(this_node,mode):
+    if mode=='pos':
+        if this_node.mhalo/this_node.FirstInFoF.mhalo < 1/2:
+            return np.random.random(size=3)
+        else:
+            return 1e-2*np.random.random(size=3)
+    else:
+        random_number = np.random.random()
+        if random_number<0.6:
+            dirr = 1
+        elif 0.6<random_number<0.61:
+            dirr = -1
+        else:
+            dirr = 0
+        return dirr*(this_node.FirstInFoF.pos-this_node.pos)*np.random.random() + np.random.random(size=3)
