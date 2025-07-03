@@ -7,7 +7,7 @@ import random
 #from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
 from scipy.integrate import simpson
 from astropy.constants import G, M_sun, pc
-from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh
+from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh, round
 from scipy.interpolate import UnivariateSpline, CubicSpline
 from libc.stdlib cimport malloc, free, rand, srand
 
@@ -392,17 +392,27 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
     '''
     cdef int i
     for i in range(n_frag_tot):
-        merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
-    for i in range(n_frag_tot):
         merger_tree = build_FoFs(merger_tree,merger_tree[i])
+    for i in range(n_frag_tot):
+        merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
     return merger_tree
+
+cdef int number_of_subs(double m):
+    # Function to estimate the number of subhalos of a halo of given mass.
+    return int(round(0.85+(m/1e11)**(9.2/10)))
 
 cdef Tree_Node** build_FoFs(Tree_Node** merger_tree,Tree_Node* this_node):
     cdef int child_index, i_frag
     if this_node.nchild > 1:
         child_index = tree_index(this_node.child)
         for i_frag in range(child_index, child_index + this_node.nchild):
-            merger_tree[i_frag].FirstInFoF = merger_tree[child_index]
+            if i_frag-child_index<number_of_subs(this_node.mhalo):
+                merger_tree[i_frag].FirstInFoF = merger_tree[child_index]
+                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+            else:
+                merger_tree[i_frag].FirstInFoF = merger_tree[i_frag]                
+                merger_tree[i_frag].NextInFoF = NULL
+        '''
         if merger_tree[child_index+1].mhalo > 0.7*merger_tree[child_index].mhalo:
             merger_tree[child_index+1].FirstInFoF = merger_tree[child_index+1]
             merger_tree[child_index+1].NextInFoF = NULL
@@ -412,11 +422,14 @@ cdef Tree_Node** build_FoFs(Tree_Node** merger_tree,Tree_Node* this_node):
         else:
             for i_frag in range(child_index, child_index + this_node.nchild -1):
                 merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+        '''
         merger_tree[child_index+this_node.nchild].NextInFoF = NULL
     elif this_node.nchild==1:
         child_index = tree_index(this_node.child)
         merger_tree[child_index].FirstInFoF= merger_tree[child_index]
         merger_tree[child_index].NextInFoF = NULL
+    else:
+        return merger_tree
     return merger_tree
 
 cdef class functions:
