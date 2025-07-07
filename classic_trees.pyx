@@ -399,7 +399,7 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
 
 cdef int number_of_subs(double m):
     # Function to estimate the number of subhalos of a halo of given mass.
-    return int(round(0.85+(m/1e12)**(9.2/10)))
+    return int(round(0.85+(m/5e11)**(8/10)))
 
 cdef Tree_Node** build_FoFs(Tree_Node** merger_tree,Tree_Node* this_node):
     cdef int child_index, i_frag
