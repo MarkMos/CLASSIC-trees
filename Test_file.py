@@ -350,8 +350,8 @@ a = a[::-1][:10]
 tree = ct.trees()
 tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 set_trees(tree)
-# tree.compute_slow(mass=1e14,times=a,n_tree=40)
-tree.compute_fast(random_mass='ST',times=a,file_name=file,n_part=500,n_tree=40)
+tree.compute_slow(mass=1e17,times=a,m_res=1e11)
+# tree.compute_fast(random_mass='ST',times=a,file_name=file,n_part=500,n_tree=40)
 # tree.compute_fast(mass=1e14,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)
 
 
@@ -423,32 +423,32 @@ tree.compute_fast(random_mass='ST',times=a,file_name=file,n_part=500,n_tree=40)
 # print(np.log10(f['TreeHalos/SubhaloMass'][first_1]/f['TreeHalos/SubhaloMass'][0]))
 # from tqdm import tqdm
 
-f = h5py.File(file)
+# f = h5py.File(file)
 
-TreeID = f['TreeHalos/TreeID'][:]
-FoF1_tot = f['TreeHalos/TreeFirstHaloInFOFgroup'][:]
-SnapNum = f['TreeHalos/SnapNum'][:]
+# TreeID = f['TreeHalos/TreeID'][:]
+# FoF1_tot = f['TreeHalos/TreeFirstHaloInFOFgroup'][:]
+# SnapNum = f['TreeHalos/SnapNum'][:]
 
-Nprog = []
-N_1pr = []
-for i in tqdm(f['TreeTable/TreeID'][:]):
-    indx = np.where(TreeID==i)
-    FoF1 = FoF1_tot[indx]
-    first_1 = FoF1[1]
-    indx1 = np.where(SnapNum[indx]==1)[0]
-    n_pr = len(indx1)
-    Nprog.append(n_pr)
-    indx2 = np.where(FoF1==first_1)[0]
-    n_1 = len(indx2)
-    N_1pr.append(n_1/n_pr)
-# print(len(N_1pr),' = ',len(Nprog))
-plt.scatter(Nprog,N_1pr)
-# plt.xscale('log')
-plt.yscale('log')
-plt.grid()
-plt.xlabel(r'$N_{prog}$')
-plt.ylabel(r'$N_{1 FoF}/N_{prog}$')
-plt.savefig('TreeTest_NFoF1Nprog_random_5.png')
+# Nprog = []
+# N_1pr = []
+# for i in tqdm(f['TreeTable/TreeID'][:]):
+#     indx = np.where(TreeID==i)
+#     FoF1 = FoF1_tot[indx]
+#     first_1 = FoF1[1]
+#     indx1 = np.where(SnapNum[indx]==1)[0]
+#     n_pr = len(indx1)
+#     Nprog.append(n_pr)
+#     indx2 = np.where(FoF1==first_1)[0]
+#     n_1 = len(indx2)
+#     N_1pr.append(n_1/n_pr)
+# # print(len(N_1pr),' = ',len(Nprog))
+# plt.scatter(Nprog,N_1pr)
+# # plt.xscale('log')
+# plt.yscale('log')
+# plt.grid()
+# plt.xlabel(r'$N_{prog}$')
+# plt.ylabel(r'$N_{1 FoF}/N_{prog}$')
+# plt.savefig('TreeTest_NFoF1Nprog_random_5.png')
 # plt.show()
 
 
