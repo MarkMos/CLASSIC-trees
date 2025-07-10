@@ -3,21 +3,23 @@ import numpy as np
 # from sigma_cdm_func import sigma_cdm, rho_crit
 from classic_trees import functions, sig_alph, trees
 # from classy import Class
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from scipy.stats import rv_continuous
 from scipy.integrate import simpson, cumulative_trapezoid
 from scipy.interpolate import interp1d
-from tqdm import tqdm
+# from tqdm import tqdm
 
 Sig = sig_alph(trees)
+
+m_min = trees.m_min
+m_max = trees.m_max
 
 n = 100
 p = 0.3
 q = 0.75
 A_p = 0.3222
 
-m_min = 1e9
-m_max = 1e16
+
 
 filename = './CLASSIC-trees/Data/flat.txt'
 DELTA = functions(filename)
@@ -71,7 +73,7 @@ class HaloMassFunction_ST(rv_continuous):
         return nST/summ_nST
 
 
-hmf_ST = HaloMassFunction_ST(a=1e9,b=1e16,name='hmf_ST')
+hmf_ST = HaloMassFunction_ST(a=m_min,b=m_max,name='hmf_ST')
 
 # print(hmf_ST.rvs(size=10))
 # print(hmf_ST.pdf(masses))
@@ -83,7 +85,7 @@ for i in range(n):
 cdf_ST = cumulative_trapezoid(temp_ST,masses,initial=0)
 cdf_ST /= cdf_ST[-1]
 
-ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(1e9,1e16))
+ppf_ST = interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(m_min,m_max))
 
 # N = 10000000
 # u_ST = np.random.rand(N)
@@ -133,7 +135,7 @@ class HaloMassFunction_PS(rv_continuous):
         return nPS/summ_nPS
 
 
-hmf_PS = HaloMassFunction_PS(a=1e9,b=1e16,name='hmf_PS')
+hmf_PS = HaloMassFunction_PS(a=m_min,b=m_max,name='hmf_PS')
 
 # print(hmf_ST.rvs(size=10))
 # print(hmf_ST.pdf(masses))
@@ -145,7 +147,7 @@ for i in range(n):
 cdf_PS = cumulative_trapezoid(temp_PS,masses,initial=0)
 cdf_PS /= cdf_PS[-1]
 
-ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(1e9,1e16))
+ppf_PS = interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(m_min,m_max))
 
 # u_PS = np.random.rand(10000000)
 # samples = ppf_PS(u_PS)
