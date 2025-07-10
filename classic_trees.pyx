@@ -1318,3 +1318,7 @@ def get_tree_vals(
     free(merger_tree)
     free(this_node)
     return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
+
+cdef class random_masses:
+    def __init__(self,str filename):
+        self.delta_c = functions(filename).delta_crit(1)
