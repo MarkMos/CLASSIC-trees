@@ -13,6 +13,8 @@ class trees:
         self.file_name_pk = None
         self.k_0_np = None
         self.Pk_0_np = None
+        self.m_max = 1e16
+        self.m_min = 1e8
     def set(self,pk_method='class',cosmo_params=None,
             add_cosmo_params=None,file=None,P_values='uncorrected'):
         if pk_method=='class':
@@ -78,6 +80,8 @@ class trees:
     def compute_fast(self,
                      file_name,
                      random_mass = None,
+                     m_max = 1e16,
+                     m_min = 1e11,
                      mass = None,
                      BoxSize = 479.0,
                      n_tree = 30,
@@ -89,18 +93,24 @@ class trees:
                      n_halo_max = 1000000,
                      n_halo = 1,
                      n_part = 40000,
-                     times = 'equal a'):
+                     times = 'equal a',
+                     mode='FoF'):
+        if random_mass is not None:
+            self.m_min = m_min
+            self.m_max = m_max
         omega_0 = self.omega_0
         l_0 = self.l_0
         h_0 = self.h_0
         from GenerateTreeFast import compute_tree_fast
         compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,
-                          i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part,times)
+                          i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode)
     def compute_slow(self,
                      mass = None,
                      n_halo_max = 1000000,
                      file_name = None,
                      random_mass = None,
+                     m_max = 1e16,
+                     m_min = 1e11,
                      BoxSize = 479.0,
                      n_lev = 10,
                      m_res = 1e8,
@@ -109,10 +119,16 @@ class trees:
                      i_seed_0 = -8635,
                      a_halo = 1,
                      z_max = 4,
-                     times = 'equal a'):
+                     times = 'equal a',
+                     mode='FoF'):
+        if random_mass is not None:
+            self.m_min = m_min
+            self.m_max = m_max
+        if mode=='FoF':
+            m_res = m_min
         omega_0 = self.omega_0
         l_0 = self.l_0
         h_0 = self.h_0
         from Generate_Tree import compute_tree
         compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
-                     n_tree,n_halo,i_seed_0,a_halo,z_max,times)
+                     n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode)
