@@ -37,7 +37,8 @@ def compute_tree(mass,
                  i_seed_0 = -8635,
                  a_halo = 1,
                  z_max = 4,
-                 times = 'equal a'):
+                 times = 'equal a',
+                 mode = 'FoF'):
     '''
     Function to call the routines of classic_trees for small numbers of trees to 
     compute. Ideally to see what different starting values yield.
@@ -58,6 +59,7 @@ def compute_tree(mass,
         a_halo      : Value of scale factor today (default) or up to which time the tree is calculated
         z_max       : Maximum redshift for lookback
         times       : Either equally spaced times in z or a, or a custom array of z or a
+        mode    	: Defining the usage of the merger tree.
     ----------------------
     Output:
         hdf5-file if file_name is not None
@@ -93,6 +95,7 @@ def compute_tree(mass,
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
     elif type(times)!=str and len(times)>1:
+        n_lev = int(len(times))
         if np.any(times>1):
             a_lev = []
             w_lev = []

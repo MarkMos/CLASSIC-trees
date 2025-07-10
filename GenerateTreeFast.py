@@ -109,7 +109,8 @@ def compute_tree_fast(random_mass,
                       n_halo_max = 1000000,
                       n_halo = 1,
                       n_part = 40000,
-                      times = 'equal a'):
+                      times = 'equal a',
+                      mode='FoF'):
     '''
     Function to call the routines of classic_trees for huge numbers of trees to 
     compute. Ideally to produce large merger tree files.
@@ -132,6 +133,7 @@ def compute_tree_fast(random_mass,
         n_halo      : Start of counter of nodes inside the tree(s)
         n_part      : Number of runs of a Pool
         times       : Either equally spaced times in z or a, or a custom array of z or a
+        mode    	: Defining the usage of the merger tree.
     ----------------------
     Output:
         hdf5-file with values of random or constant mass merger trees
@@ -169,6 +171,7 @@ def compute_tree_fast(random_mass,
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
     elif type(times)!=str and len(times)>1:
+        n_lev = int(len(times))
         if np.any(times>1):
             a_lev = []
             w_lev = []
@@ -194,7 +197,7 @@ def compute_tree_fast(random_mass,
     nth_run = False
     start_offset = 0
     for j in range(n_part):
-        start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize)
+        start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,mode)
     with h5py.File(file_name,'a') as f:
         grp = f.create_group('Header')
         grp.attrs['LastSnapShotNr'] = int(n_lev - 1)
