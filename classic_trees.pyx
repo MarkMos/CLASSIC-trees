@@ -1320,5 +1320,19 @@ def get_tree_vals(
     return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
 
 cdef class random_masses:
-    def __init__(self,str filename):
-        self.delta_c = functions(filename).delta_crit(1)
+    cdef double delta_c
+    cdef int n
+    cdef double p
+    cdef double q
+    cdef double A_p
+
+    def __init__(self,double d_c):
+        self.delta_c = d_c
+        self.n = 100
+        self.p = 0.3
+        self.q = 0.75
+        self.A_p = 0.3222
+    
+    def ST_func(self,double m):
+        nu = self.delta_c**2/sig_alph(trees).sigma_cdm(m)**2
+        nu_f_ST = self.A_p*(1+(self.q*nu)**(-self.p))*np.sqrt((self.q*nu)/(2*np.pi))*np.exp(-(self.q*nu)/2)
