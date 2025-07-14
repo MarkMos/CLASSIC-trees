@@ -1333,6 +1333,17 @@ cdef class random_masses:
         self.q = 0.75
         self.A_p = 0.3222
     
+    def dln_nu_dln_m(self,double m):
+        return 4*log(self.delta_c)*sig_alph(trees).alpha(m)
+    
     def ST_func(self,double m):
+        cdef double nu, nu_f_ST
         nu = self.delta_c**2/sig_alph(trees).sigma_cdm(m)**2
         nu_f_ST = self.A_p*(1+(self.q*nu)**(-self.p))*np.sqrt((self.q*nu)/(2*np.pi))*np.exp(-(self.q*nu)/2)
+        return 1/(m**2)*nu_f_ST*self.dln_nu_dln_m(m)
+    
+    def PS_func(self,double m):
+        cdef double nu, nu_f_PS
+        nu = self.delta_c**2/(sig_alph(trees).sigma_cdm(m))**2
+        nu_f_PS = np.sqrt(nu/(2*np.pi))*np.exp(-nu/2)
+        return 1/(m**2)*nu_f_PS*self.dln_nu_dln_m(m)
