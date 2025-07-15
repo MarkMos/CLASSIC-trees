@@ -1319,6 +1319,66 @@ def get_tree_vals(
     free(this_node)
     return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
 
+def get_tree_vals_FoF(
+    int i,
+    int i_seed_0,
+    double m_0,
+    double a_0,
+    double m_min,
+    double m_res,
+    double[:] w_lev,
+    double[:] a_lev,
+    int n_lev,
+    int n_frag_max,
+    int n_frag_tot=0):
+    '''
+    Function that builds the merger tree and returns the data that is needed for a later analysis.
+    ---------------------
+    Input:
+        i         : Number of tree produced now
+        i_seed_0  : Used for seed to generate random numbers
+        m_0       : Mass of the FoF-group at the beginning of the current tree (also base node mass)
+        a_0       : Value of scale factor today or up to which time the tree should be calculated
+        m_min     : Minimum mass of the FoF-group; scale at which the mass is not resolveable
+        m_res     : Mass resolution for the subhalos within the FoF-group
+        a_lev     : Array of the different times for which to take snapshots of the tree
+        n_lev     : Number of time levels
+        n_frag_max: Maximum number of halos in one tree
+        n_frag_tot: Start of counter of nodes inside the tree
+    ----------------------
+    Output:
+        count     : Counter that counts the length/number of nodes in the tree
+        arr_mhalo : Array of masses of the different halos inside the tree
+        arr_nodid : Array of node ID's inside the tree
+        arr_treeid: Array of the tree's ID
+        arr_time  : Array of the time levels of the different nodes
+        arr_1prog : Array of the first progenitor of the different nodes
+        arr_desc  : Array of the descandents of the different nodes
+    '''
+
+    i_seed_0 -=19*(1+i)
+    cdef:
+        int i_seed = i_seed_0
+        Tree_Node** merger_tree_FoF
+        Tree_Node* this_node_FoF
+        int count = 0
+        double[:] m_halo
+        int n_halos
+    srand(i_seed)
+
+    merger_tree = make_tree(m_0,a_0,m_min,w_lev,n_lev,n_frag_max,n_frag_tot)
+
+    m_halo[0] = m_cen_of_FoF(m_0)
+    n_halos = n_subs_in_FoF(m_0)
+
+    # Routine to get the rest of the masses for this FoF-group
+
+cdef double m_cen_of_FoF(double m):
+    return m*np.random.random()
+
+cdef int n_subs_in_FoF(double m):
+    return int(round(0.85+(m/5e11)**(9.2/10)))
+
 cdef class random_masses:
     cdef double delta_c
     cdef int n
