@@ -176,6 +176,8 @@ cdef struct Tree_Node:
     int nchild
     int index
     double mhalo
+    double[3] pos
+    double[3] velo
 
 
 cdef Tree_Node* walk_tree(Tree_Node* this_node):
@@ -213,6 +215,83 @@ cdef double halo_Vmax(double mass):
     return val + random.gauss(0,0.1)*val
 
 cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
+    '''
+    Function to count the number of nodes in a merger tree and get values out of it.
+    ----------------------
+    Input:
+        i          : the level of the tree worked with in this call
+        this_node  : the node where to start counting (best use to start with the base node)
+        n_halo_max : maximum size of the merger tree
+        merger_tree: list of the nodes of the given merger tree
+    ----------------------
+    Output:
+        count     : the number of nodes inside the tree
+        arr_halo  : the masses of the different nodes
+        arr_nodid : the nodes id
+        arr_treeid: the id of the tree
+        arr_time  : the time level of the nodes
+        arr_1prog : first progenitor of the nodes (-1 is no first progenitor)
+        arr_desc  : descandant of the nodes (-1 is no descandant)
+    '''
+    cdef:
+        int count = 0
+        double* arr_mhalo = NULL
+        double* arr_Vmax = NULL
+        int* arr_nodid = NULL
+        int* arr_treeid = NULL
+        int* arr_time = NULL
+        int* arr_1prog = NULL
+        int* arr_desc = NULL
+        int* arr_nextprog = NULL
+        int node_ID
+        bint malloc_failed = 0 # checks if the allocation of the above pointers worked
+
+    arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
+    arr_Vmax = <double*>malloc(n_halo_max*sizeof(double))
+    arr_nodid = <int*>malloc(n_halo_max*sizeof(int))
+    arr_treeid = <int*>malloc(n_halo_max*sizeof(int))
+    arr_time = <int*>malloc(n_halo_max*sizeof(int))
+    arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
+    arr_desc = <int*>malloc(n_halo_max*sizeof(int))
+    arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
+    if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog):
+        malloc_failed = 1
+    if malloc_failed:
+        raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
+    while this_node is not NULL:
+        node_ID = this_node.index
+        arr_nodid[node_ID] = node_ID
+        arr_mhalo[node_ID] = this_node.mhalo
+        arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
+        arr_treeid[node_ID]= i
+        arr_time[node_ID]  = this_node.jlevel
+        if this_node.child is not NULL:
+            if this_node.nchild > 1:
+                arr_nextprog[node_ID] = this_node.child.sibling.index
+            else:
+                arr_nextprog[node_ID] = -1
+            arr_1prog[node_ID] = this_node.child.index
+        else:
+            arr_1prog[node_ID] = -1
+            arr_nextprog[node_ID] = -1
+        if this_node.parent is not NULL:
+            arr_desc[node_ID] = this_node.parent.index
+        else:
+            arr_desc[node_ID] = -1
+        count +=1
+        this_node = walk_tree(this_node)
+    
+    np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
+    np_arr_Vmax = np.array([arr_Vmax[j] for j in range(count)])
+    np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
+    np_arr_treeid= np.array([arr_treeid[j] for j in range(count)],dtype='int_')
+    np_arr_time  = np.array([arr_time[j] for j in range(count)],dtype='int_')
+    np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
+    np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
+    np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
+    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog)
+
+cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
     '''
     Function to count the number of nodes in a merger tree and get values out of it.
     ----------------------
@@ -379,7 +458,7 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node,Tree_Node** merger_tre
             merger_tree[i_frag].sibling = merger_tree[i_frag + 1]
     return merger_tree
 '''
-cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
+cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode):
     '''
     Function to go through the whole merger tree and build the siblings of each node.
     ----------------------
@@ -391,10 +470,15 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot):
         merger_tree: Updated merger tree
     '''
     cdef int i
-    for i in range(n_frag_tot):
-        merger_tree = build_FoFs(merger_tree,merger_tree[i])
-    for i in range(n_frag_tot):
-        merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
+    if mode=='FoF':
+        for i in range(n_frag_tot):
+            # merger_tree = build_FoFs(merger_tree,merger_tree[i])
+            merger_tree[i].FirstInFoF = merger_tree[i]
+        for i in range(n_frag_tot):
+            merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
+    else:
+        for i in range(n_frag_tot):
+            merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
     return merger_tree
 
 cdef int number_of_subs(double m):
@@ -952,7 +1036,7 @@ cdef int* indexsh(int n,double* arr,int* indx):
                         done3 = True
     return indx
 
-cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot=0):
+cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[3] pos_base,double[3] vel_base):
     '''
     Function to make the merger tree of a certain mass.
     ----------------------
@@ -1247,7 +1331,10 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] w_lev,in
     '''
     
     # Build the siblings, also in decreasing mass order        
-    merger_tree = build_sibling(merger_tree,n_frag_tot)
+    merger_tree = build_sibling(merger_tree,n_frag_tot,mode)
+
+    merger_tree = pos_and_velo(merger_tree,n_frag_tot,pos_base,vel_base,a_lev)
+
     free(i_par)
     free(i_sib)
     free(i_child)
@@ -1266,7 +1353,9 @@ def get_tree_vals(
     double[:] a_lev,
     int n_lev,
     int n_frag_max,
-    int n_frag_tot=0):
+    int n_frag_tot=0,
+    double[3] pos_base = [0,0,0],
+    double[3] vel_base = [0,0,0]):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1299,11 +1388,11 @@ def get_tree_vals(
         int count = 0
     srand(i_seed)
     #print('Going into make_tree')
-    merger_tree = make_tree(m_0,a_0,m_min,w_lev,n_lev,n_frag_max,n_frag_tot)
+    merger_tree = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
 
     #print('Made a tree ',i+1)
     this_node = merger_tree[0]
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -1317,7 +1406,7 @@ def get_tree_vals(
         print('No Progenitors.')
     free(merger_tree)
     free(this_node)
-    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
+    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog
 
 def get_tree_vals_FoF(
     int i,
@@ -1330,7 +1419,9 @@ def get_tree_vals_FoF(
     double[:] a_lev,
     int n_lev,
     int n_frag_max,
-    int n_frag_tot=0):
+    int n_frag_tot=0,
+    double[3] pos_base = [0,0,0],
+    double[3] vel_base = [0,0,0]):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1362,14 +1453,15 @@ def get_tree_vals_FoF(
         Tree_Node** merger_tree_FoF
         Tree_Node* this_node_FoF
         int count = 0
-        double[:] m_halo
         int n_halos
     srand(i_seed)
 
-    merger_tree = make_tree(m_0,a_0,m_min,w_lev,n_lev,n_frag_max,n_frag_tot)
+    merger_tree = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
 
-    m_halo[0] = m_cen_of_FoF(m_0)
     n_halos = n_subs_in_FoF(m_0)
+
+    cdef double* m_halo = <double*>malloc(n_halos*sizeof(double))
+    m_halo[0] = m_cen_of_FoF(m_0)
 
     # Routine to get the rest of the masses for this FoF-group
 
@@ -1378,6 +1470,73 @@ cdef double m_cen_of_FoF(double m):
 
 cdef int n_subs_in_FoF(double m):
     return int(round(0.85+(m/5e11)**(9.2/10)))
+
+cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[3] pos_base,double[3] vel_base,double[:] a_lev):
+    cdef double timestep
+    cdef Tree_Node* this_node
+    cdef int i
+
+    merger_tree[0].pos = pos_base
+    merger_tree[0].velo = vel_base
+    for i in range(1,n_frag_tot):
+        this_node = merger_tree[i]
+        timestep =  a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel]
+        if this_node.FirstInFoF==this_node:
+            this_node.pos = velo_routine(this_node,timestep,'pos','cen')
+            this_node.velo = velo_routine(this_node,timestep,'velo','cen')
+        else:
+            this_node.pos = velo_routine(this_node,timestep,'pos','sat')
+            this_node.velo = velo_routine(this_node,timestep,'velo','sat')
+        merger_tree[this_node.index] = this_node
+    return merger_tree
+
+cdef double[3] velo_routine(Tree_Node* this_node,double timestep,str mode,str halo_type):
+    # some routine incoming
+    cdef double[3] adding,temp_velo,temp_pos
+    cdef double scale
+    cdef int i
+    if halo_type=='cen' and mode=='pos':
+        temp_pos = this_node.parent.pos
+        for i in range(3):
+            adding[i] = this_node.parent.velo[i]*timestep*np.random.random()
+            if np.random.random()<0.01:
+                adding[i] = -adding[i]
+            temp_pos[i] += adding[i]
+        return temp_pos
+    elif halo_type=='cen' and mode=='velo':
+        scale = np.random.random()
+        while scale >0.4:
+            scale = np.random.random()
+        temp_velo = this_node.parent.velo
+        for i in range(3):
+            temp_velo[i] += this_node.parent.velo[i]*scale
+        return temp_velo
+    elif halo_type=='sat' and mode=='pos':
+        temp_pos = satelite_pos_velo(this_node,'pos')
+        for i in range(3):
+            temp_pos[i] += this_node.FirstInFoF.pos[i]
+        return temp_pos
+    else:
+        temp_velo = satelite_pos_velo(this_node,'velo')
+        for i in range(3):
+            temp_velo[i] += this_node.FirstInFoF.velo[i]
+        return temp_velo 
+
+cdef double[3] satelite_pos_velo(Tree_Node* this_node,str mode):
+    if mode=='pos':
+        if this_node.mhalo/this_node.FirstInFoF.mhalo < 1/2:
+            return np.random.random(size=3)
+        else:
+            return 1e-2*np.random.random(size=3)
+    else:
+        random_number = np.random.random()
+        if random_number<0.6:
+            dirr = 1
+        elif 0.6<random_number<0.61:
+            dirr = -1
+        else:
+            dirr = 0
+        return dirr*(this_node.FirstInFoF.pos-this_node.pos)*np.random.random() + np.random.random(size=3)
 
 cdef class random_masses:
     cdef double delta_c
