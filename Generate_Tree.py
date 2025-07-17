@@ -3,7 +3,7 @@
 # from Moving_in_Tree import *
 # from Delta_crit import *
 # from sigma_cdm_func import *
-from classic_trees import functions, get_tree_vals
+from classic_trees import functions, get_tree_vals, get_tree_vals_FoF
 # from random_masses import ppf_PS, ppf_ST
 import numpy as np
 import h5py
@@ -32,13 +32,16 @@ def compute_tree(mass,
                  BoxSize = 479.0,
                  n_lev = 10,
                  m_res = 1e8,
+                 m_min = 1e11,
                  n_tree = 1,
                  n_halo = 1,
                  i_seed_0 = -8635,
                  a_halo = 1,
                  z_max = 4,
                  times = 'equal a',
-                 mode = 'FoF'):
+                 mode = 'FoF',
+                 pos_base = np.array([0,0,0],dtype=np.float64),
+                 vel_base = np.array([0,0,0],dtype=np.float64)):
     '''
     Function to call the routines of classic_trees for small numbers of trees to 
     compute. Ideally to see what different starting values yield.
@@ -119,12 +122,12 @@ def compute_tree(mass,
             
     start_offset = 0
     nth_run = False
-    if mode=='FoF':
+    if mode!='FoF':
         for i in range(n_tree):
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
             else:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
             if file_name!=None:    
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
@@ -146,6 +149,8 @@ def compute_tree(mass,
                     append_create_dataset(grp1,'SnapNum',arr_time)
                     append_create_dataset(grp1,'mass',data=arr_mhalo)
                     append_create_dataset(grp1,'SubhaloVmax',arr_Vmax)
+                    append_create_dataset(grp1,'SubhaloPos',arr_pos)
+                    append_create_dataset(grp1,'SubhaloVelo',arr_velo)
                     append_create_dataset(grp1,'TreeDescendant',arr_desc)
                     append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
                     append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
@@ -171,9 +176,9 @@ def compute_tree(mass,
     else:
         for i in range(n_tree):
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
             else:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
             if file_name!=None:    
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
