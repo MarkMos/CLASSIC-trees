@@ -120,7 +120,9 @@ class trees:
                      a_halo = 1,
                      z_max = 4,
                      times = 'equal a',
-                     mode='FoF'):
+                     mode ='FoF',
+                     pos_base = np.array([0,0,0],dtype=np.float64),
+                     vel_base = np.array([10,10,10],dtype=np.float64)):
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
@@ -131,4 +133,4 @@ class trees:
         h_0 = self.h_0
         from Generate_Tree import compute_tree
         compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
-                     n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode)
+                     m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base)
