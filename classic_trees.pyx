@@ -176,8 +176,8 @@ cdef struct Tree_Node:
     int nchild
     int index
     double mhalo
-    double[3] pos
-    double[3] velo
+    double pos[3]
+    double velo[3]
 
 
 cdef Tree_Node* walk_tree(Tree_Node* this_node):
@@ -243,7 +243,9 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_1prog = NULL
         int* arr_desc = NULL
         int* arr_nextprog = NULL
-        int node_ID
+        double** arr_pos = NULL
+        double** arr_velo = NULL
+        int node_ID, j, k
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
 
     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
@@ -254,17 +256,31 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     arr_1prog = <int*>malloc(n_halo_max*sizeof(int))
     arr_desc = <int*>malloc(n_halo_max*sizeof(int))
     arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
-    if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog):
+    arr_pos = <double**>malloc(n_halo_max*sizeof(double*))
+    arr_velo = <double**>malloc(n_halo_max*sizeof(double*))
+    for j in range(n_halo_max):
+        arr_pos[j] = <double*>malloc(3*sizeof(double))
+        arr_velo[j] = <double*>malloc(3*sizeof(double))
+    #print('Also here')
+    if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_pos and arr_velo):
         malloc_failed = 1
     if malloc_failed:
         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
     while this_node is not NULL:
+        #print('Got in the while-Loop')
         node_ID = this_node.index
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
         arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
         arr_treeid[node_ID]= i
         arr_time[node_ID]  = this_node.jlevel
+        for j in range(3):
+            #print('In for loop')
+            #print(this_node.pos[j])
+            arr_pos[node_ID][j] = this_node.pos[j]
+            #print(this_node.pos[j])
+            arr_velo[node_ID][j] = this_node.velo[j]
+            #print(this_node.velo[j])
         if this_node.child is not NULL:
             if this_node.nchild > 1:
                 arr_nextprog[node_ID] = this_node.child.sibling.index
@@ -289,7 +305,14 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     np_arr_1prog = np.array([arr_1prog[j] for j in range(count)],dtype='int_')
     np_arr_desc  = np.array([arr_desc[j] for j in range(count)],dtype='int_')
     np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
-    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog)
+    np_arr_pos = np.zeros((count,3))-1
+    np_arr_velo = np.zeros((count,3))-1
+    for j in range(count):
+        np_arr_pos[j] = [arr_pos[j][k] for k in range(3)]
+        np_arr_velo[j] = [arr_velo[j][k] for k in range(3)]
+    #np_arr_pos = np.array(np_arr_pos)
+    #np_arr_velo = np.array(np_arr_velo)
+    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_pos,np_arr_velo)
 
 cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
     '''
@@ -477,6 +500,8 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode):
         for i in range(n_frag_tot):
             merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
     else:
+        for i in range(n_frag_tot):
+            merger_tree[i].FirstInFoF = merger_tree[i]
         for i in range(n_frag_tot):
             merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
     return merger_tree
@@ -1036,7 +1061,7 @@ cdef int* indexsh(int n,double* arr,int* indx):
                         done3 = True
     return indx
 
-cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[3] pos_base,double[3] vel_base):
+cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[:] pos_base,double[:] vel_base):
     '''
     Function to make the merger tree of a certain mass.
     ----------------------
@@ -1334,12 +1359,11 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
     merger_tree = build_sibling(merger_tree,n_frag_tot,mode)
 
     merger_tree = pos_and_velo(merger_tree,n_frag_tot,pos_base,vel_base,a_lev)
-
+    # print('Outside! Finally!')
     free(i_par)
     free(i_sib)
     free(i_child)
     free(node)
-
     i_err = 0
     return merger_tree
 
@@ -1353,9 +1377,9 @@ def get_tree_vals(
     double[:] a_lev,
     int n_lev,
     int n_frag_max,
-    int n_frag_tot=0,
-    double[3] pos_base = [0,0,0],
-    double[3] vel_base = [0,0,0]):
+    int n_frag_tot,
+    double[:] pos_base,
+    double[:] vel_base):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1390,9 +1414,9 @@ def get_tree_vals(
     #print('Going into make_tree')
     merger_tree = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
 
-    #print('Made a tree ',i+1)
+    # print('Made a tree ',i+1)
     this_node = merger_tree[0]
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -1406,7 +1430,7 @@ def get_tree_vals(
         print('No Progenitors.')
     free(merger_tree)
     free(this_node)
-    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog
+    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo
 
 def get_tree_vals_FoF(
     int i,
@@ -1419,9 +1443,9 @@ def get_tree_vals_FoF(
     double[:] a_lev,
     int n_lev,
     int n_frag_max,
-    int n_frag_tot=0,
-    double[3] pos_base = [0,0,0],
-    double[3] vel_base = [0,0,0]):
+    int n_frag_tot,
+    double[:] pos_base,
+    double[:] vel_base):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1471,64 +1495,98 @@ cdef double m_cen_of_FoF(double m):
 cdef int n_subs_in_FoF(double m):
     return int(round(0.85+(m/5e11)**(9.2/10)))
 
-cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[3] pos_base,double[3] vel_base,double[:] a_lev):
+cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev):
+    # print('In pos_and_velo')
     cdef double timestep
     cdef Tree_Node* this_node
-    cdef int i
-
-    merger_tree[0].pos = pos_base
-    merger_tree[0].velo = vel_base
+    cdef int i,j
+    cdef double[:] temp_pos,temp_velo
+    for j in range(3):
+        merger_tree[0].pos[j] = pos_base[j]
+        merger_tree[0].velo[j] = vel_base[j]
     for i in range(1,n_frag_tot):
+        # print('Here we are at',i)
         this_node = merger_tree[i]
         timestep =  a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel]
         if this_node.FirstInFoF==this_node:
-            this_node.pos = velo_routine(this_node,timestep,'pos','cen')
-            this_node.velo = velo_routine(this_node,timestep,'velo','cen')
+            # print('We are here!',i)
+            temp_pos = velo_routine(this_node,timestep,'pos','cen')
+            temp_velo = velo_routine(this_node,timestep,'velo','cen')
+            for j in range(3):
+                # print('Working for',j+1)
+                this_node.pos[j] = temp_pos[j]
+                # print(this_node.pos[j])
+                this_node.velo[j] = temp_velo[j]
+                # print(this_node.velo[j])
         else:
-            this_node.pos = velo_routine(this_node,timestep,'pos','sat')
-            this_node.velo = velo_routine(this_node,timestep,'velo','sat')
-        merger_tree[this_node.index] = this_node
+            temp_pos = velo_routine(this_node,timestep,'pos','sat')
+            temp_velo = velo_routine(this_node,timestep,'velo','sat')
+            for j in range(3):
+                this_node.pos[j] = temp_pos[j]
+                this_node.velo[j] = temp_velo[j]
+        # print('Our merger tree is here',i/n_frag_tot*100,' % of ',n_frag_tot) 
+        # print(merger_tree[i].mhalo,' = ',this_node.mhalo)
+        merger_tree[i] = this_node
+        # print('Still here!')
     return merger_tree
 
-cdef double[3] velo_routine(Tree_Node* this_node,double timestep,str mode,str halo_type):
+cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str halo_type):
+    # print('In velo_routine')
     # some routine incoming
-    cdef double[3] adding,temp_velo,temp_pos
+    cdef double[:] temp_velo,temp_pos
+    cdef double adding[3]
     cdef double scale
     cdef int i
     if halo_type=='cen' and mode=='pos':
         temp_pos = this_node.parent.pos
+        # print(temp_pos[0],' position')
         for i in range(3):
             adding[i] = this_node.parent.velo[i]*timestep*np.random.random()
             if np.random.random()<0.01:
                 adding[i] = -adding[i]
             temp_pos[i] += adding[i]
+        # print(temp_pos[0],' after')
         return temp_pos
     elif halo_type=='cen' and mode=='velo':
         scale = np.random.random()
         while scale >0.4:
             scale = np.random.random()
         temp_velo = this_node.parent.velo
+        # print(temp_velo[0],' velocity')
         for i in range(3):
             temp_velo[i] += this_node.parent.velo[i]*scale
+        # print(temp_velo[0],' after')
         return temp_velo
     elif halo_type=='sat' and mode=='pos':
+        # print('In here')
         temp_pos = satelite_pos_velo(this_node,'pos')
         for i in range(3):
             temp_pos[i] += this_node.FirstInFoF.pos[i]
         return temp_pos
     else:
+        # print('Now in else')
         temp_velo = satelite_pos_velo(this_node,'velo')
         for i in range(3):
             temp_velo[i] += this_node.FirstInFoF.velo[i]
         return temp_velo 
 
-cdef double[3] satelite_pos_velo(Tree_Node* this_node,str mode):
+cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode):
+    # print('In satelite_pos_velo')
+    cdef int i,dirr
+    cdef double random_number
+    cdef double[:] temp_arr
     if mode=='pos':
+        temp_arr = this_node.parent.pos
         if this_node.mhalo/this_node.FirstInFoF.mhalo < 1/2:
-            return np.random.random(size=3)
+            for i in range(3):
+                temp_arr[i] = np.random.random()
+            return temp_arr
         else:
-            return 1e-2*np.random.random(size=3)
+            for i in range(3):
+                temp_arr[i] = 1e-2*np.random.random()
+            return temp_arr
     else:
+        temp_arr = this_node.parent.velo
         random_number = np.random.random()
         if random_number<0.6:
             dirr = 1
@@ -1536,7 +1594,9 @@ cdef double[3] satelite_pos_velo(Tree_Node* this_node,str mode):
             dirr = -1
         else:
             dirr = 0
-        return dirr*(this_node.FirstInFoF.pos-this_node.pos)*np.random.random() + np.random.random(size=3)
+        for i in range(3):
+            temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-this_node.pos[i])*np.random.random() + np.random.random()
+        return temp_arr
 
 cdef class random_masses:
     cdef double delta_c
