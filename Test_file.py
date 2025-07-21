@@ -340,7 +340,7 @@ from tqdm import tqdm
 
 import CLASSIC_trees as ct
 # import numpy as np
-from classic_trees import set_trees
+from classic_trees import set_trees, functions, random_masses
 
 # file = 'TreeTest_Positions.hdf5'
 a = np.array([0.0625423207,0.0697435265,0.0770403364,0.0819350757,0.0871408012,0.0935597132,0.0999766069,0.10532572,0.110961031,0.116345263,0.121414094,0.126703761,0.132223883,0.137332233,0.142637941,0.14814863,0.153872219,0.160575993,0.166779702,0.172404243,0.178218468,0.183357906,0.188645553,0.194085686,0.1996827,0.20544112,0.2113656,0.216432969,0.222674431,0.229095883,0.235702516,0.24249967,0.249492839,0.256687676,0.262841616,0.269143094,0.275595646,0.282202894,0.288968547,0.295896403,0.30299035,0.31025437,0.317692541,0.325309039,0.333108137,0.341094214,0.349271753,0.357645343,0.366219686,0.374999594,0.383989995,0.393195935,0.402622583,0.412275229,0.422159292,0.434333459,0.442643994,0.455408895,0.466327063,0.477506988,0.488954945,0.50067736,0.512680813,0.524972043,0.537557948,0.550445592,0.56364221,0.57715521,0.590992177,0.605160876,0.619669262,0.634525479,0.649737864,0.665314958,0.681265504,0.697598455,0.714322979,0.731448464,0.748984523,0.770583627,0.789057929,0.807975142,0.827345884,0.847181028,0.867491709,0.888289327,0.909585556,0.93139235,0.953721949,0.976586888,1.0])
@@ -351,10 +351,36 @@ a = a[::-1][:]
 tree = ct.trees()
 tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 set_trees(tree)
-tree.compute_slow(mass=1e15,m_res=1e11,mode='Normal')#,file_name=file)
+# tree.compute_slow(mass=1e15,m_res=1e11,mode='Normal')#,file_name=file)
+tree.compute_slow(mass=1e13,m_res=1e8,mode='FoF')#,file_name=file)
 # tree.compute_fast(random_mass='ST',times=a,file_name=file,n_part=500,n_tree=40)
 # tree.compute_fast(mass=1e14,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)
 
+# import time
+
+# start = time.time()
+
+# filename = './CLASSIC-trees/Data/flat.txt'
+# DELTA = functions(filename)
+# delta_c = DELTA.delta_crit(1)
+
+# ppf_ST = random_masses(delta_c).random_ST(1e8,1e16)
+
+# end = time.time()
+
+# print(f'Elapsed time: {end-start} seconds')
+
+# N = 10000000
+# u_ST = np.random.rand(N)
+# samples = ppf_ST(u_ST)
+
+# masses = np.geomspace(1e8,1e16,100)
+
+# plt.hist(samples,bins=masses,density=True)
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.grid()
+# plt.show()
 
 # f = h5py.File(file)
 
