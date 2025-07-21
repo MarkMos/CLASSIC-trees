@@ -5,10 +5,10 @@ import bisect
 import random
 #from CLASSIC_trees import trees
 #from values import omega_0, l_0, h_0, gamma_1, gamma_2, G_0, eps_1,eps_2, file_name_pk
-from scipy.integrate import simpson
+from scipy.integrate import simpson, cumulative_trapezoid
 from astropy.constants import G, M_sun, pc
 from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh, round
-from scipy.interpolate import UnivariateSpline, CubicSpline
+from scipy.interpolate import UnivariateSpline, interp1d, CubicSpline
 from libc.stdlib cimport malloc, free, rand, srand
 
 ctypedef np.float64_t DTYPE_t
@@ -494,9 +494,9 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode):
     '''
     cdef int i
     if mode=='FoF':
-        for i in range(n_frag_tot):
+        # for i in range(n_frag_tot):
             # merger_tree = build_FoFs(merger_tree,merger_tree[i])
-            merger_tree[i].FirstInFoF = merger_tree[i]
+            # merger_tree[i].FirstInFoF = merger_tree[i]
         for i in range(n_frag_tot):
             merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
     else:
@@ -1357,8 +1357,9 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
     
     # Build the siblings, also in decreasing mass order        
     merger_tree = build_sibling(merger_tree,n_frag_tot,mode)
+    if mode=='Normal':
+        merger_tree = pos_and_velo(merger_tree,n_frag_tot,pos_base,vel_base,a_lev)
 
-    merger_tree = pos_and_velo(merger_tree,n_frag_tot,pos_base,vel_base,a_lev)
     # print('Outside! Finally!')
     free(i_par)
     free(i_sib)
@@ -1477,23 +1478,47 @@ def get_tree_vals_FoF(
         Tree_Node** merger_tree_FoF
         Tree_Node* this_node_FoF
         int count = 0
-        int n_halos
+        int n_halos, j
+        double mass_sum = m_0+1
+        np.ndarray mass_temp
     srand(i_seed)
+    # np.random.seed(i_seed)
+    merger_tree_FoF = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
 
-    merger_tree = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
+    print('Number of nodes in FoF-group tree',i+1,'is',count)
+
+    print('Example information from FoF-group tree:')
+    this_node = merger_tree_FoF[0]
+    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    if count>1:
+        this_node = this_node.child
+        print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print('No Progenitors.')
 
     n_halos = n_subs_in_FoF(m_0)
-
-    cdef double* m_halo = <double*>malloc(n_halos*sizeof(double))
+    print('Number of subhalos in first FoF-group: ',n_halos)
+    cdef double* m_halo = <double*>malloc((n_halos+1)*sizeof(double))
     m_halo[0] = m_cen_of_FoF(m_0)
 
-    # Routine to get the rest of the masses for this FoF-group
+    if n_halos>=1:
+        ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
+
+        # Routine to get the rest of the masses for this FoF-group
+        while mass_sum>m_0 or mass_sum<0.8*m_0:
+            mass_temp = ppf_ST(np.random.rand(n_halos))
+            mass_sum = m_halo[0] + np.sum(mass_temp)
+        for j in range(n_halos):
+            m_halo[j+1] = mass_temp[j]
+    cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos+1)*sizeof(Tree_Node**))
+    for j in range(n_halos+1):
+        merger_trees[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
 
 cdef double m_cen_of_FoF(double m):
     return m*np.random.random()
 
 cdef int n_subs_in_FoF(double m):
-    return int(round(0.85+(m/5e11)**(9.2/10)))
+    return int(round(0.85+(m/1e11)**(9.2/10)))
 
 cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev):
     # print('In pos_and_velo')
@@ -1604,6 +1629,7 @@ cdef class random_masses:
     cdef double p
     cdef double q
     cdef double A_p
+    cdef sig_alph SigAlph
 
     def __init__(self,double d_c):
         self.delta_c = d_c
@@ -1611,18 +1637,47 @@ cdef class random_masses:
         self.p = 0.3
         self.q = 0.75
         self.A_p = 0.3222
+        self.SigAlph = sig_alph(trees)
     
-    def dln_nu_dln_m(self,double m):
-        return 4*log(self.delta_c)*sig_alph(trees).alpha(m)
+    cdef double dln_nu_dln_m(self,double m):
+        return 4*log(self.delta_c)*self.SigAlph.alpha(m)
     
     def ST_func(self,double m):
         cdef double nu, nu_f_ST
-        nu = self.delta_c**2/sig_alph(trees).sigma_cdm(m)**2
+        nu = self.delta_c**2/self.SigAlph.sigma_cdm(m)**2
         nu_f_ST = self.A_p*(1+(self.q*nu)**(-self.p))*np.sqrt((self.q*nu)/(2*np.pi))*np.exp(-(self.q*nu)/2)
         return 1/(m**2)*nu_f_ST*self.dln_nu_dln_m(m)
     
     def PS_func(self,double m):
         cdef double nu, nu_f_PS
-        nu = self.delta_c**2/(sig_alph(trees).sigma_cdm(m))**2
+        nu = self.delta_c**2/(self.SigAlph.sigma_cdm(m))**2
         nu_f_PS = np.sqrt(nu/(2*np.pi))*np.exp(-nu/2)
         return 1/(m**2)*nu_f_PS*self.dln_nu_dln_m(m)
+
+    def random_ST(self,double m_min,double m_max,int n=100):
+        cdef np.ndarray masses = np.geomspace(m_min,m_max,n,dtype=np.float64)
+        cdef int i
+        cdef np.ndarray temp_ST = np.zeros(n) 
+        cdef np.ndarray cdf_ST
+
+        for i in range(n):
+            temp_ST[i] = self.ST_func(masses[i])
+        
+        cdf_ST = cumulative_trapezoid(temp_ST,masses,initial=0)
+        cdf_ST /= cdf_ST[-1]
+
+        return interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(m_min,m_max))
+
+    def random_PS(self,double m_min,double m_max,int n=100):
+        cdef np.ndarray masses = np.geomspace(m_min,m_max,n,dtype=np.float64)
+        cdef int i
+        cdef np.ndarray temp_PS = np.zeros(n) 
+        cdef np.ndarray cdf_PS
+
+        for i in range(n):
+            temp_PS[i] = self.PS_func(masses[i])
+        
+        cdf_PS = cumulative_trapezoid(temp_PS,masses,initial=0)
+        cdf_PS /= cdf_PS[-1]
+
+        return interp1d(cdf_PS,masses,kind='cubic',bounds_error=False,fill_value=(m_min,m_max))
