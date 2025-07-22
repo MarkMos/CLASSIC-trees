@@ -126,8 +126,6 @@ class trees:
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
-        if mode=='FoF':
-            m_res = m_min
         omega_0 = self.omega_0
         l_0 = self.l_0
         h_0 = self.h_0
