@@ -9,7 +9,7 @@ from scipy.integrate import simpson, cumulative_trapezoid
 from astropy.constants import G, M_sun, pc
 from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh, round
 from scipy.interpolate import UnivariateSpline, interp1d, CubicSpline
-from libc.stdlib cimport malloc, free, rand, srand
+from libc.stdlib cimport malloc, realloc, free, rand, srand
 
 ctypedef np.float64_t DTYPE_t
 DTYPE = np.float64
@@ -296,7 +296,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
             arr_desc[node_ID] = -1
         count +=1
         this_node = walk_tree(this_node)
-    
+
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
     np_arr_Vmax = np.array([arr_Vmax[j] for j in range(count)])
     np_arr_nodid = np.array([arr_nodid[j] for j in range(count)],dtype='int_')
@@ -969,7 +969,6 @@ cdef split_result split(
     res.m_min_last = m_min_last
     return res
 
-
 cdef locate(double[:] xx,int n,double x):
     # Function to locate an element x inside a pointer xx of size n
     cdef int jl = 0
@@ -982,7 +981,7 @@ cdef locate(double[:] xx,int n,double x):
         else:
             ju = jm
     return int(jl-1)
-
+'''
 cdef int n_switch = 60
 cdef double tiny = 1e-5
 cdef double aln2I = 1.0/log(2.0)
@@ -995,9 +994,9 @@ cdef int* indexxx(int n,double* arr,int* indx):
     return indx
 
 cdef int* indexx(int n,double* arr,int* indx):
-    '''
-    Indexing or array arr[n] using numerical recipes heapsort.
-    '''
+    
+    # Indexing or array arr[n] using numerical recipes heapsort.
+    
     cdef int l,ir,idnxt
     cdef double q
     if n <= 1:
@@ -1032,9 +1031,9 @@ cdef int* indexx(int n,double* arr,int* indx):
     return indx
  
 cdef int* indexsh(int n,double* arr,int* indx):
-    '''
-    Indexing or array arr[n] using shell sort.
-    '''
+    
+    # Indexing or array arr[n] using shell sort.
+    
     cdef int m,log_nb2,k,i,j,t_index,n_n
     for i in range(n):
         indx[i] = i
@@ -1060,7 +1059,7 @@ cdef int* indexsh(int n,double* arr,int* indx):
                     else:
                         done3 = True
     return indx
-
+'''
 cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[:] pos_base,double[:] vel_base):
     '''
     Function to make the merger tree of a certain mass.
@@ -1081,7 +1080,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
     n_v = int(n_frag_max/5)
     cdef:
         split_result split_fct
-        Tree_Node** merger_tree = <Tree_Node**>malloc(n_frag_max*sizeof(Tree_Node*))
         Tree_Node* node
         sig_alph Sig
         int i_err = 0
@@ -1113,17 +1111,6 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
     n_frag_tot = 0
     Sig = sig_alph(trees)
     for i_frag in range(n_frag_max):
-        node = <Tree_Node*>malloc(sizeof(Tree_Node))
-        node.mhalo = 0.0
-        node.jlevel = 0
-        node.nchild = 0
-        node.index  = i_frag
-        node.parent = NULL
-        node.child  = NULL
-        node.sibling= NULL
-        node.FirstInFoF= NULL
-        node.NextInFoF = NULL
-        merger_tree[i_frag] = node
         m_tr[i_frag] = 0
 
     for i_lev in range(n_lev):
@@ -1242,7 +1229,21 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
                 m_left[i_node] = -1
 
     n_frag_tot = i_frag # Number of nodes in merger tree - 1
-    
+
+    cdef Tree_Node** merger_tree = <Tree_Node**>malloc((n_frag_tot+2)*sizeof(Tree_Node*))
+
+    for i_frag in range(n_frag_tot+2):
+        node = <Tree_Node*>malloc(sizeof(Tree_Node))
+        node.mhalo = 0.0
+        node.jlevel = 0
+        node.nchild = 0
+        node.index  = i_frag
+        node.parent = NULL
+        node.child  = NULL
+        node.sibling= NULL
+        node.FirstInFoF= NULL
+        node.NextInFoF = NULL
+        merger_tree[i_frag] = node
     # Asigning the parents of nodes in the merger tree, as well as masses
     # and time-level
     for i_lev_wk in range(n_lev):
@@ -1360,11 +1361,22 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
     if mode=='Normal':
         merger_tree = pos_and_velo(merger_tree,n_frag_tot,pos_base,vel_base,a_lev)
 
-    # print('Outside! Finally!')
+    # Free allocated memory
     free(i_par)
     free(i_sib)
     free(i_child)
     free(node)
+    free(i_frag_lev)
+    free(m_prog)
+    free(child_ref)
+    free(j_index)
+    free(m_tr)
+    free(n_frag_lev)
+    free(jp_frag)
+    free(m_left)
+    free(m_right)
+    free(w_node)
+    free(l_node)
     i_err = 0
     return merger_tree
 
@@ -1495,6 +1507,8 @@ def get_tree_vals_FoF(
         print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     else:
         print('No Progenitors.')
+    
+    free(this_node)
 
     n_halos = n_subs_in_FoF(m_0)
     print('Number of subhalos in first FoF-group: ',n_halos)
@@ -1508,6 +1522,8 @@ def get_tree_vals_FoF(
         while mass_sum>m_0 or mass_sum<0.8*m_0:
             mass_temp = ppf_ST(np.random.rand(n_halos))
             mass_sum = m_halo[0] + np.sum(mass_temp)
+            # count +=1
+        # print(count)
         for j in range(n_halos):
             m_halo[j+1] = mass_temp[j]
     cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos+1)*sizeof(Tree_Node**))
@@ -1515,10 +1531,23 @@ def get_tree_vals_FoF(
         merger_trees[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
 
 cdef double m_cen_of_FoF(double m):
-    return m*np.random.random()
+    if m<2e12:
+        m_cen = m*np.random.uniform(0.6,1)
+    else:
+        m_cen = m*np.random.uniform(0.3,1)
+    return m_cen
 
 cdef int n_subs_in_FoF(double m):
-    return int(round(0.85+(m/1e11)**(9.2/10)))
+    n_subs = int(round(0.85+(m/1e11)**(9.2/10)))
+    if m<1e11:
+        if np.random.random()>0.7:
+            n_subs +=1
+    else:
+        if np.random.random()<0.5:
+            n_subs += np.random.uniform(0,0.4)*n_subs
+        else:
+            n_subs -= np.random.uniform(0,0.5)*n_subs
+    return int(n_subs)
 
 cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev):
     # print('In pos_and_velo')
