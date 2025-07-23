@@ -310,11 +310,20 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     for j in range(count):
         np_arr_pos[j] = [arr_pos[j][k] for k in range(3)]
         np_arr_velo[j] = [arr_velo[j][k] for k in range(3)]
-    #np_arr_pos = np.array(np_arr_pos)
-    #np_arr_velo = np.array(np_arr_velo)
+
+    free(arr_mhalo)
+    free(arr_Vmax)
+    free(arr_nodid)
+    free(arr_treeid)
+    free(arr_time)
+    free(arr_1prog)
+    free(arr_desc)
+    free(arr_nextprog)
+    free(arr_pos)
+    free(arr_velo)
     return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_pos,np_arr_velo)
 
-cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
+cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int* n_offset_arr,n_FoF_trees):
     '''
     Function to count the number of nodes in a merger tree and get values out of it.
     ----------------------
@@ -333,6 +342,7 @@ cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_No
         arr_1prog : first progenitor of the nodes (-1 is no first progenitor)
         arr_desc  : descandant of the nodes (-1 is no descandant)
     '''
+    print('In side node_vals_and_counter_FoF()')
     cdef:
         int count = 0
         double* arr_mhalo = NULL
@@ -346,7 +356,9 @@ cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_No
         int* arr_1FoF = NULL
         int* arr_nextFoF = NULL
         int node_ID
-        bint malloc_failed = 0 # checks if the allocation of the above pointers worked
+        int j
+        Tree_Node* this_node
+        bint malloc_failed = 0 # checks if the allocation of the above pointers worked   
 
     arr_mhalo = <double*>malloc(n_halo_max*sizeof(double))
     arr_Vmax = <double*>malloc(n_halo_max*sizeof(double))
@@ -358,40 +370,47 @@ cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_No
     arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
     arr_1FoF = <int*>malloc(n_halo_max*sizeof(int))
     arr_nextFoF = <int*>malloc(n_halo_max*sizeof(int))
+    print('Here')
     if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_1FoF and arr_nextFoF):
         malloc_failed = 1
     if malloc_failed:
         raise MemoryError('Failed to allocate memory for arrays in node_vals_counter function!')
-    while this_node is not NULL:
-        node_ID = this_node.index
-        arr_nodid[node_ID] = node_ID
-        arr_mhalo[node_ID] = this_node.mhalo
-        arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
-        arr_treeid[node_ID]= i
-        arr_time[node_ID]  = this_node.jlevel
-        if this_node.child is not NULL:
-            if this_node.nchild > 1:
-                arr_nextprog[node_ID] = this_node.child.sibling.index
+    for j in range(n_FoF_trees):
+        c = 0
+        this_node = merger_tree[count]
+        while this_node is not NULL and c<n_offset_arr[j]-1:
+            node_ID = this_node.index
+            # print(node_ID)
+            arr_nodid[node_ID] = node_ID
+            arr_mhalo[node_ID] = this_node.mhalo
+            arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
+            arr_treeid[node_ID]= i
+            arr_time[node_ID]  = this_node.jlevel
+            if this_node.child is not NULL:
+                if this_node.nchild > 1:
+                    arr_nextprog[node_ID] = this_node.child.sibling.index
+                else:
+                    arr_nextprog[node_ID] = -1
+                arr_1prog[node_ID] = this_node.child.index
             else:
+                arr_1prog[node_ID] = -1
                 arr_nextprog[node_ID] = -1
-            arr_1prog[node_ID] = this_node.child.index
-        else:
-            arr_1prog[node_ID] = -1
-            arr_nextprog[node_ID] = -1
-        if this_node.parent is not NULL:
-            arr_desc[node_ID] = this_node.parent.index
-        else:
-            arr_desc[node_ID] = -1
-        if this_node.FirstInFoF is not NULL:
-            arr_1FoF[node_ID] = this_node.FirstInFoF.index
-        else:
-            arr_1FoF[node_ID] = -1
-        if this_node.NextInFoF is not NULL:
-            arr_nextFoF[node_ID] = this_node.NextInFoF.index
-        else:
-            arr_nextFoF[node_ID] = -1
-        count +=1
-        this_node = walk_tree(this_node)
+            if this_node.parent is not NULL:
+                arr_desc[node_ID] = this_node.parent.index
+            else:
+                arr_desc[node_ID] = -1
+            if this_node.FirstInFoF is not NULL:
+                arr_1FoF[node_ID] = this_node.FirstInFoF.index
+            else:
+                arr_1FoF[node_ID] = -1
+            if this_node.NextInFoF is not NULL:
+                arr_nextFoF[node_ID] = this_node.NextInFoF.index
+            else:
+                arr_nextFoF[node_ID] = -1
+            count +=1
+            c += 1
+            this_node = walk_tree(this_node)
+    print('Out of loops!')
     
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
     np_arr_Vmax = np.array([arr_Vmax[j] for j in range(count)])
@@ -403,6 +422,17 @@ cdef node_vals_and_counter_FoF(int i,Tree_Node* this_node,int n_halo_max,Tree_No
     np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
     np_arr_1FoF = np.array([arr_1FoF[j] for j in range(count)],dtype='int_')
     np_arr_nextFoF = np.array([arr_nextFoF[j] for j in range(count)],dtype='int_')
+    
+    free(arr_mhalo)
+    free(arr_Vmax)
+    free(arr_nodid)
+    free(arr_treeid)
+    free(arr_time)
+    free(arr_1prog)
+    free(arr_desc)
+    free(arr_nextprog)
+    free(arr_1FoF)
+    free(arr_nextFoF)
     return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_1FoF,np_arr_nextFoF)
 
 cdef int tree_index(Tree_Node* node):
@@ -630,8 +660,8 @@ cdef class functions:
                 delta_c = delta_flat[0]*a_min/a
             else:
                 raise ValueError('delta_crit(): FATAL - look up tale only for a<1 \n a=',a)
-        #free(delta_flat)
-        #free(a_flat)
+        free(delta_flat)
+        free(a_flat)
         return delta_c
 cdef class sig_alph:
     cdef object trees
@@ -1060,7 +1090,7 @@ cdef int* indexsh(int n,double* arr,int* indx):
                         done3 = True
     return indx
 '''
-cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[:] pos_base,double[:] vel_base):
+cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[:] pos_base,double[:] vel_base):
     '''
     Function to make the merger tree of a certain mass.
     ----------------------
@@ -1170,7 +1200,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
                 print('Here!!!')
                 print(i_frag)
                 i_err = 1
-                return NULL
+                return NULL, i_err
 
             i_frag += 1     
             m_tr[i_frag] = m_prog[0]
@@ -1378,7 +1408,7 @@ cdef Tree_Node** make_tree(double m_0,double a_0,double m_min,double[:] a_lev,do
     free(w_node)
     free(l_node)
     i_err = 0
-    return merger_tree
+    return merger_tree,n_frag_tot+1
 
 def get_tree_vals(
     int i,
@@ -1425,7 +1455,7 @@ def get_tree_vals(
         int count = 0
     srand(i_seed)
     #print('Going into make_tree')
-    merger_tree = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
+    merger_tree,n_frag_tot = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
 
     # print('Made a tree ',i+1)
     this_node = merger_tree[0]
@@ -1490,12 +1520,12 @@ def get_tree_vals_FoF(
         Tree_Node** merger_tree_FoF
         Tree_Node* this_node_FoF
         int count = 0
-        int n_halos, j
+        int n_halos, j, k
         double mass_sum = m_0+1
         np.ndarray mass_temp
     srand(i_seed)
     # np.random.seed(i_seed)
-    merger_tree_FoF = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
+    merger_tree_FoF,count = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base)
 
     print('Number of nodes in FoF-group tree',i+1,'is',count)
 
@@ -1508,10 +1538,10 @@ def get_tree_vals_FoF(
     else:
         print('No Progenitors.')
     
-    free(this_node)
+    # free(this_node)
 
     n_halos = n_subs_in_FoF(m_0)
-    print('Number of subhalos in first FoF-group: ',n_halos)
+    print('Number of subhalos in first FoF-group: ',n_halos+1)
     cdef double* m_halo = <double*>malloc((n_halos+1)*sizeof(double))
     m_halo[0] = m_cen_of_FoF(m_0)
 
@@ -1526,10 +1556,60 @@ def get_tree_vals_FoF(
         # print(count)
         for j in range(n_halos):
             m_halo[j+1] = mass_temp[j]
-    cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos+1)*sizeof(Tree_Node**))
-    for j in range(n_halos+1):
-        merger_trees[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
 
+    cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos+1)*sizeof(Tree_Node**))
+    cdef int* n_offset_arr = <int*>malloc((n_halos+1)*sizeof(int))
+    cdef int n_offset_sum = 0
+    for j in range(n_halos+1):
+        merger_trees[j],n_offset_arr[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
+        n_offset_sum += n_offset_arr[j]
+    print('Calculation until here!',n_offset_sum)
+    cdef Tree_Node** merger_tree_subs = <Tree_Node**>malloc((n_offset_sum+1)*sizeof(Tree_Node*))
+    cdef int c = 0
+    for j in range(n_halos+1):
+        for k in range(n_offset_arr[j]):
+            merger_tree_subs[c] = merger_trees[j][k]
+            merger_tree_subs[c].index = c
+            c += 1
+    print('It worked')
+
+    
+    # merger_tree_subs[-1].mhalo = 0.0
+    # merger_tree_subs[-1].jlevel = 0
+    # merger_tree_subs[-1].nchild = 0
+    # merger_tree_subs[-1].index  = n_offset_sum+1
+    # merger_tree_subs[-1].parent = NULL
+    # merger_tree_subs[-1].child  = NULL
+    # merger_tree_subs[-1].sibling= NULL
+    # merger_tree_subs[-1].FirstInFoF= NULL
+    # merger_tree_subs[-1].NextInFoF = NULL
+    # free(merger_trees)
+
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_offset_arr,n_halos+1)
+
+    print('Number of nodes in FoF-group subhalo-tree',1,'is',count)
+
+    print('Example information from FoF-group subhalo-tree:')
+    this_node = merger_tree_subs[0]
+    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    if count>1:
+        this_node = this_node.child
+        print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print('No Progenitors.')
+
+    print('Number of nodes in FoF-group subhalo-tree',2,'is',count)
+
+    print('Example information from FoF-group subhalo-tree:')
+    this_node = merger_tree_subs[n_offset_arr[0]]
+    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    if this_node.nchild>0:
+        this_node = this_node.child
+        print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print('No Progenitors.')
+
+    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo
 cdef double m_cen_of_FoF(double m):
     if m<2e12:
         m_cen = m*np.random.uniform(0.6,1)
