@@ -370,7 +370,9 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int*
     arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
     arr_1FoF = <int*>malloc(n_halo_max*sizeof(int))
     arr_nextFoF = <int*>malloc(n_halo_max*sizeof(int))
-    print('Here')
+
+    np_arr_count = []
+
     if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_1FoF and arr_nextFoF):
         malloc_failed = 1
     if malloc_failed:
@@ -378,7 +380,7 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int*
     for j in range(n_FoF_trees):
         c = 0
         this_node = merger_tree[count]
-        while this_node is not NULL and c<n_offset_arr[j]-1:
+        while this_node is not NULL: # and c<n_offset_arr[j]-1:
             node_ID = this_node.index
             # print(node_ID)
             arr_nodid[node_ID] = node_ID
@@ -410,7 +412,7 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int*
             count +=1
             c += 1
             this_node = walk_tree(this_node)
-    print('Out of loops!')
+        np_arr_count.append(c)
     
     np_arr_mhalo = np.array([arr_mhalo[j] for j in range(count)])
     np_arr_Vmax = np.array([arr_Vmax[j] for j in range(count)])
@@ -433,7 +435,7 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int*
     free(arr_nextprog)
     free(arr_1FoF)
     free(arr_nextFoF)
-    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_1FoF,np_arr_nextFoF)
+    return (np_arr_count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_1FoF,np_arr_nextFoF)
 
 cdef int tree_index(Tree_Node* node):
     '''
@@ -1518,9 +1520,8 @@ def get_tree_vals_FoF(
     cdef:
         int i_seed = i_seed_0
         Tree_Node** merger_tree_FoF
-        Tree_Node* this_node_FoF
         int count = 0
-        int n_halos, j, k
+        int n_halos, j, k, level
         double mass_sum = m_0+1
         np.ndarray mass_temp
     srand(i_seed)
@@ -1538,7 +1539,7 @@ def get_tree_vals_FoF(
     else:
         print('No Progenitors.')
     
-    # free(this_node)
+    free(this_node)
 
     n_halos = n_subs_in_FoF(m_0)
     print('Number of subhalos in first FoF-group: ',n_halos+1)
@@ -1571,8 +1572,7 @@ def get_tree_vals_FoF(
             merger_tree_subs[c] = merger_trees[j][k]
             merger_tree_subs[c].index = c
             c += 1
-    print('It worked')
-
+    print('It worked',c)
     
     # merger_tree_subs[-1].mhalo = 0.0
     # merger_tree_subs[-1].jlevel = 0
@@ -1585,20 +1585,56 @@ def get_tree_vals_FoF(
     # merger_tree_subs[-1].NextInFoF = NULL
     # free(merger_trees)
 
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_offset_arr,n_halos+1)
+    cdef Tree_Node* this_node_FoF
+    cdef Tree_Node* this_node_subs = <Tree_Node*>malloc(sizeof(Tree_Node))
+    cdef double m_group
 
-    print('Number of nodes in FoF-group subhalo-tree',1,'is',count)
+    this_node_FoF = merger_tree_FoF[0]
+
+    '''while this_node_FoF is not NULL:
+        # print('While we are here!')
+        level = this_node_FoF.jlevel
+        m_group = this_node_FoF.mhalo
+        this_node_subs.mhalo = 0.0
+        # print(m_group)
+        for k in range(n_offset_sum):
+            # print(merger_tree_subs[k].mhalo)
+            if merger_tree_subs[k].jlevel==level:
+                # print(level)
+                # print(merger_tree_subs[k].mhalo)
+                # print(merger_tree_subs[k].FirstInFoF==NULL)
+                if this_node_subs.mhalo<merger_tree_subs[k].mhalo<m_group or k==0: # and merger_tree_subs[k].FirstInFoF==NULL:
+                    # print('In this if')
+                    merger_tree_subs[k].FirstInFoF = merger_tree_subs[k]
+                    merger_tree_subs[k].NextInFoF = merger_tree_subs[k+1]
+                    this_node_subs = merger_tree_subs[k]
+                else:
+                    if k==0:
+                        merger_tree_subs[k].FirstInFoF = merger_tree_FoF[k]
+                        this_node_subs = merger_tree_subs[k]
+                    else:
+                        merger_tree_subs[k].FirstInFoF = this_node_subs
+                    if merger_tree_subs[k].sibling==NULL:
+                        merger_tree_subs[k].NextInFoF = NULL
+                    else:
+                        merger_tree_subs[k].NextInFoF = merger_tree_subs[k+1]
+        this_node_FoF = walk_tree(this_node_FoF)
+
+    '''
+    arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_offset_arr,n_halos+1)
+
+    print('Number of nodes in FoF-group subhalo-tree',1,'is',arr_count[0])
 
     print('Example information from FoF-group subhalo-tree:')
     this_node = merger_tree_subs[0]
     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-    if count>1:
+    if arr_count[0]>1:
         this_node = this_node.child
         print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     else:
         print('No Progenitors.')
 
-    print('Number of nodes in FoF-group subhalo-tree',2,'is',count)
+    print('Number of nodes in FoF-group subhalo-tree',2,'is',arr_count[1])
 
     print('Example information from FoF-group subhalo-tree:')
     this_node = merger_tree_subs[n_offset_arr[0]]
@@ -1609,7 +1645,8 @@ def get_tree_vals_FoF(
     else:
         print('No Progenitors.')
 
-    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo
+    return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF
+
 cdef double m_cen_of_FoF(double m):
     if m<2e12:
         m_cen = m*np.random.uniform(0.6,1)
