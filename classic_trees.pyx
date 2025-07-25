@@ -1539,11 +1539,11 @@ def get_tree_vals_FoF(
     else:
         print('No Progenitors.')
     
-    free(this_node)
+    # free(this_node)
 
     n_halos = n_subs_in_FoF(m_0)
-    print('Number of subhalos in first FoF-group: ',n_halos+1)
-    cdef double* m_halo = <double*>malloc((n_halos+1)*sizeof(double))
+    print('Number of subhalos in first FoF-group: ',n_halos)
+    cdef double* m_halo = <double*>malloc((n_halos)*sizeof(double))
     m_halo[0] = m_cen_of_FoF(m_0)
 
     if n_halos>=1:
@@ -1551,23 +1551,23 @@ def get_tree_vals_FoF(
 
         # Routine to get the rest of the masses for this FoF-group
         while mass_sum>m_0 or mass_sum<0.8*m_0:
-            mass_temp = ppf_ST(np.random.rand(n_halos))
+            mass_temp = ppf_ST(np.random.rand(n_halos-1))
             mass_sum = m_halo[0] + np.sum(mass_temp)
             # count +=1
         # print(count)
-        for j in range(n_halos):
+        for j in range(n_halos-1):
             m_halo[j+1] = mass_temp[j]
 
-    cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos+1)*sizeof(Tree_Node**))
-    cdef int* n_offset_arr = <int*>malloc((n_halos+1)*sizeof(int))
+    cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos)*sizeof(Tree_Node**))
+    cdef int* n_offset_arr = <int*>malloc((n_halos)*sizeof(int))
     cdef int n_offset_sum = 0
-    for j in range(n_halos+1):
+    for j in range(n_halos):
         merger_trees[j],n_offset_arr[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base)
         n_offset_sum += n_offset_arr[j]
     print('Calculation until here!',n_offset_sum)
     cdef Tree_Node** merger_tree_subs = <Tree_Node**>malloc((n_offset_sum+1)*sizeof(Tree_Node*))
     cdef int c = 0
-    for j in range(n_halos+1):
+    for j in range(n_halos):
         for k in range(n_offset_arr[j]):
             merger_tree_subs[c] = merger_trees[j][k]
             merger_tree_subs[c].index = c
@@ -1585,13 +1585,92 @@ def get_tree_vals_FoF(
     # merger_tree_subs[-1].NextInFoF = NULL
     # free(merger_trees)
 
+    # cdef int** lev_indx_FoF = <int**>malloc(n_lev*sizeof(int*))
+    # cdef int* temp_indx_pntr
+    lev_indx_FoF = []
+    for level in range(n_lev):
+        temp_indx = []
+        for j in range(count):
+            if merger_tree_FoF[j].jlevel==level:
+                temp_indx.append(j)
+        if temp_indx!=[]:
+            lev_indx_FoF.append(temp_indx)
+        # temp_indx_pntr = <int*>malloc(len(temp_indx)*sizeof(int))
+        # for k in range(len(temp_indx)):
+        #     temp_indx_pntr[k] = temp_indx[k]
+        # lev_indx_FoF[level] = temp_indx_pntr
+    # print(lev_indx_FoF)
+    # print(merger_tree_FoF[lev_indx_FoF[5]].mhalo)
+    # cdef int** lev_indx_subs = <int**>malloc(n_lev*sizeof(int*))
+    lev_indx_subs = []
+    for level in range(n_lev):
+        temp_indx = []
+        for j in range(n_offset_sum):
+            if merger_tree_subs[j].jlevel==level:
+                temp_indx.append(j)
+        if temp_indx!=[]:
+            lev_indx_subs.append(temp_indx)
+    # print(lev_indx_subs)
+    cdef double m_group, m_max_subs
+    cdef int ind_subs, ind_max_subs
+    m_max_subs = 0.0
+
+    '''for level in range(len(lev_indx_FoF)):
+        if type(lev_indx_FoF[level])!=list:
+            m_group = merger_tree_FoF[lev_indx_FoF[level]].mhalo
+            if level==0:
+                n_range = n_halos
+            else:
+                n_range = n_subs_in_FoF(m_group)
+            for ind_subs in lev_indx_subs[level]:
+                if m_max_subs<merger_tree_subs[ind_subs].mhalo<m_group:
+                    m_max_subs = merger_tree_subs[ind_subs].mhalo
+                    ind_max_subs = ind_subs
+            merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
+            for k in range(n_range):
+                if lev_indx_subs[level][k]==ind_max_subs:
+                    merger_tree_subs[k].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                else:
+                    merger_tree_subs[k].FirstInFoF = merger_tree_FoF[ind_max_subs]
+                    if k<n_range:
+                        merger_tree_subs[k].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                    else:
+                        merger_tree_subs[k].NextInFoF = NULL
+            if n_range<len(lev_indx_subs[level]):
+                if n_range+1<len(lev_indx_subs[level]):
+                    m_max_subs = merger_tree_subs[lev_indx_subs[level][n_range]].mhalo
+                    ind_max_subs = lev_indx_subs[level][n_range]
+                    for ind_subs in lev_indx_subs[level][n_range:]:
+                        if merger_tree_subs[ind_subs].mhalo>m_max_subs:
+                            ind_max_subs = ind_subs
+                    n_next_FoF = n_subs_in_FoF(m_max_subs)
+                    for k in range(n_range,n_range+n_next_FoF):
+                        if lev_indx_subs[level][k]==ind_max_subs:
+                            merger_tree_subs[k].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                        else:
+                            merger_tree_subs[k].FirstInFoF = merger_tree_FoF[ind_max_subs]
+                            if k<n_range:
+                                merger_tree_subs[k].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                            else:
+                                merger_tree_subs[k].NextInFoF = NULL
+                else:
+                    merger_tree_subs[lev_indx_subs[level][n_range]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][n_range]]
+                    merger_tree_subs[lev_indx_subs[level][n_range]].NextInFoF = NULL
+
+        elif len(lev_indx_FoF[level])>1:
+            ms_group = []
+            for j in lev_indx_FoF[level]:
+                ms_group.append(merger_tree_FoF[j].mhalo)
+    '''    
+
+    '''
     cdef Tree_Node* this_node_FoF
     cdef Tree_Node* this_node_subs = <Tree_Node*>malloc(sizeof(Tree_Node))
     cdef double m_group
 
     this_node_FoF = merger_tree_FoF[0]
 
-    '''while this_node_FoF is not NULL:
+    while this_node_FoF is not NULL:
         # print('While we are here!')
         level = this_node_FoF.jlevel
         m_group = this_node_FoF.mhalo
