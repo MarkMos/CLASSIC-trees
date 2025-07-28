@@ -181,7 +181,8 @@ def compute_tree(mass,
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
             print(count)
             print(sum(count))
-            print(np.unique(arr_1FoF))
+            print(len(np.unique(arr_1FoF)))
+            print(np.unique(arr_1FoF,return_counts=True))
             # for arr in arr_1FoF:
             #     if arr !=-1:
             #         print(arr)
