@@ -352,7 +352,7 @@ tree = ct.trees()
 tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 set_trees(tree)
 # tree.compute_slow(mass=1e15,m_res=1e11,mode='Normal')#,file_name=file)
-tree.compute_slow(mass=1e12,m_res=1e8,mode='FoF')#,file_name=file)
+tree.compute_slow(mass=1e14,m_res=1e8,mode='FoF')#,file_name=file)
 # tree.compute_fast(random_mass='ST',times=a,file_name=file,n_part=500,n_tree=40)
 # tree.compute_fast(mass=1e14,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)
 
