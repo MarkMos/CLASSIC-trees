@@ -1,6 +1,8 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy as np
+import sysconfig
+python_include = sysconfig.get_paths()['include']
 
 extensions = [
     Extension(
@@ -8,7 +10,7 @@ extensions = [
         sources=['classic_trees.pyx'],
         language='c',
         extra_compile_args=['-std=c99'],
-        include_dirs=[np.get_include()]
+        include_dirs=[np.get_include(),python_include]
     )
 ]
 
@@ -20,7 +22,7 @@ setup(
         compiler_directives={
             'language_level': '3',
             'boundscheck': True,
-            'wraparound': True
+            'wraparound': False
         }
     ),
 )
