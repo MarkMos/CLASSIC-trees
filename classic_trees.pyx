@@ -1872,11 +1872,16 @@ cdef double spin_abs(double m,str mode='Normal'):
         spin_val = np.random.uniform(0.1*(20+(m/5e8)**0.9),10*(20+(m/5e8)**0.9))
     else:
         spin_val = np.random.uniform(9e3,2e4)
-    if mode!='Normal':
+    if mode=='Upper':
         if m<6e12:
             spin_val = 10*(20+(m/5e8)**0.9)
         else:
             spin_val = 2e4
+    elif mode=='Lower':
+        if m<6e12:
+            spin_val = 0.1*(20+(m/5e8)**0.9)
+        else:
+            spin_val = 9e3
     return spin_val
 
 cdef int n_subs_in_FoF(double m):
@@ -1965,12 +1970,14 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
         return temp_pos
     elif halo_type=='cen' and mode=='velo':
         scale = np.random.random()
-        while scale >0.4:
+        while scale >0.05:
             scale = np.random.random()
         temp_velo = this_node.parent.velo
-        # print(temp_velo[0],' velocity')
         for i in range(3):
-            temp_velo[i] += this_node.parent.velo[i]*scale
+            if np.random.random()>0.5:
+                temp_velo[i] += this_node.parent.velo[i]*scale
+            else:
+                temp_velo[i] -= this_node.parent.velo[i]*scale
         # print(temp_velo[0],' after')
         return temp_velo
     elif halo_type=='sat' and mode=='pos':
@@ -1995,11 +2002,11 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
         temp_arr = this_node.FirstInFoF.pos
         if this_node.mhalo/this_node.FirstInFoF.mhalo < 1/2:
             for i in range(3):
-                temp_arr[i] = np.random.random()
+                temp_arr[i] = np.random.uniform(0,0.2)
             return temp_arr
         else:
             for i in range(3):
-                temp_arr[i] = 1e-2*np.random.random()
+                temp_arr[i] = 1e-2*np.random.uniform(0,0.2)
             return temp_arr
     else:
         temp_arr = this_node.FirstInFoF.velo
@@ -2011,14 +2018,17 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
         else:
             dirr = 0
         for i in range(3):
-            temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])*np.random.random() + np.random.random()
+            if (this_node.FirstInFoF.pos[i]-position_of_node[i])==0:
+                temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])*np.random.uniform(0,0.1) + np.random.uniform(0,0.1)
+            else:
+                temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])/sqrt((this_node.FirstInFoF.pos[i]-position_of_node[i])**2)*np.random.uniform(0,0.1) + np.random.uniform(0,0.1)
         return temp_arr
 
 cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot):
     print('In spin_3_calc()')
     cdef Tree_Node* this_node
     cdef int i,j
-    cdef double s_1,s_2,s_3,s_sum,s_abs,mass,scale
+    cdef double s_1,s_2,s_3,s_sum,s_up,s_low,mass,scale
 
     for i in range(n_frag_tot):
         print((i+1)/n_frag_tot*100,'%')
@@ -2030,8 +2040,9 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot):
                 s_2 = spin_abs(mass)
                 s_3 = spin_abs(mass)
                 s_sum = sqrt(s_1**2+s_2**2+s_3**2)
-                s_abs = spin_abs(mass,'upper')
-                while s_sum>s_abs:
+                s_up = spin_abs(mass,'Upper')
+                s_low = spin_abs(mass,'Lower')
+                while s_sum>s_up or s_sum<s_low and s_sum!=0.0:
                     s_1 = spin_abs(mass)
                     s_2 = spin_abs(mass)
                     s_3 = spin_abs(mass)
@@ -2041,9 +2052,21 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot):
                 this_node.spin[2] = s_3
             else:
                 scale = mass/this_node.parent.mhalo
-                this_node.spin[0] = np.random.uniform(scale-0.1*scale,scale+0.1*scale)*this_node.parent.spin[0]
-                this_node.spin[1] = np.random.uniform(scale-0.1*scale,scale+0.1*scale)*this_node.parent.spin[1]
-                this_node.spin[2] = np.random.uniform(scale-0.1*scale,scale+0.1*scale)*this_node.parent.spin[2]
+                # print(scale)
+                s_1 = np.random.uniform(0.1*scale,scale)*this_node.parent.spin[0]
+                s_2 = np.random.uniform(0.1*scale,scale)*this_node.parent.spin[1]
+                s_3 = np.random.uniform(0.1*scale,scale)*this_node.parent.spin[2]
+                s_sum = sqrt(s_1**2+s_2**2+s_3**2)
+                s_up = spin_abs(mass,'Upper')
+                s_low = spin_abs(mass,'Lower')
+                while s_sum>s_up or s_sum<s_low and s_sum!=0.0:
+                    s_1 = spin_abs(mass)
+                    s_2 = spin_abs(mass)
+                    s_3 = spin_abs(mass)
+                    s_sum = sqrt(s_1**2+s_2**2+s_3**2)
+                this_node.spin[0] 
+                this_node.spin[1] 
+                this_node.spin[2] 
         merger_tree[i] = this_node
     return merger_tree
 
