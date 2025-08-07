@@ -21,7 +21,7 @@ setup(
         extensions,
         compiler_directives={
             'language_level': '3',
-            'boundscheck': True,
+            'boundscheck': False,
             'wraparound': False
         }
     ),
