@@ -132,3 +132,7 @@ class trees:
         from Generate_Tree import compute_tree
         compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
                      m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base)
+
+    def comp_speed(self):
+        from speed_test_trees import compute_speed
+        compute_speed()
