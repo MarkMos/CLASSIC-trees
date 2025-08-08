@@ -1902,8 +1902,11 @@ def get_tree_vals_FoF(
 
     return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin
 
+# from cython.parallel import prange
+# from libc.stdio cimport printf
+
 def speed_test(
-    int i,
+    int n_tree,
     int i_seed_0,
     double m_0,
     double a_0,
@@ -1916,35 +1919,40 @@ def speed_test(
     double[:] pos_base,
     double[:] vel_base):
 
-    i_seed_0 -=19*(1+i)
+    # i_seed_0 -=19*(1+i)
     cdef:
         int i_seed = i_seed_0
         Tree_Node** merger_tree
         Tree_Node* this_node
         int count = 0
+        int c = 0
         sig_alph Sig
-    srand(i_seed)
+        int i
     Sig = sig_alph(trees)
-    merger_tree,n_frag_tot = make_tree(m_0,a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Speed',pos_base,vel_base,Sig)
+    n_frag_tot = 0
+    for i in range(n_tree):
+        count = 0
+        i_seed_0 -=19*(1+i)
+        srand(i_seed_0)
+        # Sig = sig_alph(trees)
+        merger_tree,n_frag_tot = make_tree(m_0,a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Speed',pos_base,vel_base,Sig)
 
-    this_node = merger_tree[0]
+        this_node = merger_tree[0]
 
-    while this_node is not NULL:
-        count += 1
-        this_node = walk_tree(this_node)
-    
-    print('Number of nodes in tree',i+1,'is',count)
-    
-    print('Example information from tree:')
-    this_node = merger_tree[0]
-    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-    if count>1:
+        while this_node is not NULL:
+            count += 1
+            this_node = walk_tree(this_node)
+        c += count
+        print('Number of nodes in tree',i+1,'is',count)
+        
+        print('Example information from tree:')
+        this_node = merger_tree[0]
+        print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
         this_node = this_node.child
         print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    else:
-        print('No Progenitors.')
-    free(merger_tree)
-    free(this_node)
+        free(merger_tree)
+        free(this_node)
+    print('All trees together have a length of:',c)
 
 
 cdef double m_cen_of_FoF(double m):
@@ -2114,11 +2122,13 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
     elif halo_type=='cen' and mode=='velo':
         adding = this_node.parent.velo
         velo_summ = 0.0
-        while velo_summ<=0.0 or velo_summ>(3e3)**2:
+        # while velo_summ<=(1e1)**2 or velo_summ>(3e3)**2:
+        while velo_summ<=0.0: # or velo_summ>(3e3)**2:
             velo_summ = 0.0
             temp_velo = this_node.parent.velo
             for i in range(3):
-                temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
+                # temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
+                temp_velo[i] = np.random.normal(adding[i],30)
                 velo_summ += temp_velo[i]**2
         # print(temp_velo[0],' after')
         return temp_velo
@@ -2133,7 +2143,8 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
         # print('Now in else',this_node.FirstInFoF.velo[0])
         adding = this_node.FirstInFoF.velo
         velo_summ = 0.0
-        while velo_summ<=0.0:
+        # while velo_summ<=(1e1)**2 or velo_summ>(3e3)**2:
+        while velo_summ<=0.0: # or velo_summ>(3e3)**2:
             velo_summ = 0.0
             temp_velo = satelite_pos_velo(this_node,'velo',position_of_node)
             for i in range(3):
