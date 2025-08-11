@@ -1966,24 +1966,29 @@ cdef double m_cen_of_FoF(double m):
 cdef double spin_abs(double m,str mode='Normal'):
     cdef double spin_val
     if m<6e12:
-        spin_val = np.random.uniform(0.1*(20+(m/5e8)**0.9),10*(20+(m/5e8)**0.9))
+        spin_val = np.random.normal(20+(m/5e8)**0.9,0.1*(20+(m/5e8)**0.9))
     else:
-        spin_val = np.random.uniform(9e3,2e4)
+        # spin_val = np.random.normal(9e3,1e2)
+        spin_val = np.random.normal(20+(m/5e8)**0.9,0.1*(20+(m/5e8)**0.9))
+    
     if mode=='Upper':
         if m<6e12:
             spin_val = 10*(20+(m/5e8)**0.9)
         else:
-            spin_val = 2e4
+            spin_val = 10*(20+(m/5e8)**0.9)
+            # spin_val = 2e4
     elif mode=='Lower':
         if m<6e12:
-            spin_val = 0.1*(20+(m/5e8)**0.9)
+            spin_val = 0.01*(20+(m/5e8)**0.9)
         else:
-            spin_val = 9e3
+            spin_val = 0.01*(20+(m/5e8)**0.9)
+            # spin_val = 9e3
     elif mode=='Middle':
         if m<6e12:
             spin_val = 20+(m/5e8)**0.9
         else:
-            spin_val = 9e3
+            spin_val = 20+(m/5e8)**0.9
+            # spin_val = 9e3
     return spin_val
 
 cdef int n_subs_in_FoF(double m):
@@ -2214,11 +2219,11 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                     this_node.spin[1] = s_2
                     this_node.spin[2] = s_3
                 else:
-                    scale = spin_abs(mass)/spin_abs(this_node.parent.mhalo)
+                    scale = spin_abs(mass,'Middle')/spin_abs(this_node.parent.mhalo,'Middle')
                     # print(scale)
-                    s_1 = np.random.uniform(0.1*scale,scale)*this_node.parent.spin[0]
-                    s_2 = np.random.uniform(0.1*scale,scale)*this_node.parent.spin[1]
-                    s_3 = np.random.uniform(0.1*scale,scale)*this_node.parent.spin[2]
+                    s_1 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[0]
+                    s_2 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[1]
+                    s_3 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[2]
                     s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     s_up = spin_abs(mass,'Upper')
                     s_low = spin_abs(mass,'Lower')
