@@ -1565,7 +1565,7 @@ def get_tree_vals_FoF(
         Tree_Node** merger_tree_FoF
         int count = 0
         int n_halos, j, k, level
-        double mass_sum = m_0+1
+        double mass_sum = 0.0
         np.ndarray mass_temp
         sig_alph Sig
     srand(i_seed)
