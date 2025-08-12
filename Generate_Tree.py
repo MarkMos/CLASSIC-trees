@@ -185,9 +185,9 @@ def compute_tree(mass,
             print(np.unique(arr_1FoF,return_counts=True))
             print(len(np.unique(arr_pos)))
             print(np.unique(arr_spin,return_counts=True))
-            np.savetxt('Spins_test40.txt',arr_spin)
-            np.savetxt('Mass_test40.txt',arr_mhalo)
-            np.savetxt('Velocity_test40.txt',arr_velo)
+            np.savetxt('Spins_test44.txt',arr_spin)
+            np.savetxt('Mass_test44.txt',arr_mhalo)
+            np.savetxt('Velocity_test44.txt',arr_velo)
             # for arr in arr_1FoF:
             #     if arr !=-1:
             #         print(arr)
