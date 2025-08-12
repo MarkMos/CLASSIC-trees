@@ -1966,28 +1966,28 @@ cdef double m_cen_of_FoF(double m):
 cdef double spin_abs(double m,str mode='Normal'):
     cdef double spin_val
     if m<6e12:
-        spin_val = np.random.normal(20+(m/5e8)**0.9,0.1*(20+(m/5e8)**0.9))
+        spin_val = np.random.normal(10+(m/5e8)**0.9,0.1*(10+(m/5e8)**0.9))
     else:
         # spin_val = np.random.normal(9e3,1e2)
-        spin_val = np.random.normal(20+(m/5e8)**0.9,0.1*(20+(m/5e8)**0.9))
+        spin_val = np.random.normal(10+(m/5e8)**0.9,0.1*(10+(m/5e8)**0.9))
     
     if mode=='Upper':
         if m<6e12:
-            spin_val = 10*(20+(m/5e8)**0.9)
+            spin_val = 10*(10+(m/5e8)**0.9)
         else:
-            spin_val = 10*(20+(m/5e8)**0.9)
+            spin_val = 10*(10+(m/5e8)**0.9)
             # spin_val = 2e4
     elif mode=='Lower':
         if m<6e12:
-            spin_val = 0.01*(20+(m/5e8)**0.9)
+            spin_val = 0.01*(10+(m/5e8)**0.9)
         else:
-            spin_val = 0.01*(20+(m/5e8)**0.9)
+            spin_val = 0.01*(10+(m/5e8)**0.9)
             # spin_val = 9e3
     elif mode=='Middle':
         if m<6e12:
-            spin_val = 20+(m/5e8)**0.9
+            spin_val = 10+(m/5e8)**0.9
         else:
-            spin_val = 20+(m/5e8)**0.9
+            spin_val = 10+(m/5e8)**0.9
             # spin_val = 9e3
     return spin_val
 
@@ -2210,7 +2210,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                     s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     s_up = spin_abs(mass,'Upper')
                     s_low = spin_abs(mass,'Lower')
-                    while s_sum>s_up or s_sum<s_low and s_sum!=0.0:
+                    while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
                         s_1 = spin_abs(mass)
                         s_2 = spin_abs(mass)
                         s_3 = spin_abs(mass)
@@ -2227,7 +2227,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                     s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     s_up = spin_abs(mass,'Upper')
                     s_low = spin_abs(mass,'Lower')
-                    while s_sum>s_up or s_sum<s_low and s_sum!=0.0:
+                    while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
                         s_1 = spin_abs(mass)
                         s_2 = spin_abs(mass)
                         s_3 = spin_abs(mass)
@@ -2251,7 +2251,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                             s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                             s_up = spin_abs(mass,'Upper')
                             s_low = spin_abs(mass,'Lower')
-                            while s_sum>s_up or s_sum<s_low and s_sum!=0.0:
+                            while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
                                 s_1 = spin_abs(mass)
                                 s_2 = spin_abs(mass)
                                 s_3 = spin_abs(mass)
@@ -2271,7 +2271,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                             # print('upper limit:',s_up)
                             s_low = spin_abs(mass,'Lower')
                             # print('lower limit:',s_low)
-                            while s_sum>s_up or s_sum<s_low:
+                            while s_sum>s_up or s_sum<0.0:
                                 s_1 = spin_abs(mass)
                                 s_2 = spin_abs(mass)
                                 s_3 = spin_abs(mass)
