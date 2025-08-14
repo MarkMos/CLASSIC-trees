@@ -124,13 +124,19 @@ def compute_tree(mass,
     nth_run = False
     if mode!='FoF':
         for i in range(n_tree):
+            print(pos_base)
+            print(vel_base)
             if random_mass==None:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
             else:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base)
-            np.savetxt('PositionNormalTree1.txt',arr_pos)
-            np.savetxt('TimeNormalTree1.txt',arr_time)
-            np.savetxt('ScaleFactorNormalTree1.txt',a_lev)
+            print(arr_pos[0])
+            print(arr_velo[0])
+            # np.savetxt('PositionNormalTree8.txt',arr_pos)
+            # np.savetxt('TimeNormalTree8.txt',arr_time)
+            # np.savetxt('ScaleFactorNormalTree8.txt',a_lev)
+            np.savetxt('MassNormalTree1.txt',arr_mhalo)
+            np.savetxt('VeloNormalTree1.txt',arr_velo)
             if file_name!=None:    
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
