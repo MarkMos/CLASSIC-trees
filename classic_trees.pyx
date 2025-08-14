@@ -1432,6 +1432,7 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
     if mode=='Normal':
         with gil:
             merger_tree = pos_and_velo(merger_tree,n_frag_tot+1,pos_base,vel_base,a_lev)
+            print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
             merger_tree = spin_3_calc(merger_tree,n_frag_tot+1)
 
     # Free allocated memory
@@ -1504,6 +1505,7 @@ def get_tree_vals(
 
     # print('Made a tree ',i+1)
     this_node = merger_tree[0]
+    print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
     count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
@@ -2009,11 +2011,13 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
     cdef Tree_Node* this_node
     cdef int i,j,level,c
     cdef double[:] temp_pos,temp_velo
-    this_node = merger_tree[0].FirstInFoF
+    print(pos_base[0],pos_base[1],pos_base[2])
+    this_node = merger_tree[0]
     for j in range(3):
         this_node.pos[j] = pos_base[j]
         this_node.velo[j] = vel_base[j]
-    merger_tree[this_node.index] = this_node
+    merger_tree[0] = this_node
+    print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
     # print('First Node at',this_node.index)
     # c=0
     # print('No Problemo')
@@ -2043,7 +2047,7 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
             if this_node!=NULL:
                 if this_node.parent!=NULL:
                     # print('At time-level',this_node.jlevel)
-                    timestep =  a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel]
+                    timestep =  (a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel])/(1e2*a_lev[this_node.parent.jlevel]*trees.h_0*sqrt(trees.omega_0*(1/a_lev[this_node.parent.jlevel])**3+trees.l_0))
                     if this_node.FirstInFoF==this_node:
                         # print('We are here!',i)
                         temp_pos = velo_routine(this_node,timestep,'pos','cen',pos_base)
@@ -2073,7 +2077,7 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                     if this_node!=NULL:
                         if this_node.parent!=NULL:
                             # print('At time-level',this_node.jlevel)
-                            timestep =  a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel]
+                            timestep =  (a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel])/(1e2*a_lev[this_node.parent.jlevel]*trees.h_0*sqrt(trees.omega_0*(1/a_lev[this_node.parent.jlevel])**3+trees.l_0))
                             if this_node.FirstInFoF==this_node:
                                 # print('We are here!',i,'of',n_frag_tot)
                                 # print('Parent pos:',this_node.parent.pos[0])
@@ -2115,14 +2119,12 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
     cdef double velo_summ
     cdef int i
     if halo_type=='cen' and mode=='pos':
-        temp_pos = this_node.parent.pos
-        # print(temp_pos[0],' position')
+        temp_pos = this_node.pos
         for i in range(3):
-            adding[i] = this_node.parent.velo[i]*timestep*np.random.random()
+            adding[i] = this_node.parent.velo[i]*timestep
             if np.random.random()<0.01:
                 adding[i] = -adding[i]
-            temp_pos[i] += adding[i]
-        # print(temp_pos[0],' after')
+            temp_pos[i] = this_node.parent.pos[i] + np.random.normal(0.5*adding[i],abs(0.1*adding[i]))
         return temp_pos
     elif halo_type=='cen' and mode=='velo':
         adding = this_node.parent.velo
@@ -2130,7 +2132,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
         # while velo_summ<=(1e1)**2 or velo_summ>(3e3)**2:
         while velo_summ<=0.0: # or velo_summ>(3e3)**2:
             velo_summ = 0.0
-            temp_velo = this_node.parent.velo
+            temp_velo = this_node.velo
             for i in range(3):
                 # temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
                 temp_velo[i] = np.random.normal(adding[i],30)
