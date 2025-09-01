@@ -94,7 +94,10 @@ class trees:
                      n_halo = 1,
                      n_part = 40000,
                      times = 'equal a',
-                     mode='FoF'):
+                     mode='FoF',
+                     pos_base = np.array([0,0,0],dtype=np.float64),
+                     vel_base = np.array([10,10,10],dtype=np.float64),
+                     scaling = 0.5):
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
@@ -102,8 +105,8 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         from GenerateTreeFast import compute_tree_fast
-        compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,
-                          i_seed_0,a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode)
+        compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
+                          a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling)
     def compute_slow(self,
                      mass = None,
                      n_halo_max = 1000000,
@@ -122,7 +125,8 @@ class trees:
                      times = 'equal a',
                      mode ='FoF',
                      pos_base = np.array([0,0,0],dtype=np.float64),
-                     vel_base = np.array([10,10,10],dtype=np.float64)):
+                     vel_base = np.array([10,10,10],dtype=np.float64),
+                     scaling = 0.5):
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
@@ -131,7 +135,7 @@ class trees:
         h_0 = self.h_0
         from Generate_Tree import compute_tree
         compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
-                     m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base)
+                     m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling)
 
     def comp_speed(self):
         from speed_test_trees import compute_speed
