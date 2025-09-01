@@ -14,11 +14,12 @@ lock = Lock()
 filename = './CLASSIC-trees/Data/flat.txt'
 DELTA = functions(filename)
 
-def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo):
+def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
+    vel_base = np.random.lognormal(np.log(200),0.7,3)
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
     count = np.array([count],dtype='int_')
     i = np.array([i],dtype='int_')
 
@@ -31,8 +32,8 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
         "arr_1prog": arr_1prog,
         "arr_desc": arr_desc,
         "arr_nextprog": arr_nextprog,
-        'arr_1FoF': arr_1FoF,
-        'arr_nextFoF': arr_nextFoF,
+        'arr_pos': arr_pos,
+        'arr_velo': arr_velo,
         "count": count,
         "tree_index": i
     }
@@ -48,8 +49,8 @@ def append_create_dataset(grp,name,data):
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
 # Parallel execution:
-def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize):
-    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo)
+def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,mode,pos_base,vel_base,scaling):
+    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
         results = pool.starmap(tree_process, args_list)
@@ -83,8 +84,8 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
             append_create_dataset(grp1,'TreeDescendant',result['arr_desc'])
             append_create_dataset(grp1,'TreeFirstProgenitor',result['arr_1prog'])
             append_create_dataset(grp1,'NextProgenitor',result['arr_nextprog'])
-            append_create_dataset(grp1,'TreeFirstHaloInFOFgroup',result['arr_1FoF'])
-            append_create_dataset(grp1,'TreeNextHaloInFOFgroup',result['arr_nextFoF'])
+            append_create_dataset(grp1,'TreePos',result['arr_pos'])
+            append_create_dataset(grp1,'TreeVelo',result['arr_velo'])
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
             append_create_dataset(grp1,'TreeIndex',data=result['arr_nodid'])
             append_create_dataset(grp2,'Length',data=result['count'])
@@ -110,7 +111,10 @@ def compute_tree_fast(random_mass,
                       n_halo = 1,
                       n_part = 40000,
                       times = 'equal a',
-                      mode='FoF'):
+                      mode='FoF',
+                      pos_base = np.array([0,0,0],dtype=np.float64),
+                      vel_base = np.array([10,10,10],dtype=np.float64),
+                      scaling = 0.5):
     '''
     Function to call the routines of classic_trees for huge numbers of trees to 
     compute. Ideally to produce large merger tree files.
@@ -138,6 +142,7 @@ def compute_tree_fast(random_mass,
     Output:
         hdf5-file with values of random or constant mass merger trees
     '''
+    vel_base = np.random.lognormal(np.log(200),0.7,3)
     if random_mass=='PS':
         from random_masses import ppf_PS
         u_PS = np.random.rand(int(n_part*n_tree))
@@ -197,7 +202,7 @@ def compute_tree_fast(random_mass,
     nth_run = False
     start_offset = 0
     for j in range(n_part):
-        start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,mode)
+        start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,mode,pos_base,vel_base,scaling)
     with h5py.File(file_name,'a') as f:
         grp = f.create_group('Header')
         grp.attrs['LastSnapShotNr'] = int(n_lev - 1)
