@@ -97,7 +97,7 @@ class trees:
                      mode='FoF',
                      pos_base = np.array([0,0,0],dtype=np.float64),
                      vel_base = np.array([10,10,10],dtype=np.float64),
-                     scaling = 0.5):
+                     scaling = 0.3):
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
@@ -126,7 +126,7 @@ class trees:
                      mode ='FoF',
                      pos_base = np.array([0,0,0],dtype=np.float64),
                      vel_base = np.array([10,10,10],dtype=np.float64),
-                     scaling = 0.5):
+                     scaling = 0.3):
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
