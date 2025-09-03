@@ -208,6 +208,7 @@ cdef Tree_Node* walk_tree(Tree_Node* this_node):
     return next_node
 
 cdef double halo_Vmax(double mass):
+    # Function to calculate the maximum velocity for a certain mass with a scatter
     cdef double G_used = G.value * M_sun.value / (pc.value * (1e3**2))
     cdef double a = 3.36713334
     cdef double b = 0.61474034
@@ -226,13 +227,17 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         merger_tree: list of the nodes of the given merger tree
     ----------------------
     Output:
-        count     : the number of nodes inside the tree
-        arr_halo  : the masses of the different nodes
-        arr_nodid : the nodes id
-        arr_treeid: the id of the tree
-        arr_time  : the time level of the nodes
-        arr_1prog : first progenitor of the nodes (-1 is no first progenitor)
-        arr_desc  : descandant of the nodes (-1 is no descandant)
+        count       : the number of nodes inside the tree
+        arr_halo    : the masses of the different nodes
+        arr_nodid   : the nodes id
+        arr_treeid  : the id of the tree
+        arr_time    : the time level of the nodes
+        arr_1prog   : first progenitor of the nodes (-1 is no first progenitor)
+        arr_desc    : descandant of the nodes (-1 is no descandant)
+        arr_nextprog: next progenitor of node (-1 is no other progenitors)
+        arr_pos     : 3-position of node
+        arr_velo    : 3-velocity of node
+        arr_spin    : 3-spin of node
     '''
     cdef:
         int count = 0
@@ -246,6 +251,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         int* arr_nextprog = NULL
         double** arr_pos = NULL
         double** arr_velo = NULL
+        double** arr_spin = NULL
         int node_ID, j, k
         bint malloc_failed = 0 # checks if the allocation of the above pointers worked
 
@@ -259,9 +265,11 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     arr_nextprog = <int*>malloc(n_halo_max*sizeof(int))
     arr_pos = <double**>malloc(n_halo_max*sizeof(double*))
     arr_velo = <double**>malloc(n_halo_max*sizeof(double*))
+    arr_spin = <double**>malloc(n_halo_max*sizeof(double*))
     for j in range(n_halo_max):
         arr_pos[j] = <double*>malloc(3*sizeof(double))
         arr_velo[j] = <double*>malloc(3*sizeof(double))
+        arr_spin[j] = <double*>malloc(3*sizeof(double))
     #print('Also here')
     if not (arr_mhalo and arr_Vmax and arr_nodid and arr_treeid and arr_time and arr_1prog and arr_desc and arr_nextprog and arr_pos and arr_velo):
         malloc_failed = 1
@@ -281,6 +289,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
             arr_pos[node_ID][j] = this_node.pos[j]
             #print(this_node.pos[j])
             arr_velo[node_ID][j] = this_node.velo[j]
+            arr_spin[node_ID][j] = this_node.spin[j]
             #print(this_node.velo[j])
         if this_node.child is not NULL:
             if this_node.nchild > 1:
@@ -308,10 +317,11 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     np_arr_nextprog = np.array([arr_nextprog[j] for j in range(count)],dtype='int_')
     np_arr_pos = np.zeros((count,3))-1
     np_arr_velo = np.zeros((count,3))-1
+    np_arr_spin = np.zeros((count,3))-1
     for j in range(count):
         np_arr_pos[j] = [arr_pos[j][k] for k in range(3)]
         np_arr_velo[j] = [arr_velo[j][k] for k in range(3)]
-
+        np_arr_spin[j] = [arr_spin[j][k] for k in range(3)]
     free(arr_mhalo)
     free(arr_Vmax)
     free(arr_nodid)
@@ -322,7 +332,8 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     free(arr_nextprog)
     free(arr_pos)
     free(arr_velo)
-    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_pos,np_arr_velo)
+    free(arr_spin)
+    return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_pos,np_arr_velo,np_arr_spin)
 
 cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int n_FoF_trees):
     '''
@@ -330,20 +341,25 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int 
     ----------------------
     Input:
         i          : the level of the tree worked with in this call
-        this_node  : the node where to start counting (best use to start with the base node)
         n_halo_max : maximum size of the merger tree
         merger_tree: list of the nodes of the given merger tree
+        n_FoF_trees: number of merger trees in the FoF group
     ----------------------
     Output:
-        count     : the number of nodes inside the tree
-        arr_halo  : the masses of the different nodes
-        arr_nodid : the nodes id
-        arr_treeid: the id of the tree
-        arr_time  : the time level of the nodes
-        arr_1prog : first progenitor of the nodes (-1 is no first progenitor)
-        arr_desc  : descandant of the nodes (-1 is no descandant)
+        count       : the number of nodes inside the tree
+        arr_halo    : the masses of the different nodes
+        arr_nodid   : the nodes id
+        arr_treeid  : the id of the tree
+        arr_time    : the time level of the nodes
+        arr_1prog   : first progenitor of the nodes (-1 is no first progenitor)
+        arr_desc    : descandant of the nodes (-1 is no descandant)
+        arr_nextprog: next progenitor of node (-1 is no other progenitors)
+        arr_1FoF    : the id of the first node in a FoF group
+        arr_nextFoF : the id of the next node in a FoF group (-1 is no other nodes in the group)
+        arr_pos     : 3-position of node
+        arr_velo    : 3-velocity of node
+        arr_spin    : 3-spin of node
     '''
-    print('In side node_vals_and_counter_FoF()')
     cdef:
         int count = 0
         double* arr_mhalo = NULL
@@ -876,6 +892,7 @@ cdef split_result split(
     the merger tree.
     ----------------------
     Input:
+        Sig       : Object from Class sig_alph for the computation of sigma_cdm and alpha
         m_2       : Mass of the current node
         w         : Current time
         m_min     : Minimum mass to resolve
@@ -1140,9 +1157,15 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
         a_0       : Value of scale factor today or up to which time the tree should be calculated
         m_min     : Minimum mass; scale at which the mass is not resolveable
         a_lev     : Array of the different times for which to take snapshots of the tree
+        w_lev     : Array of the different values of delta_crit for the different times
         n_lev     : Number of time levels
         n_frag_max: Maximum number of halos in one tree
         n_frag_tot: Start of counter of nodes inside the tree
+        mode      : Defining the usage of the merger tree.
+        pos_base  : Initial 3-position of base node
+        velo_base : Initial 3-velocity of base node
+        Sig       : Object from Class sig_alph for the computation of sigma_cdm and alpha
+        scaling   : Factor of scattering of positional change over time
     ----------------------
     Output:
         merger_tree: Merger tree of given mass, with parents, siblings, children and mass
@@ -1478,18 +1501,27 @@ def get_tree_vals(
         a_0       : Value of scale factor today or up to which time the tree should be calculated
         m_min     : Minimum mass; scale at which the mass is not resolveable
         a_lev     : Array of the different times for which to take snapshots of the tree
+        w_lev     : Array of the different values of delta_crit for the different times
         n_lev     : Number of time levels
         n_frag_max: Maximum number of halos in one tree
         n_frag_tot: Start of counter of nodes inside the tree
+        pos_base  : Initial 3-position of base node
+        velo_base : Initial 3-velocity of base node
+        scaling   : Factor of scattering of positional change over time
     ----------------------
     Output:
-        count     : Counter that counts the length/number of nodes in the tree
-        arr_mhalo : Array of masses of the different halos inside the tree
-        arr_nodid : Array of node ID's inside the tree
-        arr_treeid: Array of the tree's ID
-        arr_time  : Array of the time levels of the different nodes
-        arr_1prog : Array of the first progenitor of the different nodes
-        arr_desc  : Array of the descandents of the different nodes
+        count       : Counter that counts the length/number of nodes in the tree
+        arr_mhalo   : Array of masses of the different halos inside the tree
+        arr_Vmax    : Array of maximum node velocity
+        arr_nodid   : Array of node ID's inside the tree
+        arr_treeid  : Array of the tree's ID
+        arr_time    : Array of the time levels of the different nodes
+        arr_1prog   : Array of the first progenitor of the different nodes
+        arr_desc    : Array of the descandents of the different nodes
+        arr_nextprog: Array of the next progenitor of the different nodes
+        arr_pos     : Array of the positions of the different nodes
+        arr_velo    : Array of the velocities of the different nodes
+        arr_spin    : Array of the spins of the different nodes
     '''
 
     i_seed_0 -=19*(1+i)
@@ -1507,7 +1539,7 @@ def get_tree_vals(
     # print('Made a tree ',i+1)
     this_node = merger_tree[0]
     # print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -1521,7 +1553,7 @@ def get_tree_vals(
         print('No Progenitors.')
     free(merger_tree)
     free(this_node)
-    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo
+    return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin
 
 def get_tree_vals_FoF(
     int i,
@@ -1549,18 +1581,27 @@ def get_tree_vals_FoF(
         m_min     : Minimum mass of the FoF-group; scale at which the mass is not resolveable
         m_res     : Mass resolution for the subhalos within the FoF-group
         a_lev     : Array of the different times for which to take snapshots of the tree
+        w_lev     : Array of the different values of delta_crit for the different times
         n_lev     : Number of time levels
         n_frag_max: Maximum number of halos in one tree
         n_frag_tot: Start of counter of nodes inside the tree
+        pos_base  : Initial 3-position of base node
+        velo_base : Initial 3-velocity of base node
+        scaling   : Factor of scattering of positional change over time
     ----------------------
     Output:
-        count     : Counter that counts the length/number of nodes in the tree
-        arr_mhalo : Array of masses of the different halos inside the tree
-        arr_nodid : Array of node ID's inside the tree
-        arr_treeid: Array of the tree's ID
-        arr_time  : Array of the time levels of the different nodes
-        arr_1prog : Array of the first progenitor of the different nodes
-        arr_desc  : Array of the descandents of the different nodes
+        count       : Counter that counts the length/number of nodes in the tree
+        arr_mhalo   : Array of masses of the different halos inside the tree
+        arr_Vmax    : Array of maximum node velocity
+        arr_nodid   : Array of node ID's inside the tree
+        arr_treeid  : Array of the tree's ID
+        arr_time    : Array of the time levels of the different nodes
+        arr_1prog   : Array of the first progenitor of the different nodes
+        arr_desc    : Array of the descandents of the different nodes
+        arr_nextprog: Array of the next progenitor of the different nodes
+        arr_pos     : Array of the positions of the different nodes
+        arr_velo    : Array of the velocities of the different nodes
+        arr_spin    : Array of the spins of the different nodes
     '''
 
     i_seed_0 -=19*(1+i)
@@ -1910,6 +1951,7 @@ def get_tree_vals_FoF(
 # from libc.stdio cimport printf
 
 def speed_test(
+    int j,
     int n_tree,
     int i_seed_0,
     double m_0,
@@ -1935,7 +1977,7 @@ def speed_test(
         int i
     Sig = sig_alph(trees)
     n_frag_tot = 0
-    for i in range(n_tree):
+    for i in range(j*n_tree,n_tree+j*n_tree):
         count = 0
         i_seed_0 -=19*(1+i)
         srand(i_seed_0)
@@ -1958,9 +2000,11 @@ def speed_test(
         free(merger_tree)
         free(this_node)
     print('All trees together have a length of:',c)
+    return
 
 
 cdef double m_cen_of_FoF(double m):
+    # Function to calculate the mass of the central halo in a FoF group
     cdef double m_cen
     if m<2e12:
         m_cen = m*np.random.uniform(0.6,1)
@@ -1969,6 +2013,7 @@ cdef double m_cen_of_FoF(double m):
     return m_cen
 
 cdef double spin_abs(double m,str mode='Normal'):
+    # Function to calculate the absolute value of the spin of a halo
     cdef double spin_val
     if m<6e12:
         spin_val = np.random.normal(10+(m/5e8)**0.9,0.1*(10+(m/5e8)**0.9))
@@ -1997,6 +2042,7 @@ cdef double spin_abs(double m,str mode='Normal'):
     return spin_val
 
 cdef int n_subs_in_FoF(double m):
+    # Function to calculate the number of halos in a FoF group
     n_subs = int(round(0.85+(m/1e11)**(9.2/10)))
     if m<1e11:
         if np.random.random()>0.7:
@@ -2009,7 +2055,22 @@ cdef int n_subs_in_FoF(double m):
     return int(n_subs)
 
 cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
-    # print('In pos_and_velo')
+    '''
+    Function that calculates the positions and velocities of the different halos 
+    in a tree either in the FoF or Normal case.
+    ----------------------
+    Input:
+        merger_tree: Merger tree containing the different halos
+        n_frag_tot : Number of halos in merger tree
+        pos_base   : Initial 3-position of base node
+        velo_base  : Initial 3-velocity of base node
+        a_lev      : Array of the different times for which to take snapshots of the tree
+        scaling    : Factor of scattering of positional change over time
+        mode       : Defining the case the function is called in
+    ----------------------
+    Output:
+        merger_tree: Updated merger tree
+    '''
     cdef double timestep
     cdef Tree_Node* this_node
     cdef int i,j,level,c
@@ -2115,8 +2176,24 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
     return merger_tree
 
 cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str halo_type,double[:] position_of_node,double scaling):
-    # print('In velo_routine')
-    # some routine incoming
+    '''
+    Routine to calculate the 3-position and 3-velocity of the halos.
+    ----------------------
+    Input:
+        this_node  : Halo to which the position or velocity is calculated
+        timestep   : Timedifference to the parent; if parent=NULL timestep=1
+        mode       : Defining the case the function is called in; either 'pos' or 'velo'
+                     for position or velocity, respectivly
+        halo_type  : Type of halo; either 'cen' or 'sat' 
+                     for central or satelite, respectivly
+        pos_of_node: Initial 3-position of parent or base node
+        scaling    : Factor of scattering of positional change over time
+    ----------------------
+    Output:
+        temp_pos : 3-position of the halo
+                   --or--
+        temp_velo: 3-velocity of the halo 
+    '''
     cdef double[:] temp_velo,temp_pos
     cdef double adding[3]
     cdef double velo_summ
@@ -2163,7 +2240,20 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
         return temp_velo 
 
 cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] position_of_node):
-    # print('In satelite_pos_velo')
+    '''
+    Routine to calculate the 3-position and 3-velocity of the satelite halos.
+    ----------------------
+    Input:
+        this_node  : Node to which the position or velocity is calculated
+        mode       : Defining the case the function is called in; either 'pos' or 'velo'
+                     for position or velocity, respectivly
+        pos_of_node: Initial 3-position of parent or base node
+    ----------------------
+    Output:
+        temp_arr: 3-position of the satelite halo
+                  --or--
+        temp_arr: 3-velocity of the satelite halo
+    '''
     cdef int i,dirr
     cdef double random_number
     cdef double[:] temp_arr
@@ -2198,7 +2288,19 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
         return temp_arr
 
 cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,str mode='Normal'):
-    # print('In spin_3_calc()')
+    '''
+    Function that calculates the 3-spins of the different halos 
+    in a tree either in the FoF or Normal case.
+    ----------------------
+    Input:
+        merger_tree: Merger tree containing the different halos
+        n_frag_tot : Number of halos in merger tree
+        n_lev      : Number of time levels
+        mode       : Defining the case the function is called in
+    ----------------------
+    Output:
+        merger_tree: Updated merger tree
+    '''
     cdef Tree_Node* this_node
     cdef int i,level
     cdef double s_1,s_2,s_3,s_sum,s_up,s_low,mass,scale
@@ -2289,6 +2391,9 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
     return merger_tree
 
 cdef class random_masses:
+    # Class to draw masses randomly following either the Press & Schechter (PS)
+    # Halo Mass Function (HMF) or the Sheth & Tormen (ST) HMF
+    #
     cdef double delta_c
     cdef int n
     cdef double p
@@ -2305,21 +2410,35 @@ cdef class random_masses:
         self.SigAlph = sig_alph(trees)
     
     cdef double dln_nu_dln_m(self,double m):
+        # Function that both PS and ST need for the calculation
         return 4*log(self.delta_c)*self.SigAlph.alpha(m)
     
     def ST_func(self,double m):
+        # ST HMF
         cdef double nu, nu_f_ST
         nu = self.delta_c**2/self.SigAlph.sigma_cdm(m)**2
         nu_f_ST = self.A_p*(1+(self.q*nu)**(-self.p))*np.sqrt((self.q*nu)/(2*np.pi))*np.exp(-(self.q*nu)/2)
         return 1/(m**2)*nu_f_ST*self.dln_nu_dln_m(m)
     
     def PS_func(self,double m):
+        # PS HMF
         cdef double nu, nu_f_PS
         nu = self.delta_c**2/(self.SigAlph.sigma_cdm(m))**2
         nu_f_PS = np.sqrt(nu/(2*np.pi))*np.exp(-nu/2)
         return 1/(m**2)*nu_f_PS*self.dln_nu_dln_m(m)
 
     def random_ST(self,double m_min,double m_max,int n=100):
+        '''
+        Function to make a random-mass-drawing function after ST.
+        ----------------------
+        Input:
+            m_min: Lower mass limit
+            m_max: Higher mass limit
+            n    : Number of steps for the description of the CDF
+        ----------------------
+        Output:
+            Function to randomly draw masses
+        '''
         cdef np.ndarray masses = np.geomspace(m_min,m_max,n,dtype=np.float64)
         cdef int i
         cdef np.ndarray temp_ST = np.zeros(n) 
@@ -2334,6 +2453,17 @@ cdef class random_masses:
         return interp1d(cdf_ST,masses,kind='cubic',bounds_error=False,fill_value=(m_min,m_max))
 
     def random_PS(self,double m_min,double m_max,int n=100):
+        '''
+        Function to make a random-mass-drawing function after PS.
+        ----------------------
+        Input:
+            m_min: Lower mass limit
+            m_max: Higher mass limit
+            n    : Number of steps for the description of the CDF
+        ----------------------
+        Output:
+            Function to randomly draw masses
+        '''
         cdef np.ndarray masses = np.geomspace(m_min,m_max,n,dtype=np.float64)
         cdef int i
         cdef np.ndarray temp_PS = np.zeros(n) 
