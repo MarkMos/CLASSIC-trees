@@ -19,23 +19,24 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
     count = np.array([count],dtype='int_')
     i = np.array([i],dtype='int_')
 
     return {
-        "arr_mhalo": arr_mhalo,
+        'arr_mhalo': arr_mhalo,
         'arr_Vmax': arr_Vmax,
-        "arr_nodid": arr_nodid,
-        "arr_treeid": arr_treeid,
-        "arr_time": arr_time,
-        "arr_1prog": arr_1prog,
-        "arr_desc": arr_desc,
-        "arr_nextprog": arr_nextprog,
+        'arr_nodid': arr_nodid,
+        'arr_treeid': arr_treeid,
+        'arr_time': arr_time,
+        'arr_1prog': arr_1prog,
+        'arr_desc': arr_desc,
+        'arr_nextprog': arr_nextprog,
         'arr_pos': arr_pos,
         'arr_velo': arr_velo,
-        "count": count,
-        "tree_index": i
+        'arr_spin': arr_spin,
+        'count': count,
+        'tree_index': i
     }
 
 def append_create_dataset(grp,name,data):
@@ -84,8 +85,9 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
             append_create_dataset(grp1,'TreeDescendant',result['arr_desc'])
             append_create_dataset(grp1,'TreeFirstProgenitor',result['arr_1prog'])
             append_create_dataset(grp1,'NextProgenitor',result['arr_nextprog'])
-            append_create_dataset(grp1,'TreePos',result['arr_pos'])
-            append_create_dataset(grp1,'TreeVelo',result['arr_velo'])
+            append_create_dataset(grp1,'SubhaloPos',result['arr_pos'])
+            append_create_dataset(grp1,'SubhaloVelo',result['arr_velo'])
+            append_create_dataset(grp1,'SubhaloSpin',result['arr_spin'])
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
             append_create_dataset(grp1,'TreeIndex',data=result['arr_nodid'])
             append_create_dataset(grp2,'Length',data=result['count'])
@@ -138,6 +140,9 @@ def compute_tree_fast(random_mass,
         n_part      : Number of runs of a Pool
         times       : Either equally spaced times in z or a, or a custom array of z or a
         mode    	: Defining the usage of the merger tree.
+        pos_base    : Initial 3 position of base node
+        velo_base   : Initial 3 velocity of base node
+        scaling     : Factor of scattering of positional change over time
     ----------------------
     Output:
         hdf5-file with values of random or constant mass merger trees

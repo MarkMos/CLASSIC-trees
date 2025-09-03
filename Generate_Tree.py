@@ -64,6 +64,9 @@ def compute_tree(mass,
         z_max       : Maximum redshift for lookback
         times       : Either equally spaced times in z or a, or a custom array of z or a
         mode    	: Defining the usage of the merger tree.
+        pos_base    : Initial 3 position of base node
+        velo_base   : Initial 3 velocity of base node
+        scaling     : Factor of scattering of positional change over time
     ----------------------
     Output:
         hdf5-file if file_name is not None
@@ -128,9 +131,9 @@ def compute_tree(mass,
             print(pos_base)
             print(vel_base)
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             print(arr_pos[0])
             print(arr_velo[0])
             # np.savetxt('PositionNormalTree_100percentPos.txt',arr_pos)
