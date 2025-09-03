@@ -351,10 +351,10 @@ a = a[::-1][:]
 tree = ct.trees()
 tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 set_trees(tree)
-# tree.comp_speed()
+tree.comp_speed()
 # tree.compute_slow(mass=1e14,m_res=1e8,mode='Normal',z_max=15,n_lev=20,vel_base=np.array([100,90,100],dtype=np.float64),scaling=3e-1)#,file_name=file)
 # tree.compute_slow(mass=2e13,m_res=1e8,mode='FoF',vel_base=np.array([100,90,100],dtype=np.float64))#,file_name=file)
-tree.compute_fast(random_mass='ST',file_name=file,n_part=50,n_tree=40,scaling=0.5,z_max=15,n_lev=20)
+# tree.compute_fast(random_mass='ST',file_name=file,n_part=50,n_tree=40,scaling=0.5,z_max=15,n_lev=20)
 # tree.compute_fast(mass=1e14,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)
 
 # import time
