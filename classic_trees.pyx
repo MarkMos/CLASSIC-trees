@@ -587,43 +587,43 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode) 
             merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
     return merger_tree
 
-cdef int number_of_subs(double m):
-    # Function to estimate the number of subhalos of a halo of given mass.
-    return int(round(0.85+(m/5e11)**(8/10)))
-
-cdef Tree_Node** build_FoFs(Tree_Node** merger_tree,Tree_Node* this_node):
-    cdef int child_index, i_frag
-    if this_node.nchild > 1:
-        child_index = tree_index(this_node.child)
-        for i_frag in range(child_index, child_index + this_node.nchild):
-            if i_frag-child_index<number_of_subs(this_node.mhalo):
-                merger_tree[i_frag].FirstInFoF = merger_tree[child_index]
-                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
-            else:
-                merger_tree[i_frag].FirstInFoF = merger_tree[i_frag]                
-                merger_tree[i_frag].NextInFoF = NULL
-        '''
-        if merger_tree[child_index+1].mhalo > 0.7*merger_tree[child_index].mhalo:
-            merger_tree[child_index+1].FirstInFoF = merger_tree[child_index+1]
-            merger_tree[child_index+1].NextInFoF = NULL
-            merger_tree[child_index].NextInFoF = merger_tree[child_index+2]
-            for i_frag in range(child_index+2, child_index + this_node.nchild -1):
-                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
-        else:
-            for i_frag in range(child_index, child_index + this_node.nchild -1):
-                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
-        '''
-        merger_tree[child_index+this_node.nchild].NextInFoF = NULL
-    elif this_node.nchild==1:
-        child_index = tree_index(this_node.child)
-        merger_tree[child_index].FirstInFoF= merger_tree[child_index]
-        merger_tree[child_index].NextInFoF = NULL
-    else:
-        return merger_tree
-    return merger_tree
+#cdef int number_of_subs(double m):
+#    # Function to estimate the number of subhalos of a halo of given mass.
+#    return int(round(0.85+(m/5e11)**(8/10)))
+#
+#cdef Tree_Node** build_FoFs(Tree_Node** merger_tree,Tree_Node* this_node):
+#    cdef int child_index, i_frag
+#    if this_node.nchild > 1:
+#        child_index = tree_index(this_node.child)
+#        for i_frag in range(child_index, child_index + this_node.nchild):
+#            if i_frag-child_index<number_of_subs(this_node.mhalo):
+#                merger_tree[i_frag].FirstInFoF = merger_tree[child_index]
+#                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+#            else:
+#                merger_tree[i_frag].FirstInFoF = merger_tree[i_frag]                
+#                merger_tree[i_frag].NextInFoF = NULL
+#        '''
+#        if merger_tree[child_index+1].mhalo > 0.7*merger_tree[child_index].mhalo:
+#            merger_tree[child_index+1].FirstInFoF = merger_tree[child_index+1]
+#            merger_tree[child_index+1].NextInFoF = NULL
+#            merger_tree[child_index].NextInFoF = merger_tree[child_index+2]
+#            for i_frag in range(child_index+2, child_index + this_node.nchild -1):
+#                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+#        else:
+#            for i_frag in range(child_index, child_index + this_node.nchild -1):
+#                merger_tree[i_frag].NextInFoF = merger_tree[i_frag+1]
+#        '''
+#        merger_tree[child_index+this_node.nchild].NextInFoF = NULL
+#    elif this_node.nchild==1:
+#        child_index = tree_index(this_node.child)
+#        merger_tree[child_index].FirstInFoF= merger_tree[child_index]
+#        merger_tree[child_index].NextInFoF = NULL
+#    else:
+#        return merger_tree
+#    return merger_tree
 
 cdef class functions:
-    # class to define the different functions used in the making of the tree
+    # class to define the function for delta_crit used in the making of the tree
     cdef int n_table, n_v, n_sum
     cdef float a, a_min, delta_c
     cdef np.ndarray data
@@ -632,7 +632,7 @@ cdef class functions:
         self.data = np.loadtxt(filename)
     def delta_crit(self,double a):
         '''
-        Function to compute the critical delta.
+        Function to compute the critical delta at scale factor a.
         '''
         l_0 = trees.l_0
         omega_0 = trees.omega_0
@@ -715,6 +715,7 @@ cdef class functions:
         free(a_flat)
         return delta_c
 cdef class sig_alph:
+    # Class for the functions sigma_cdm and alpha
     cdef object trees
     cdef double G_used
     cdef np.ndarray k_0_np
@@ -775,6 +776,8 @@ cdef class sig_alph:
             self.Sig[i] = log(self.sig_int(self.m_array[i]))
             self.log_m[i] = log(self.m_array[i])
         self.sigma_spline = cspline_alloc(self.num_points,self.log_m_r,self.sigma_temp)
+
+    # Alpha function
     cdef void _precompute_alpha(self):
         cdef i
         for i in range(self.num_points):
@@ -790,6 +793,7 @@ cdef class sig_alph:
     cpdef double sigma_cdm(self,double m):
         return cspline_eval(self.sigma_spline, log(m))
 
+    # Interpolated alpha function
     cpdef double alpha(self,double m):
         return cspline_deriv(self.alpha_spline,log(m))
 
@@ -857,6 +861,7 @@ cdef double J_unresolved(double z) nogil:
 cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
 
 cdef double min3(double a,double b,double c) nogil:
+    # Function to compute the minimum of the 3 doubles a,b and c
     if a<b and a<c:
         return a
     elif b<a and b<c:
@@ -864,6 +869,7 @@ cdef double min3(double a,double b,double c) nogil:
     else:
         return c
 cdef double min2(double a,double b) nogil:
+    # Function to compute the minimum of the 2 doubles a and b
     if a<b:
         return a
     else:
@@ -1715,6 +1721,9 @@ def get_tree_vals_FoF(
     cdef double m_group, m_max_subs, m_sum, m_temp, m_sum_FoF, m
     cdef int ind_subs, ind_max_subs, n_range
     # ind_max_subs = 0
+
+    arr_GroupMass = np.zeros(n_offset_sum)
+
     for level in range(len(lev_indx_FoF)):
         m_max_subs = 0.0
         # print(level)
@@ -1732,6 +1741,7 @@ def get_tree_vals_FoF(
                     ind_max_subs = ind_subs
             # print(ind_max_subs)
             merger_tree_subs[ind_max_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
+            arr_GroupMass[ind_max_subs] = m_group
             if merger_tree_subs[ind_max_subs].jlevel!=0:
                 for j in range(3):
                     merger_tree_subs[ind_max_subs].pos[j] = merger_tree_FoF[lev_indx_FoF[level][0]].pos[j]
@@ -1762,6 +1772,7 @@ def get_tree_vals_FoF(
                         m_sum += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         c += 1
                         merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs]
+                        arr_GroupMass[lev_indx_subs[level][k]] = 0.0
                         # print(lev_indx_subs[level][k],ind_max_subs,merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF.index) # == merger_tree_FoF[ind_max_subs])
                         if k<n_range-1:
                             merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
@@ -1770,6 +1781,7 @@ def get_tree_vals_FoF(
                         else:
                             merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                 else:
+                    arr_GroupMass[lev_indx_subs[level][k]] = merger_tree_subs[lev_indx_subs[level][k]].mhalo
                     merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][k]]
                     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                     if level==0:
@@ -1846,6 +1858,7 @@ def get_tree_vals_FoF(
                 m_temp = merger_tree_subs[ind_subs].mhalo
                 if count_list[j]<n_range_list[j] and m_sum_list[j]+m_temp<=ms_group[j]:
                     if lev_indx_subs[level][k]==ind_max_subs_list[j]:
+                        arr_GroupMass[lev_indx_subs[level][k]] = ms_group[j]
                         merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][k]]
                         m_sum_list[j] += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         count_list[j] += 1
@@ -1854,15 +1867,17 @@ def get_tree_vals_FoF(
                         else:
                             merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                     else:
+                        arr_GroupMass[lev_indx_subs[level][k]] = merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         m_sum_list[j] += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         count_list[j] += 1
-                        merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs]
+                        merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs_list[j]]
                         # print(lev_indx_subs[level][k],ind_max_subs,merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF.index) # == merger_tree_FoF[ind_max_subs])
                         if k<n_range_list[j]-1:
                             merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
                         else:
                             merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                 else:
+                    arr_GroupMass[lev_indx_subs[level][k]] = merger_tree_subs[lev_indx_subs[level][k]].mhalo
                     merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][k]]
                     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                     if level==0:
@@ -1871,6 +1886,7 @@ def get_tree_vals_FoF(
     for level in range(len(lev_indx_FoF),n_lev):
         for ind_subs in lev_indx_subs[level]:
             merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
+            arr_GroupMass[ind_subs] = merger_tree_subs[lev_indx_subs[level][k]].mhalo
             # merger_tree_subs[ind_subs].pos = np.random.uniform(0,100,3)
             # merger_tree_subs[ind_subs].velo = np.random.normal(100,10,3)
             merger_tree_subs[ind_subs].NextInFoF = NULL
@@ -1945,7 +1961,7 @@ def get_tree_vals_FoF(
     else:
         print('No Progenitors.')
 
-    return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin
+    return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass
 
 # from cython.parallel import prange
 # from libc.stdio cimport printf
