@@ -106,7 +106,7 @@ class trees:
         h_0 = self.h_0
         from GenerateTreeFast import compute_tree_fast
         compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
-                          a_halo,m_res,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling)
+                          a_halo,m_res,m_min,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling)
     def compute_slow(self,
                      mass = None,
                      n_halo_max = 1000000,
