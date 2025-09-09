@@ -1659,6 +1659,7 @@ def get_tree_vals_FoF(
     n_halos = n_subs_in_FoF(m_0)
     print('Number of subhalos in first FoF-group: ',n_halos)
     cdef double* m_halo = <double*>malloc((n_halos)*sizeof(double))
+    cdef int c_halos = 0
     m_halo[0] = m_cen_of_FoF(m_0)
 
     if n_halos>=1:
@@ -1668,6 +1669,12 @@ def get_tree_vals_FoF(
         while mass_sum>m_0 or mass_sum<0.8*m_0:
             mass_temp = ppf_ST(np.random.rand(n_halos-1))
             mass_sum = m_halo[0] + np.sum(mass_temp)
+            c_halos += 1
+            if c_halos>1000:
+                print('Here is the Problem masses')
+                m_halo[0] = m_cen_of_FoF(m_0)
+                ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
+                c_halos = 0
             # print(mass_sum)
             # count +=1
         # print(count)
@@ -1847,10 +1854,15 @@ def get_tree_vals_FoF(
                 m_sum_list.append(0.0)
                 n_range_list.append(n_subs_in_FoF(merger_tree_FoF[j].mhalo))
             n_range = sum(n_range_list)
-            while n_range>len(lev_indx_subs[level]):
-                for j in lev_indx_FoF[level]:
-                    n_range_list.append(n_subs_in_FoF(merger_tree_FoF[j].mhalo))
-                n_range = sum(n_range_list)
+            # while n_range>len(lev_indx_subs[level]):
+            #     # print('in while loop')
+            #     print('Here is the Problem n_range',merger_tree_FoF[0].mhalo)
+            #     n_range_list = []
+            #     for j in lev_indx_FoF[level]:
+            #         n_range_list.append(n_subs_in_FoF(merger_tree_FoF[j].mhalo))
+            #     n_range = sum(n_range_list)
+            #     print('Number of n_range:',n_range,'compared to',len(lev_indx_subs[level]))
+            #     print(len(n_range_list))
             m_sum_FoF = sum(ms_group)
             ms_group = np.array(ms_group)
             m_sum_list = np.array(m_sum_list)
@@ -1905,7 +1917,9 @@ def get_tree_vals_FoF(
                         merger_tree_subs[lev_indx_subs[level][k]].pos = np.random.uniform(0,100,3)
                         merger_tree_subs[lev_indx_subs[level][k]].velo = np.random.normal(100,10,3)
     if len(lev_indx_subs)==n_lev:
+        # print('n_lev-part')
         for level in range(len(lev_indx_FoF),n_lev):
+            # print(level)
             for ind_subs in lev_indx_subs[level]:
                 merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                 arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
@@ -1913,7 +1927,9 @@ def get_tree_vals_FoF(
                 # merger_tree_subs[ind_subs].velo = np.random.normal(100,10,3)
                 merger_tree_subs[ind_subs].NextInFoF = NULL
     elif len(lev_indx_subs)>len(lev_indx_FoF) and len(lev_indx_subs)<n_lev:
-         for level in range(len(lev_indx_FoF),len(lev_indx_subs)):
+        # print('other part')
+        for level in range(len(lev_indx_FoF),len(lev_indx_subs)):
+            # print(level)
             for ind_subs in lev_indx_subs[level]:
                 merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                 arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
@@ -1970,7 +1986,7 @@ def get_tree_vals_FoF(
 
     print('Number of nodes in FoF-group subhalo-tree',1,'is',arr_count[0])
 
-    print('Example information from FoF-group subhalo-tree:')
+    print('Example information from FoF-group-tree',i+1,' subhalo-tree:')
     this_node = merger_tree_subs[0]
     print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
     if arr_count[0]>1:
@@ -1978,17 +1994,17 @@ def get_tree_vals_FoF(
         print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     else:
         print('No Progenitors.')
+    if len(arr_count)>1:
+        print('Number of nodes in FoF-group subhalo-tree',2,'is',arr_count[1])
 
-    print('Number of nodes in FoF-group subhalo-tree',2,'is',arr_count[1])
-
-    print('Example information from FoF-group subhalo-tree:')
-    this_node = merger_tree_subs[n_offset_arr[0]]
-    print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-    if this_node.nchild>0:
-        this_node = this_node.child
-        print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-    else:
-        print('No Progenitors.')
+        print('Example information from FoF-group',i+1,' subhalo-tree:')
+        this_node = merger_tree_subs[n_offset_arr[0]]
+        print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+        if this_node.nchild>0:
+            this_node = this_node.child
+            print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+        else:
+            print('No Progenitors.')
 
     return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen
 
@@ -2052,13 +2068,21 @@ cdef double m_cen_of_FoF(double m):
     # Function to calculate the mass of the central halo in a FoF group
     cdef double m_cen
     if m<2e12:
-        m_cen = m*np.random.uniform(0.6,1)
+        m_cen = m*np.random.normal(0.8,0.05)
+        if m_cen>m:
+            m_cen = m
     elif 2e12<=m<3e13:
-        m_cen = m*np.random.uniform(0.3,1)
+        m_cen = m*np.random.normal(0.8,0.05)
+        if m_cen>m:
+            m_cen = 0.9*m
     elif 3e13<=m<1e14:
-        m_cen = m*np.random.uniform(0.2,0.9)
+        m_cen = m*np.random.normal(0.8,0.05)
+        if m_cen>m:
+            m_cen = 0.8*m
     else:
-        m_cen = m*np.random.uniform(0.1,0.8)
+        m_cen = m*np.random.normal(0.6,0.06)
+        if m_cen>m:
+            m_cen = 0.4*m
     return m_cen
 
 cdef double spin_abs(double m,str mode='Normal'):
@@ -2096,11 +2120,12 @@ cdef int n_subs_in_FoF(double m):
     if m<1e11:
         if np.random.random()>0.7:
             n_subs +=1
-    else:
-        if np.random.random()<0.5:
-            n_subs += np.random.uniform(0,0.4)*n_subs
         else:
-            n_subs -= np.random.uniform(0,0.5)*n_subs
+            n_subs -=1
+    elif 1e11<=m<4e13:
+        n_subs += np.random.normal(0,0.1)*n_subs
+    else:
+        n_subs = np.random.normal(3e2,10)
     return int(n_subs)
 
 cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
