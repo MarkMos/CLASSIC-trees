@@ -58,7 +58,7 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
         'arr_Vmax': arr_Vmax,
         'arr_nodid': arr_nodid,
         'arr_treeid': arr_treeid,
-        'arr_time': arr_time,
+        'arr_time': n_lev-1-arr_time,
         'arr_1prog': arr_1prog,
         'arr_desc': arr_desc,
         'arr_nextprog': arr_nextprog,
@@ -154,8 +154,8 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
         
         if nth_run is False:
             grp3 = f.create_group('TreeTimes')
-            d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
-            d_time= grp3.create_dataset('Time',data=a_lev)
+            d_red = grp3.create_dataset('Redshift',data=1/a_lev[::-1]-1)
+            d_time= grp3.create_dataset('Time',data=a_lev[::-1])
         if 'Parameters' not in f:
             f.create_group('Parameters')
             f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
@@ -181,7 +181,7 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
             append_create_dataset(grp1,'SubhaloNr',result['arr_SubhaloNr'])
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
             append_create_dataset(grp1,'TreeIndex',data=result['arr_nodid'])
-            append_create_dataset(grp2,'Length',data=np.array([int(np.sum(result['count']))],dtype='int_'))
+            append_create_dataset(grp2,'Length',data=np.array([int(np.sum(result['count']))],dtype='int32'))
             append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
             append_create_dataset(grp2,'TreeID',data=result['tree_index'])
             start_offset += np.sum(result['count'])
@@ -309,6 +309,10 @@ def compute_tree_fast(random_mass,
         grp.attrs['LastSnapShotNr'] = int(n_lev - 1)
         grp.attrs['Nhalos_ThisFile'] = start_offset
         grp.attrs['Nhalos_Total'] = start_offset
-        grp.attrs['Ntrees_ThisFile'] = int(n_tree*n_part)
-        grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
-        grp.attrs['NumFiles'] = 1
+        if mode!='FoF':
+            grp.attrs['Ntrees_ThisFile'] = int(n_tree*n_part)
+            grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
+        else:
+            grp.attrs['Ntrees_ThisFile'] = int(n_tree*n_part)
+            grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
+        grp.attrs['NumFiles'] = np.int32(1)
