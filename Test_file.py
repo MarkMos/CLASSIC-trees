@@ -342,22 +342,23 @@ import CLASSIC_trees as ct
 # import numpy as np
 from classic_trees import set_trees, functions, random_masses
 
-file = 'TreeTest_SageCompSurfaceCalc22.hdf5'
+file = 'TreeTest_1e12_20000.hdf5'
 a = np.array([0.0625423207,0.0697435265,0.0770403364,0.0819350757,0.0871408012,0.0935597132,0.0999766069,0.10532572,0.110961031,0.116345263,0.121414094,0.126703761,0.132223883,0.137332233,0.142637941,0.14814863,0.153872219,0.160575993,0.166779702,0.172404243,0.178218468,0.183357906,0.188645553,0.194085686,0.1996827,0.20544112,0.2113656,0.216432969,0.222674431,0.229095883,0.235702516,0.24249967,0.249492839,0.256687676,0.262841616,0.269143094,0.275595646,0.282202894,0.288968547,0.295896403,0.30299035,0.31025437,0.317692541,0.325309039,0.333108137,0.341094214,0.349271753,0.357645343,0.366219686,0.374999594,0.383989995,0.393195935,0.402622583,0.412275229,0.422159292,0.434333459,0.442643994,0.455408895,0.466327063,0.477506988,0.488954945,0.50067736,0.512680813,0.524972043,0.537557948,0.550445592,0.56364221,0.57715521,0.590992177,0.605160876,0.619669262,0.634525479,0.649737864,0.665314958,0.681265504,0.697598455,0.714322979,0.731448464,0.748984523,0.770583627,0.789057929,0.807975142,0.827345884,0.847181028,0.867491709,0.888289327,0.909585556,0.93139235,0.953721949,0.976586888,1.0])
 a = a[::-1][:]
 
 # z = np.array([0,0.09090909090909105,0.19999999999999996,0.33333333333333326,0.4999999999999998,0.7142857142857142,1,1.3999999999999995,1.9999999999999996,3])
 
-tree = ct.trees()
-tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
-set_trees(tree)
+# tree = ct.trees()
+# tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':0.75}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+# set_trees(tree)
 # tree.comp_speed()
-# tree.compute_slow(mass=1e15,m_res=1e10,mode='Normal',z_max=20,n_lev=2,vel_base=np.array([100,90,100],dtype=np.float64),scaling=3e-1)#,file_name=file)
+# tree.compute_slow(mass=1e12,m_res=1e8,times='equal z',mode='Normal',z_max=4,n_lev=10,vel_base=np.array([100,90,100],dtype=np.float64))#,file_name=file)
 # tree.compute_fast(mass=1e14,m_res=1e8,mode='FoF',vel_base=np.array([100,90,100],dtype=np.float64),n_part=2,n_tree=2,file_name=file)
 # tree.compute_slow(mass=2e14,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64))
-tree.compute_fast(random_mass='ST',m_max=5e14,m_min=1e12,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),n_part=5000,n_tree=4,file_name=file)
+# tree.compute_fast(random_mass='ST',m_max=5e14,m_min=1e12,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),n_part=5000,n_tree=4,file_name=file)
 # tree.compute_fast(random_mass='ST',file_name=file,n_part=50,n_tree=40,scaling=0.5,z_max=15,n_lev=20)
-# tree.compute_fast(mass=1e14,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)
+# tree.compute_fast(mass=1e12,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)
+# tree.compute_fast(mass=1e12,m_res=1e8,times='equal z',mode='Normal',z_max=4,n_lev=10,file_name=file,n_part=400,n_tree=50)
 
 # import time
 
@@ -439,26 +440,26 @@ tree.compute_fast(random_mass='ST',m_max=5e14,m_min=1e12,m_res=1e9,mode='FoF',z_
 # p.save('A_ytree1e14andPosVelo.png')
 
 
-# f = h5py.File('TreeTest_FoF_1e12_20000.hdf5')
-# # comp = [-1.9,-1.7,-1.5,-1.3,-1.1,-9e-1,-7e-1,-5e-1,-3e-1,-1e-1,1e-1,3e-1,5e-1,7e-1]
+f = h5py.File(file)
+# comp = [-1.9,-1.7,-1.5,-1.3,-1.1,-9e-1,-7e-1,-5e-1,-3e-1,-1e-1,1e-1,3e-1,5e-1,7e-1]
 
-# # comp_y = 10**(np.array([-2.555,-1.627,-1.368,-1.274,-1.186,-1.083,-9.456e-1,-7.429e-1,-2.967e-1, 4.759e-1,-9.140e-1,-2.206,-3.438,-1.000e+1]))
-# # indx = np.where(f['TreeHalos/SnapNum']==1)[0]
-# coll = []
-# for i in f['TreeTable/StartOffset'][:]:
-#     first_1= f['TreeHalos/TreeFirstProgenitor'][i]
-#     coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
-# plt.hist(coll,bins=50,density=True,label='Our')
-# # plt.plot(comp[:-2],comp_y[:-2])
-# coll_fortran = np.log10(np.loadtxt('/home/markus/code/Fortran_MassOver1e12.txt'))
-# plt.hist(coll_fortran,bins=50,density=True,label='Fortran')
-# # plt.xscale('log')
-# plt.yscale('log')
-# plt.grid()
-# plt.xlabel(r'$\log(M_1/M_2)$')
-# plt.ylabel(r'$\log(f_{cmf})$')
-# plt.legend(title=r'For $M_2 = 1e12$ at $z = 0.444$')
-# plt.savefig('TreeTest_M1M2_1e12_3.png')
+# comp_y = 10**(np.array([-2.555,-1.627,-1.368,-1.274,-1.186,-1.083,-9.456e-1,-7.429e-1,-2.967e-1, 4.759e-1,-9.140e-1,-2.206,-3.438,-1.000e+1]))
+# indx = np.where(f['TreeHalos/SnapNum']==1)[0]
+coll = []
+for i in f['TreeTable/StartOffset'][:]:
+    first_1= f['TreeHalos/TreeFirstProgenitor'][i]
+    coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
+plt.hist(coll,bins=50,density=True,label='CLASSIC-trees')
+# plt.plot(comp[:-2],comp_y[:-2])
+coll_fortran = np.log10(np.loadtxt('/home/markus/code/Fortran_MassOver1e12.txt'))
+plt.hist(coll_fortran,bins=50,density=True,label='Durham',alpha=0.5)
+# plt.xscale('log')
+plt.yscale('log')
+plt.grid()
+plt.xlabel(r'$\log(M_1/M_2)$')
+plt.ylabel(r'$\log(f_{cmf})$')
+plt.legend(title=r'For $M_2 = 1e12$ at $z = 0.444$')
+plt.savefig('TreeTest_M1M2_1e12_betterName.png')
 
 
 # plt.show()
