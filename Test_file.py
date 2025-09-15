@@ -348,11 +348,11 @@ a = a[::-1][:]
 
 # z = np.array([0,0.09090909090909105,0.19999999999999996,0.33333333333333326,0.4999999999999998,0.7142857142857142,1,1.3999999999999995,1.9999999999999996,3])
 
-# tree = ct.trees()
-# tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':0.75}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
-# set_trees(tree)
+tree = ct.trees()
+tree.set(pk_method='class',cosmo_params={'h':0.6711,'Omega_m':0.3,'Omega_Lambda':0.7}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+set_trees(tree)
 # tree.comp_speed()
-# tree.compute_slow(mass=1e12,m_res=1e8,times='equal z',mode='Normal',z_max=4,n_lev=10,vel_base=np.array([100,90,100],dtype=np.float64))#,file_name=file)
+tree.compute_slow(mass=2e14,m_res=1e9,times=a,mode='Normal',vel_base=np.array([100,90,100],dtype=np.float64),n_halo_max=1e7)#,file_name=file)
 # tree.compute_fast(mass=1e14,m_res=1e8,mode='FoF',vel_base=np.array([100,90,100],dtype=np.float64),n_part=2,n_tree=2,file_name=file)
 # tree.compute_slow(mass=2e14,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64))
 # tree.compute_fast(random_mass='ST',m_max=5e14,m_min=1e12,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),n_part=5000,n_tree=4,file_name=file)
@@ -440,26 +440,29 @@ a = a[::-1][:]
 # p.save('A_ytree1e14andPosVelo.png')
 
 
-f = h5py.File(file)
-# comp = [-1.9,-1.7,-1.5,-1.3,-1.1,-9e-1,-7e-1,-5e-1,-3e-1,-1e-1,1e-1,3e-1,5e-1,7e-1]
+# f = h5py.File(file)
 
-# comp_y = 10**(np.array([-2.555,-1.627,-1.368,-1.274,-1.186,-1.083,-9.456e-1,-7.429e-1,-2.967e-1, 4.759e-1,-9.140e-1,-2.206,-3.438,-1.000e+1]))
-# indx = np.where(f['TreeHalos/SnapNum']==1)[0]
-coll = []
-for i in f['TreeTable/StartOffset'][:]:
-    first_1= f['TreeHalos/TreeFirstProgenitor'][i]
-    coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
-plt.hist(coll,bins=50,density=True,label='CLASSIC-trees')
-# plt.plot(comp[:-2],comp_y[:-2])
-coll_fortran = np.log10(np.loadtxt('/home/markus/code/Fortran_MassOver1e12.txt'))
-plt.hist(coll_fortran,bins=50,density=True,label='Durham',alpha=0.5)
-# plt.xscale('log')
-plt.yscale('log')
-plt.grid()
-plt.xlabel(r'$\log(M_1/M_2)$')
-plt.ylabel(r'$\log(f_{cmf})$')
-plt.legend(title=r'For $M_2 = 1e12$ at $z = 0.444$')
-plt.savefig('TreeTest_M1M2_1e12_betterName.png')
+# range_coll = np.linspace(-0.9,0,50)
+# # comp = [-1.9,-1.7,-1.5,-1.3,-1.1,-9e-1,-7e-1,-5e-1,-3e-1,-1e-1,1e-1,3e-1,5e-1,7e-1]
+
+# # comp_y = 10**(np.array([-2.555,-1.627,-1.368,-1.274,-1.186,-1.083,-9.456e-1,-7.429e-1,-2.967e-1, 4.759e-1,-9.140e-1,-2.206,-3.438,-1.000e+1]))
+# # indx = np.where(f['TreeHalos/SnapNum']==1)[0]
+# coll = []
+# for i in f['TreeTable/StartOffset'][:]:
+#     first_1= f['TreeHalos/TreeFirstProgenitor'][i]
+#     coll.append(np.log10(f['TreeHalos/SubhaloMass'][i+first_1]/f['TreeHalos/SubhaloMass'][i]))
+# plt.hist(coll,bins=range_coll,density=True,label='CLASSIC-trees')
+# # plt.plot(comp[:-2],comp_y[:-2])
+# coll_fortran = np.log10(np.loadtxt('/home/markus/code/Fortran_MassOver1e12.txt'))
+# plt.hist(coll_fortran,bins=range_coll,density=True,label='Durham',alpha=0.5)
+# # plt.xscale('log')
+# plt.yscale('log')
+# plt.grid()
+# plt.xlabel(r'$\log(M_1/M_2)$')
+# plt.ylabel(r'$f_{cmf}$')
+# plt.legend(title=r'For $M_2 = 1e12$ at $z = 0.444$')
+# plt.savefig('TreeTest_M1M2_1e12_betterName.png')
+# plt.show()
 
 
 # plt.show()
