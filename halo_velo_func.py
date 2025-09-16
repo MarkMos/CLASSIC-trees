@@ -55,9 +55,10 @@ r_s = 1
 rho_r = rho_s/(r/r_s*(1+r/r_s)**2)
 
 plt.loglog(r,rho_r)
-plt.xlabel(r'$\log(r/r_s)$')
-plt.ylabel(r'$\log(\rho/\rho_s)$')
+plt.xlabel(r'$r/r_s$')
+plt.ylabel(r'$\rho/\rho_s$')
 plt.grid()
+plt.title('NFW profile')
 plt.savefig('NFWprofile.png')
 
 
