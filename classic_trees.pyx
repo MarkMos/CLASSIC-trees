@@ -1678,6 +1678,8 @@ def get_tree_vals_FoF(
             # print(mass_sum)
             # count +=1
         # print(count)
+        mass_temp.sort()
+        mass_temp = mass_temp[::-1]
         for j in range(n_halos-1):
             m_halo[j+1] = mass_temp[j]
 
@@ -1751,6 +1753,7 @@ def get_tree_vals_FoF(
     # ind_max_subs = 0
 
     arr_GroupMass = np.zeros(n_offset_sum)
+    indices_1FoF = []
 
     for level in range(len(lev_indx_FoF)):
         m_max_subs = 0.0
@@ -1768,6 +1771,7 @@ def get_tree_vals_FoF(
                     m_max_subs = merger_tree_subs[ind_subs].mhalo
                     ind_max_subs = ind_subs
             # print(ind_max_subs)
+            indices_1FoF += [ind_max_subs]
             merger_tree_subs[ind_max_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
             arr_GroupMass[ind_max_subs] = m_group
             if merger_tree_subs[ind_max_subs].jlevel!=0:
@@ -1790,31 +1794,28 @@ def get_tree_vals_FoF(
                     if lev_indx_subs[level][k]==ind_max_subs:
                         m_sum += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         c += 1
-                        if k<len(lev_indx_subs[level])-1:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
-                            # if level==0:
-                            #     print(lev_indx_subs[level][k+1],'=',merger_tree_subs[lev_indx_subs[level][k]].NextInFoF.index)
-                        else:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
+                        # if k<len(lev_indx_subs[level])-1:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                        #     # if level==0:
+                        #     #     print(lev_indx_subs[level][k+1],'=',merger_tree_subs[lev_indx_subs[level][k]].NextInFoF.index)
+                        # else:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                     else:
                         m_sum += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         c += 1
                         merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs]
                         arr_GroupMass[lev_indx_subs[level][k]] = 0.0
                         # print(lev_indx_subs[level][k],ind_max_subs,merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF.index) # == merger_tree_FoF[ind_max_subs])
-                        if k<len(lev_indx_subs[level])-1:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
-                            # if level==0:
-                            #     print(lev_indx_subs[level][k+1],'=',merger_tree_subs[lev_indx_subs[level][k]].NextInFoF.index)
-                        else:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
+                        # if k<len(lev_indx_subs[level])-1:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                        #     # if level==0:
+                        #     #     print(lev_indx_subs[level][k+1],'=',merger_tree_subs[lev_indx_subs[level][k]].NextInFoF.index)
+                        # else:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                 else:
                     arr_GroupMass[lev_indx_subs[level][k]] = merger_tree_subs[lev_indx_subs[level][k]].mhalo
                     merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][k]]
                     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
-                    if level==0:
-                        merger_tree_subs[lev_indx_subs[level][k]].pos = np.random.uniform(0,100,3)
-                        merger_tree_subs[lev_indx_subs[level][k]].velo = np.random.normal(100,10,3)
             # print(merger_tree_subs[ind_max_subs].FirstInFoF==merger_tree_subs[ind_max_subs],'2')
             # print(already_counted)
             # for ind_subs in lev_indx_subs[level]:
@@ -1876,7 +1877,7 @@ def get_tree_vals_FoF(
                         ind_max_subs = ind_subs
                 ind_max_subs_list.append(ind_max_subs)
             # print(ind_max_subs_list)
-
+            indices_1FoF += ind_max_subs_list
             for k,ind_subs in enumerate(ind_max_subs_list):
                 for j in range(3):
                     merger_tree_subs[ind_subs].pos[j] = merger_tree_FoF[lev_indx_FoF[level][k]].pos[j]
@@ -1895,20 +1896,20 @@ def get_tree_vals_FoF(
                         merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][k]]
                         m_sum_list[j] += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         count_list[j] += 1
-                        if k<len(lev_indx_subs[level])-1:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
-                        else:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
+                        # if k<len(lev_indx_subs[level])-1:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                        # else:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                     else:
                         arr_GroupMass[lev_indx_subs[level][k]] = 0.0
                         m_sum_list[j] += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         count_list[j] += 1
                         merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs_list[j]]
                         # print(lev_indx_subs[level][k],ind_max_subs,merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF.index) # == merger_tree_FoF[ind_max_subs])
-                        if k<len(lev_indx_subs[level])-1:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
-                        else:
-                            merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
+                        # if k<len(lev_indx_subs[level])-1:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                        # else:
+                        #     merger_tree_subs[lev_indx_subs[level][k]].NextInFoF = NULL
                 else:
                     arr_GroupMass[lev_indx_subs[level][k]] = merger_tree_subs[lev_indx_subs[level][k]].mhalo
                     merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[lev_indx_subs[level][k]]
@@ -1978,6 +1979,17 @@ def get_tree_vals_FoF(
     # print(merger_tree_subs[ind_max_subs].FirstInFoF==merger_tree_subs[ind_max_subs],'5')
 
     # print(merger_tree_subs[0].FirstInFoF==merger_tree_subs[0])
+
+    for ind_subs in indices_1FoF:
+        for k in range(n_offset_sum):
+            
+
+    c = 0
+    for level in range(n_lev):
+        for k in range(n_offset_sum):
+            if merger_tree_subs[k].jlevel==level:
+                merger_tree_subs[k].index = c
+                c += 1
 
     merger_tree_subs = pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF')
     merger_tree_subs = spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF')
