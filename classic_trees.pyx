@@ -1996,14 +1996,20 @@ def get_tree_vals_FoF(
     #                         id_save = j
 
 
-            
-
+    cdef c_SubNr = 0
+    arr_SubhaloNr = np.zeros(n_offset_sum)
+    arr_GroupMass_temp = np.zeros(n_offset_sum)
     c = 0
     for level in range(n_lev):
+        c_SubNr = 0
         for k in range(n_offset_sum):
             if merger_tree_subs[k].jlevel==level:
+                arr_SubhaloNr[k] = c_SubNr
                 merger_tree_subs[k].index = c
+                arr_GroupMass_temp[c] = arr_GroupMass[k]
                 c += 1
+                c_SubNr += 1
+    arr_GroupMass = arr_GroupMass_temp
 
     merger_tree_subs = pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF')
     merger_tree_subs = spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF')
@@ -2032,7 +2038,7 @@ def get_tree_vals_FoF(
         else:
             print('No Progenitors.')
 
-    return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen
+    return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen,arr_SubhaloNr
 
 # from cython.parallel import prange
 # from libc.stdio cimport printf
