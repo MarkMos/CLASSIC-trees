@@ -1862,6 +1862,8 @@ def get_tree_vals_FoF(
                         m_max_subs = merger_tree_subs[ind_subs].mhalo
                         ind_max_subs = ind_subs
                 ind_max_subs_list.append(ind_max_subs)
+            for ind_subs in ind_max_subs_list:
+                merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
             # print(ind_max_subs_list)
             indices_1FoF += ind_max_subs_list
             for k,ind_subs in enumerate(ind_max_subs_list):
@@ -1890,8 +1892,9 @@ def get_tree_vals_FoF(
                         arr_GroupMass[lev_indx_subs[level][k]] = 0.0
                         m_sum_list[j] += merger_tree_subs[lev_indx_subs[level][k]].mhalo
                         count_list[j] += 1
-                        merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs_list[j]]
-                        same_ind_max_list[j].append(lev_indx_subs[level][k])
+                        if lev_indx_subs[level][k] not in ind_max_subs_list:
+                            merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF = merger_tree_subs[ind_max_subs_list[j]]
+                            same_ind_max_list[j].append(lev_indx_subs[level][k])
                         # print(lev_indx_subs[level][k])
                         # print(lev_indx_subs[level][k],ind_max_subs,merger_tree_subs[lev_indx_subs[level][k]].FirstInFoF.index) # == merger_tree_FoF[ind_max_subs])
                         # if k<len(lev_indx_subs[level])-1:
