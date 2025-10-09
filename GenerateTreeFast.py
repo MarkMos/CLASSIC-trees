@@ -47,7 +47,7 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
     count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
-    arr_MostBoundID = np.array(arr_nodid,dtype=np.uint32) # np.zeros(np.sum(count),dtype='int_')
+    # arr_MostBoundID = np.array(arr_nodid,dtype=np.uint32) # np.zeros(np.sum(count),dtype='int_')
     arr_vel_disp = np.zeros(np.sum(count),dtype=np.float32)
     # arr_SubhaloNr = arr_nodid # np.zeros(np.sum(count),dtype='int_')
     count = np.array(count,dtype='int_')
@@ -69,7 +69,7 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
         'arr_spin': arr_spin,
         'arr_GroupMass': arr_GroupMass/1e10,
         'arr_sublen': arr_sublen,
-        'arr_MostBoundID': arr_MostBoundID,
+        # 'arr_MostBoundID': arr_MostBoundID,
         'arr_vel_disp': arr_vel_disp,
         # 'arr_SubhaloNr': arr_SubhaloNr,
         'count': count,
@@ -176,7 +176,7 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
             append_create_dataset(grp1,'SubhaloVel',np.array(result['arr_velo'],dtype=np.float32))
             append_create_dataset(grp1,'SubhaloSpin',np.array(result['arr_spin'],dtype=np.float32))
             append_create_dataset(grp1,'SubhaloLen',np.array(result['arr_sublen'],dtype=np.int32))
-            append_create_dataset(grp1,'SubhaloIDMostbound',result['arr_MostBoundID'])
+            # append_create_dataset(grp1,'SubhaloIDMostbound',result['arr_MostBoundID'])
             append_create_dataset(grp1,'SubhaloVelDisp',result['arr_vel_disp'])
             # append_create_dataset(grp1,'SubhaloNr',result['arr_SubhaloNr'])
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
@@ -317,13 +317,21 @@ def compute_tree_fast(random_mass,
             grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
             grp1 = f['TreeHalos']
             arr_SubhaloNr = np.zeros(start_offset,dtype='int_')
+            arr_MostBoundID = np.array([i for i in range(start_offset)],dtype=np.uint32)
             SnapNum = f['TreeHalos/SnapNum'][:]
+            masses = f['TreeHalos/SubhaloMass'][:]
             for i in range(n_lev-1,0,-1):
                 indx_lev = np.where(SnapNum==i)[0]
                 if len(indx_lev)!=0:
+                    mass_lev = masses[indx_lev]
+                    temp_arr = []
+                    for indx,j in enumerate(indx_lev):
+                        temp_arr.append([mass_lev[indx],j])
+                    sorted(temp_arr,key = lambda x:x[0],reverse=True)
                     c = 0
-                    for j in indx_lev:
-                        arr_SubhaloNr[j] = c
+                    for j in range(len(temp_arr)):
+                        arr_SubhaloNr[temp_arr[j][1]] = c
                         c += 1
             append_create_dataset(grp1,'SubhaloNr',arr_SubhaloNr)
+            append_create_dataset(grp1,'SubhaloIDMostbound',arr_MostBoundID)
         grp.attrs['NumFiles'] = np.int32(1)
