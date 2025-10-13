@@ -1719,7 +1719,7 @@ def get_tree_vals_FoF(
         for j in range(count):
             if merger_tree_FoF[j].jlevel==level:
                 temp_indx.append(j)
-        if temp_indx!=[]:
+        if len(temp_indx)!=0:
             lev_indx_FoF_list.append(temp_indx)
         # temp_indx_pntr = <int*>malloc(len(temp_indx)*sizeof(int))
         # for k in range(len(temp_indx)):
@@ -1736,8 +1736,9 @@ def get_tree_vals_FoF(
         for j in range(n_offset_sum):
             if merger_tree_subs[j].jlevel==level:
                 temp_indx.append(j)
-        if temp_indx!=[]:
+        if len(temp_indx)!=0:
             lev_indx_subs_list.append(temp_indx)
+    print(len(np.unique([i_ind for sub in lev_indx_subs_list for i_ind in sub])),n_offset_sum)
     # print(len(lev_indx_subs_list))
     # cdef int[:,:] 
     cdef list lev_indx_subs = lev_indx_subs_list
@@ -1756,9 +1757,9 @@ def get_tree_vals_FoF(
     indices_1FoF = []
 
     for level in range(len(lev_indx_FoF)):
-        m_max_subs = 0.0
         # print(level)
         if len(lev_indx_FoF[level])==1:
+            m_max_subs = 0.0
             m_group = merger_tree_FoF[lev_indx_FoF[level][0]].mhalo
             if level==0:
                 n_range = n_halos
