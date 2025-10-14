@@ -1738,7 +1738,8 @@ def get_tree_vals_FoF(
                 temp_indx.append(j)
         if len(temp_indx)!=0:
             lev_indx_subs_list.append(temp_indx)
-    print(len(np.unique([i_ind for sub in lev_indx_subs_list for i_ind in sub])),n_offset_sum)
+    # print(len(np.unique([i_ind for sub in lev_indx_subs_list for i_ind in sub])),n_offset_sum)
+    # print(len(lev_indx_subs_list[0]),n_halos)
     # print(len(lev_indx_subs_list))
     # cdef int[:,:] 
     cdef list lev_indx_subs = lev_indx_subs_list
@@ -1909,19 +1910,19 @@ def get_tree_vals_FoF(
                     if level==0:
                         merger_tree_subs[lev_indx_subs[level][k]].pos = np.random.uniform(0,100,3)
                         merger_tree_subs[lev_indx_subs[level][k]].velo = np.random.normal(100,10,3)
-                # print(same_ind_max_list)
-                if same_ind_max_list!=[]:
-                    for k,j in enumerate(ind_max_subs_list):
-                        # print('Or problem in here')
-                        for ind_subs in same_ind_max_list[k]:
-                            # print('Or here')
-                            if merger_tree_subs[j].NextInFoF==NULL:
-                                merger_tree_subs[j].NextInFoF = merger_tree_subs[ind_subs]
-                                id_save = ind_subs
-                            else:
-                                merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
-                                id_save = ind_subs
-                        merger_tree_subs[id_save].NextInFoF = NULL
+            # print(same_ind_max_list)
+            if same_ind_max_list!=[]:
+                for k,j in enumerate(ind_max_subs_list):
+                    # print('Or problem in here')
+                    for ind_subs in same_ind_max_list[k]:
+                        # print('Or here')
+                        if merger_tree_subs[j].NextInFoF==NULL:
+                            merger_tree_subs[j].NextInFoF = merger_tree_subs[ind_subs]
+                            id_save = ind_subs
+                        else:
+                            merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
+                            id_save = ind_subs
+                    merger_tree_subs[id_save].NextInFoF = NULL
     if len(lev_indx_subs)==n_lev:
         # print('n_lev-part')
         for level in range(len(lev_indx_FoF),n_lev):
@@ -2158,10 +2159,10 @@ cdef int n_subs_in_FoF(double m):
             n_subs +=1
         else:
             n_subs -=1
-    elif 1e11<=m<4e13:
+    elif 1e11<=m: #<4e13:
         n_subs += np.random.normal(0,0.1)*n_subs
-    else:
-        n_subs = np.random.normal(3e2,10)
+    # else:
+    #     n_subs = np.random.normal(3e2,10)
     return int(n_subs)
 
 cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
