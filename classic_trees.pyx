@@ -2393,7 +2393,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
     print('In spin_3_calc')
     cdef Tree_Node* this_node
     cdef int i,level
-    cdef double s_1,s_2,s_3,s_sum,s_up,s_low,mass,scale
+    cdef double s_1,s_2,s_3,s_sum,s_up,s_low,mass,scale,theta,u,s_abs
     if mode=='Normal':
         for i in range(n_frag_tot):
             # print((i+1)/n_frag_tot*100,'%')
@@ -2401,16 +2401,21 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
             if this_node!=NULL:
                 mass = this_node.mhalo
                 if this_node.parent==NULL:
-                    s_1 = spin_abs(mass)
-                    s_2 = spin_abs(mass)
-                    s_3 = spin_abs(mass)
+                    theta = 2*np.pi*np.random.uniform(0,1)
+                    u = 2*np.random.uniform(0,1)-1
+                    norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
+                    s_abs = spin_abs(mass)
+                    s_1 = s_abs*norm_vel[0]
+                    s_2 = s_abs*norm_vel[1]
+                    s_3 = s_abs*norm_vel[2]
                     s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     s_up = spin_abs(mass,'Upper')
                     s_low = spin_abs(mass,'Lower')
                     while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
-                        s_1 = spin_abs(mass)
-                        s_2 = spin_abs(mass)
-                        s_3 = spin_abs(mass)
+                        s_abs = spin_abs(mass)
+                        s_1 = s_abs*norm_vel[0]
+                        s_2 = s_abs*norm_vel[1]
+                        s_3 = s_abs*norm_vel[2]
                         s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     this_node.spin[0] = s_1
                     this_node.spin[1] = s_2
@@ -2442,16 +2447,21 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                     if this_node!=NULL:
                         mass = this_node.mhalo
                         if this_node.parent==NULL:
-                            s_1 = spin_abs(mass)
-                            s_2 = spin_abs(mass)
-                            s_3 = spin_abs(mass)
+                            theta = 2*np.pi*np.random.uniform(0,1)
+                            u = 2*np.random.uniform(0,1)-1
+                            norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
+                            s_abs = spin_abs(mass)
+                            s_1 = s_abs*norm_vel[0]
+                            s_2 = s_abs*norm_vel[1]
+                            s_3 = s_abs*norm_vel[2]
                             s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                             s_up = spin_abs(mass,'Upper')
                             s_low = spin_abs(mass,'Lower')
                             while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
-                                s_1 = spin_abs(mass)
-                                s_2 = spin_abs(mass)
-                                s_3 = spin_abs(mass)
+                                s_abs = spin_abs(mass)
+                                s_1 = s_abs*norm_vel[0]
+                                s_2 = s_abs*norm_vel[1]
+                                s_3 = s_abs*norm_vel[2]
                                 s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                             this_node.spin[0] = s_1
                             this_node.spin[1] = s_2
