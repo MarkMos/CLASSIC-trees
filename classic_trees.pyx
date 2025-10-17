@@ -2421,18 +2421,20 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                     this_node.spin[1] = s_2
                     this_node.spin[2] = s_3
                 else:
-                    scale = spin_abs(mass,'Middle')/spin_abs(this_node.parent.mhalo,'Middle')
+                    s_abs = sqrt(this_node.parent.spin[0]**2+this_node.parent.spin[1]**2+this_node.parent.spin[2]**2)
+                    scale = spin_abs(mass,'Middle')/spin_abs(this_node.parent.mhalo,'Middle')*s_abs
                     # print(scale)
-                    s_1 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[0]
-                    s_2 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[1]
-                    s_3 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[2]
+                    s_1 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[0]/s_abs
+                    s_2 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[1]/s_abs
+                    s_3 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[2]/s_abs
                     s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     s_up = spin_abs(mass,'Upper')
                     s_low = spin_abs(mass,'Lower')
                     while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
-                        s_1 = spin_abs(mass)
-                        s_2 = spin_abs(mass)
-                        s_3 = spin_abs(mass)
+                        scale = spin_abs(mass)
+                        s_1 = scale*this_node.parent.spin[0]/s_abs
+                        s_2 = scale*this_node.parent.spin[1]/s_abs
+                        s_3 = scale*this_node.parent.spin[2]/s_abs
                         s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                     this_node.spin[0] = s_1
                     this_node.spin[1] = s_2
@@ -2467,21 +2469,20 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                             this_node.spin[1] = s_2
                             this_node.spin[2] = s_3
                         else:
-                            scale = spin_abs(mass)/spin_abs(this_node.parent.mhalo)
+                            s_abs = sqrt(this_node.parent.spin[0]**2+this_node.parent.spin[1]**2+this_node.parent.spin[2]**2)
+                            scale = spin_abs(mass,'Middle')/spin_abs(this_node.parent.mhalo,'Middle')*s_abs
                             # print(scale)
-                            s_1 = np.random.normal(scale,0.05*scale)*this_node.parent.spin[0]
-                            s_2 = np.random.normal(scale,0.05*scale)*this_node.parent.spin[1]
-                            s_3 = np.random.normal(scale,0.05*scale)*this_node.parent.spin[2]
+                            s_1 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[0]/s_abs
+                            s_2 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[1]/s_abs
+                            s_3 = np.random.normal(scale,0.01*scale)*this_node.parent.spin[2]/s_abs
                             s_sum = sqrt(s_1**2+s_2**2+s_3**2)
-                            # print('|Spin|=',s_sum,'at',this_node.jlevel)
                             s_up = spin_abs(mass,'Upper')
-                            # print('upper limit:',s_up)
                             s_low = spin_abs(mass,'Lower')
-                            # print('lower limit:',s_low)
-                            while s_sum>s_up or s_sum<0.0:
-                                s_1 = spin_abs(mass)
-                                s_2 = spin_abs(mass)
-                                s_3 = spin_abs(mass)
+                            while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
+                                scale = spin_abs(mass)
+                                s_1 = scale*this_node.parent.spin[0]/s_abs
+                                s_2 = scale*this_node.parent.spin[1]/s_abs
+                                s_3 = scale*this_node.parent.spin[2]/s_abs
                                 s_sum = sqrt(s_1**2+s_2**2+s_3**2)
                             # print('After |Spin|=',s_sum,'at',this_node.jlevel) 
                             this_node.spin[0] = s_1
