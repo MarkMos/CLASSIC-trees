@@ -322,14 +322,19 @@ def compute_tree_fast(random_mass,
             arr_SubhaloNr = np.zeros(start_offset,dtype='int_')
             arr_MostBoundID = np.array([i for i in range(start_offset)],dtype=np.uint32)
             SnapNum = f['TreeHalos/SnapNum'][:]
-            masses = f['TreeHalos/SubhaloMass'][:]
+            masses = f['TreeHalos/Group_M_Crit200'][:]
             for i in range(n_lev-1,0,-1):
                 indx_lev = np.where(SnapNum==i)[0]
                 if len(indx_lev)!=0:
                     mass_lev = masses[indx_lev]
                     temp_arr = []
+                    m_temp = 0
                     for indx,j in enumerate(indx_lev):
-                        temp_arr.append([mass_lev[indx],j])
+                        if mass_lev[indx]>0:
+                            m_temp = mass_lev[indx]
+                            temp_arr.append([mass_lev[indx],j])
+                        else:
+                            temp_arr.append([m_temp,j])
                     sorted(temp_arr,key = lambda x:x[0],reverse=True)
                     c = 0
                     for j in range(len(temp_arr)):
