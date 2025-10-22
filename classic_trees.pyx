@@ -2203,13 +2203,13 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                     timestep =  (a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel])/(1e2*a_lev[this_node.parent.jlevel]*trees.h_0*sqrt(trees.omega_0*(1/a_lev[this_node.parent.jlevel])**3+trees.l_0))
                     if this_node.FirstInFoF==this_node:
                         # print('We are here!',i)
-                        temp_pos = velo_routine(this_node,timestep,'pos','cen',pos_base,scaling)
-                        temp_velo = velo_routine(this_node,timestep,'velo','cen',pos_base,scaling)
+                        # temp_pos = velo_routine(this_node,timestep,'pos','cen',pos_base,scaling)
+                        # temp_velo = velo_routine(this_node,timestep,'velo','cen',pos_base,scaling)
                         for j in range(3):
                             # print('Working for',j+1)
-                            this_node.pos[j] = temp_pos[j]
+                            this_node.pos[j] = pos_base[j]
                             # print(this_node.pos[j])
-                            this_node.velo[j] = temp_velo[j]
+                            this_node.velo[j] = vel_base[j]
                             # print(this_node.velo[j])
                     else:
                         # print('and now in else',i)
@@ -2236,13 +2236,13 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                                 # print('Parent pos:',this_node.parent.pos[0])
                                 # print('Parent velo:',this_node.parent.velo[0])
                                 # print('Parent id:',this_node.parent.index,'and level',this_node.parent.jlevel,'and mass',this_node.parent.mhalo)
-                                temp_pos = velo_routine(this_node,timestep,'pos','cen',pos_base,scaling)
-                                temp_velo = velo_routine(this_node,timestep,'velo','cen',pos_base,scaling)
+                                # temp_pos = velo_routine(this_node,timestep,'pos','cen',pos_base,scaling)
+                                # temp_velo = velo_routine(this_node,timestep,'velo','cen',pos_base,scaling)
                                 for j in range(3):
                                     # print('Working for',j+1)
-                                    this_node.pos[j] = temp_pos[j]
+                                    this_node.pos[j] = pos_base[j]
                                     # print(this_node.pos[j])
-                                    this_node.velo[j] = temp_velo[j]
+                                    this_node.velo[j] = vel_base[j]
                                     # print(this_node.velo[j])
                             else:
                                 # print('and now in else',i)
