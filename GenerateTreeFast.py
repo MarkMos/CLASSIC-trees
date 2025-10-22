@@ -253,6 +253,8 @@ def compute_tree_fast(random_mass,
         u_ST = np.random.rand(int(n_part*n_tree))
         mp_halo = ppf_ST(u_ST)
         mp_halo = np.sort(mp_halo)[::-1]
+    elif random_mass=='Self':
+        mp_halo = mass
     else:
         mp_halo = mass*np.ones(int(n_part*n_tree))
     if type(times)==str and times=='equal z':
@@ -309,7 +311,7 @@ def compute_tree_fast(random_mass,
             start_offset = parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,mode,pos_base,vel_base,scaling)
     with h5py.File(file_name,'a') as f:
         grp = f.create_group('Header')
-        grp.attrs['LastSnapShotNr'] = int(n_lev - 1)
+        grp.attrs['LastSnapShotNr'] = np.int32(n_lev - 1)
         grp.attrs['Nhalos_ThisFile'] = start_offset
         grp.attrs['Nhalos_Total'] = start_offset
         if mode!='FoF':
@@ -323,6 +325,7 @@ def compute_tree_fast(random_mass,
             arr_MostBoundID = np.array([i for i in range(start_offset)],dtype=np.uint32)
             SnapNum = f['TreeHalos/SnapNum'][:]
             masses = f['TreeHalos/Group_M_Crit200'][:]
+            # masses = f['TreeHalos/SubhaloMass'][:]
             for i in range(n_lev-1,0,-1):
                 indx_lev = np.where(SnapNum==i)[0]
                 if len(indx_lev)!=0:
