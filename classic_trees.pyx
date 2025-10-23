@@ -2008,7 +2008,7 @@ def get_tree_vals_FoF(
     for level in range(n_lev):
         c_SubNr = 0
         for k in range(n_offset_sum):
-            if merger_tree_subs[k].jlevel==level:
+            if merger_tree_subs[k].jlevel==level:# and merger_tree_subs[k]!=NULL:
                 # arr_SubhaloNr[k] = c_SubNr
                 merger_tree_subs[k].index = c
                 arr_GroupMass_temp[c] = arr_GroupMass[k]

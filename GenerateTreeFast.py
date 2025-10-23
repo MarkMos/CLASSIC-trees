@@ -319,7 +319,10 @@ def compute_tree_fast(random_mass,
             grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
         else:
             grp.attrs['Ntrees_ThisFile'] = int(n_tree*n_part)
+            # grp.attrs['NtreesPerFile'] = np.int32(n_tree*n_part)
             grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
+            # grp.attrs['ParticleMass'] = 0.0860657
+            # grp.attrs['NumberOfOutputFiles'] = np.int32(1)
             grp1 = f['TreeHalos']
             arr_SubhaloNr = np.zeros(start_offset,dtype='int_')
             arr_MostBoundID = np.array([i for i in range(start_offset)],dtype=np.uint32)
