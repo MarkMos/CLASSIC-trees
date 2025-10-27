@@ -567,6 +567,7 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
         # 2. Update sibling pointers
         for k in range(child_index, child_index + this_node.nchild - 1):
             merger_tree[k].sibling = merger_tree[k + 1]
+    # free(temp)
     return merger_tree
 '''
 cdef Tree_Node** associated_siblings(Tree_Node* this_node,Tree_Node** merger_tree,int i):
@@ -2042,6 +2043,10 @@ def get_tree_vals_FoF(
             print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
         else:
             print('No Progenitors.')
+    free(m_halo)
+    free(merger_trees)
+    free(merger_tree_subs)
+    free(n_offset_arr)
 
     return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen
 
@@ -2184,7 +2189,7 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
     '''
     cdef double timestep
     cdef Tree_Node* this_node
-    cdef int i,j,level,c
+    cdef int i,j,level,c,indx
     cdef double[:] temp_pos,temp_velo
     print('In pos_and_velo')
     this_node = merger_tree[0]
@@ -2197,6 +2202,8 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
         for i in range(1,n_frag_tot):
             # print('Here we are at',(i+1)/n_frag_tot*100,'% of',n_frag_tot)
             this_node = merger_tree[i]
+            if this_node.parent!=NULL:
+                indx = this_node.parent.index
             if this_node!=NULL:
                 if this_node.parent!=NULL:
                     # print('At time-level',this_node.jlevel)
@@ -2221,11 +2228,16 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                 else:
                     timestep = 1
                     # print('At time-level',this_node.jlevel)
+            if this_node.parent!=NULL:
+                if this_node.parent.index!=indx:
+                    print('Problem here in Normal at index=',indx,' now ',this_node.parent.index)
             merger_tree[i] = this_node
     else:
         for level in range(len(a_lev)+1):
             for i in range(1,n_frag_tot):
                 this_node = merger_tree[i]
+                if this_node.parent!=NULL:
+                    indx = this_node.parent.index
                 if this_node.jlevel==level:
                     if this_node!=NULL:
                         if this_node.parent!=NULL:
@@ -2260,6 +2272,9 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                                 # print('First pos:',this_node.pos[j])
                                 this_node.velo[j] = temp_velo[j]
                                 # print('First velo:',this_node.velo[j])
+                if this_node.parent!=NULL:
+                    if this_node.parent.index!=indx:
+                        print('Problem here in Normal at index=',indx,' now ',this_node.parent.index)
                 merger_tree[i] = this_node
 
     return merger_tree
