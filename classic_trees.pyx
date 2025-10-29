@@ -246,6 +246,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         arr_sublen  : the length of the different nodes
     '''
     cdef:
+        Tree_Node* temp_node
         int count = 0
         double* arr_mhalo = NULL
         double* arr_Vmax = NULL
@@ -300,11 +301,12 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
             arr_velo[node_ID][j] = this_node.velo[j]
             arr_spin[node_ID][j] = this_node.spin[j]
             #print(this_node.velo[j])
+        temp_node = walk_tree(this_node)
+        if temp_node is not NULL:
+            arr_nextprog[node_ID] = temp_node.child.sibling.index
+        else:
+            arr_nextprog[node_ID] = -1
         if this_node.child is not NULL:
-            if this_node.nchild > 1:
-                arr_nextprog[node_ID] = this_node.child.sibling.index
-            else:
-                arr_nextprog[node_ID] = -1
             arr_1prog[node_ID] = this_node.child.index
         else:
             arr_1prog[node_ID] = -1
