@@ -554,7 +554,7 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
     '''
     cdef:
         int child_index, i_frag, k, j
-        Tree_Node* temp = <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
+        Tree_Node* temp # = <Tree_Node*>malloc(sizeof(Tree_Node)) # temporary node to store the ones to change for mass ordering
     
     if this_node.nchild > 1:
         child_index = tree_index(this_node.child)
@@ -816,6 +816,13 @@ cdef class sig_alph:
     # Interpolated alpha function
     cpdef double alpha(self,double m):
         return cspline_deriv(self.alpha_spline,log(m))
+    
+    # def __dealloc__(self):
+    #     free(self.log_m_r)
+    #     free(self.sigma_temp)
+    #     free(self.alpha_temp)
+    #     cspline_free(self.sigma_spline)
+    #     cspline_free(self.alpha_spline)
 
 
 cdef double eps = 1e-5
