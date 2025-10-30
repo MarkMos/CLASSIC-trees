@@ -1898,6 +1898,8 @@ def get_tree_vals_FoF(
                         # else:
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                     else:
+                        if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
+                            continue
                         arr_GroupMass[ind_subs] = 0.0
                         m_sum_list[j] += merger_tree_subs[ind_subs].mhalo
                         count_list[j] += 1
