@@ -1913,6 +1913,8 @@ def get_tree_vals_FoF(
                         # else:
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                 else:
+                    if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
+                            continue
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                     merger_tree_subs[ind_subs].NextInFoF = NULL
