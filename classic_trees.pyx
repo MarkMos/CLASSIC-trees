@@ -1874,6 +1874,7 @@ def get_tree_vals_FoF(
                 ind_max_subs_list.append(ind_max_subs)
             for ind_subs in ind_max_subs_list:
                 merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
+            # print(len(ms_group),len(ind_max_subs_list))
             # print(ind_max_subs_list)
             for k,ind_subs in enumerate(ind_max_subs_list):
                 for j in range(3):
@@ -1881,7 +1882,52 @@ def get_tree_vals_FoF(
                     # print('FoF-group pos:',merger_tree_FoF[lev_indx_FoF[level][k]].pos[j])
                     merger_tree_subs[ind_subs].velo[j] = merger_tree_FoF[lev_indx_FoF[level][k]].velo[j]
                     # print('FoF-group velo:',merger_tree_FoF[lev_indx_FoF[level][k]].velo[j])
+            for j in range(len(ms_group)):
+                m_group = ms_group[j]
+                ind_max_subs = ind_max_subs_list[j]
+                n_range = n_range_list[j]
+                m_sum = 0
+                c = 0
+                same_ind_max = []
+                for ind_subs in lev_indx_subs[level]:
+                    # if level==0:
+                    #     print(ind_subs)
+                    # already_counted.append(ind_subs)
+                    m_temp = merger_tree_subs[ind_subs].mhalo
+                    if c<n_range and m_sum+m_temp<=m_group:
+                        if ind_subs==ind_max_subs:
+                            m_sum += merger_tree_subs[ind_subs].mhalo
+                            c += 1
+                            # if k<len(lev_indx_subs[level])-1:
+                            #     merger_tree_subs[ind_subs].NextInFoF = merger_tree_subs[lev_indx_subs[level][k+1]]
+                            #     # if level==0:
+                            #     #     print(lev_indx_subs[level][k+1],'=',merger_tree_subs[ind_subs].NextInFoF.index)
+                            # else:
+                            #     merger_tree_subs[ind_subs].NextInFoF = NULL
+                        else:
+                            if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
+                                continue
+                            m_sum += merger_tree_subs[ind_subs].mhalo
+                            c += 1
+                            merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
+                            arr_GroupMass[ind_subs] = 0.0
+                            same_ind_max.append(ind_subs)
 
+                for ind_subs in same_ind_max:
+                    if merger_tree_subs[ind_max_subs].NextInFoF==NULL:
+                        merger_tree_subs[ind_max_subs].NextInFoF = merger_tree_subs[ind_subs]
+                        id_save = ind_subs
+                    else:
+                        merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
+                        id_save = ind_subs
+                merger_tree_subs[id_save].NextInFoF = NULL
+            for ind_subs in lev_indx_subs[level]:
+                if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
+                    continue
+                arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
+                merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
+                merger_tree_subs[ind_subs].NextInFoF = NULL
+            '''
             for k,ind_subs in enumerate(lev_indx_subs[level]):
                 num_random = np.random.random()
                 subs_probs = np.cumsum((ms_group-m_sum_list)/m_sum_FoF)
@@ -1899,6 +1945,7 @@ def get_tree_vals_FoF(
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                     else:
                         if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
+                            print('1. Safeguard')
                             continue
                         arr_GroupMass[ind_subs] = 0.0
                         m_sum_list[j] += merger_tree_subs[ind_subs].mhalo
@@ -1914,6 +1961,7 @@ def get_tree_vals_FoF(
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                 else:
                     if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
+                            print('2. Safeguard')
                             continue
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
@@ -1934,6 +1982,7 @@ def get_tree_vals_FoF(
                             merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
                             id_save = ind_subs
                     merger_tree_subs[id_save].NextInFoF = NULL
+            '''
     if len(lev_indx_subs)==n_lev:
         # print('n_lev-part')
         for level in range(len(lev_indx_FoF),n_lev):
