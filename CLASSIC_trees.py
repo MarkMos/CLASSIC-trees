@@ -3,7 +3,7 @@ import numpy as np
 class trees:
     def __init__(self):
         self.pk_method = 'class'
-        self.default = {'output':'mPk','P_k_max_h/Mpc':1000}
+        self.default = {'output':'mPk','P_k_max_h/Mpc':10000}
         self.h_0 = 0.6781
         self.omega_0 = 0.30988304304812053
         self.l_0 = 1-0.30988304304812053
