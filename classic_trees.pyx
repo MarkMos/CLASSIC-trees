@@ -216,12 +216,12 @@ cdef double halo_Vmax(double mass):
     val = sqrt(G_used*mass**b/a)
     return val + random.gauss(0,0.1)*val
 
-cdef int SubhaloLen(double m):
+cdef int SubhaloLen(double m,double m_res):
     # Function to calculate the length of a halo.
-    cdef double M_p = trees.m_min/32
+    cdef double M_p = m_res/32
     return int(round(m/M_p))
 
-cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree):
+cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node** merger_tree,double m_res):
     '''
     Function to count the number of nodes in a merger tree and get values out of it.
     ----------------------
@@ -289,7 +289,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         node_ID = this_node.index
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
-        arr_sublen[node_ID] = SubhaloLen(this_node.mhalo)
+        arr_sublen[node_ID] = SubhaloLen(this_node.mhalo,m_res)
         arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
         arr_treeid[node_ID]= i
         arr_time[node_ID]  = this_node.jlevel
@@ -303,7 +303,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
             #print(this_node.velo[j])
         temp_node = walk_tree(this_node)
         if temp_node is not NULL:
-            arr_nextprog[node_ID] = temp_node.child.sibling.index
+            arr_nextprog[node_ID] = temp_node.index
         else:
             arr_nextprog[node_ID] = -1
         if this_node.child is not NULL:
@@ -348,7 +348,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
     free(arr_sublen)
     return (count,np_arr_mhalo,np_arr_Vmax,np_arr_nodid,np_arr_treeid,np_arr_time,np_arr_1prog,np_arr_desc,np_arr_nextprog,np_arr_pos,np_arr_velo,np_arr_spin,np_arr_sublen)
 
-cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int n_FoF_trees):
+cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int n_FoF_trees,double m_res):
     '''
     Function to count the number of nodes in a merger tree and get values out of it.
     ----------------------
@@ -375,6 +375,7 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int 
         arr_sublen  : the length of the different nodes
     '''
     cdef:
+        # Tree_Node* temp_node
         int count = 0
         double* arr_mhalo = NULL
         double* arr_Vmax = NULL
@@ -428,7 +429,7 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int 
             # print(node_ID,n_FoF_trees)
             arr_nodid[node_ID] = node_ID
             arr_mhalo[node_ID] = this_node.mhalo
-            arr_sublen[node_ID] = SubhaloLen(this_node.mhalo)
+            arr_sublen[node_ID] = SubhaloLen(this_node.mhalo,m_res)
             arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo)
             arr_treeid[node_ID]= i
             arr_time[node_ID]  = this_node.jlevel
@@ -436,17 +437,17 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int 
                 arr_pos[node_ID][k] = this_node.pos[k]
                 arr_velo[node_ID][k] = this_node.velo[k]
                 arr_spin[node_ID][k] = this_node.spin[k]
+            # temp_node = walk_tree(this_node)
+            if this_node.sibling is not NULL: # and this_node.jlevel<=temp_node.jlevel:
+                arr_nextprog[node_ID] = this_node.sibling.index
+            else:
+                arr_nextprog[node_ID] = -1
             if this_node.child is not NULL:
                 # print('Progenitor if')
-                if this_node.nchild > 1:
-                    arr_nextprog[node_ID] = this_node.child.sibling.index
-                else:
-                    arr_nextprog[node_ID] = -1
                 arr_1prog[node_ID] = this_node.child.index
             else:
                 # print('Progenitor else')
                 arr_1prog[node_ID] = -1
-                arr_nextprog[node_ID] = -1
             if this_node.parent is not NULL:
                 # print('Descendant if')
                 arr_desc[node_ID] = this_node.parent.index
@@ -1574,7 +1575,7 @@ def get_tree_vals(
     # print('Made a tree ',i+1)
     this_node = merger_tree[0]
     # print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter(i,this_node,n_frag_max,merger_tree)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter(i,this_node,n_frag_max,merger_tree,m_min)
 
     print('Number of nodes in tree',i+1,'is',count)
     
@@ -2079,7 +2080,7 @@ def get_tree_vals_FoF(
     merger_tree_subs = pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF')
     merger_tree_subs = spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF')
 
-    arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_halos)
+    arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_halos,m_res)
 
     print('Number of nodes in FoF-group subhalo-tree',1,'is',arr_count[0])
 
