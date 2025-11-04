@@ -129,6 +129,7 @@ def compute_tree(mass,
     if mode!='FoF':
         for i in range(n_tree):
             print(pos_base)
+            vel_base = np.array([100,100,90],dtype=np.float64)
             print(vel_base)
             if random_mass==None:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
@@ -140,8 +141,9 @@ def compute_tree(mass,
             # np.savetxt('PositionNormalTree_100percentPos.txt',arr_pos)
             # np.savetxt('TimeNormalTree_100percentPos.txt',arr_time)
             # np.savetxt('ScaleFactorNormalTree_100percentPos.txt',a_lev)
-            # np.savetxt('MassNormalTree1.txt',arr_mhalo)
-            # np.savetxt('VeloNormalTree1.txt',arr_velo)
+            # np.savetxt('MassTestTree1.txt',arr_mhalo)
+            # np.savetxt('VeloTestTree1.txt',arr_velo)
+            # np.savetxt('SpinTestTree1.txt',arr_spin)
             if file_name!=None:    
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
@@ -204,9 +206,9 @@ def compute_tree(mass,
             print(np.unique(arr_nextFoF,return_counts=True))
             print(arr_GroupMass)
             # np.savetxt('GroupMassTest.txt',arr_GroupMass)
-            # np.savetxt('Spins_test44.txt',arr_spin)
-            # np.savetxt('Mass_test44.txt',arr_mhalo)
-            # np.savetxt('Velocity_test44.txt',arr_velo)
+            np.savetxt('Spins_test_better6.txt',arr_spin)
+            np.savetxt('Mass_test_better6.txt',arr_mhalo)
+            np.savetxt('Velocity_test_better6.txt',arr_velo)
             # np.savetxt('Position_test4.txt',arr_pos)
             # np.savetxt('Time_test4.txt',arr_time)
             # for arr in arr_1FoF:

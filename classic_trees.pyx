@@ -2191,16 +2191,16 @@ cdef double spin_abs(double m,str mode='Normal'):
     # Function to calculate the absolute value of the spin of a halo
     cdef double spin_val
     if m<6e12:
-        spin_val = np.random.normal(10+(m/5e8)**0.9,0.1*(10+(m/5e8)**0.9))
+        spin_val = np.random.lognormal(log(10+(m/5e8)**0.9),0.1*log(0.1*(10+(m/5e8)**0.9)))
     else:
         # spin_val = np.random.normal(9e3,1e2)
-        spin_val = np.random.normal(10+(m/5e8)**0.9,0.1*(10+(m/5e8)**0.9))
+        spin_val = np.random.lognormal(log(10+(m/5e8)**0.9),0.1*log(0.1*(10+(m/5e8)**0.9)))
     
     if mode=='Upper':
         if m<6e12:
-            spin_val = 10*(10+(m/5e8)**0.9)
+            spin_val = 100*(10+(m/5e8)**0.9)
         else:
-            spin_val = 10*(10+(m/5e8)**0.9)
+            spin_val = 100*(10+(m/5e8)**0.9)
             # spin_val = 2e4
     elif mode=='Lower':
         if m<6e12:
@@ -2379,7 +2379,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
             temp_velo = this_node.velo
             for i in range(3):
                 # temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
-                temp_velo[i] = np.random.normal(adding[i],30)
+                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7)
                 velo_summ += temp_velo[i]**2
         # print(temp_velo[0],' after')
         return temp_velo
@@ -2447,8 +2447,8 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
                 if dirr==0:
                     temp_arr[i] = np.random.normal(0,0.01)*temp_arr[i]
                 else:
-                    temp_arr[i] = np.random.normal(0,0.01)*temp_arr[i]
-                    # temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])/sqrt((this_node.FirstInFoF.pos[0]-position_of_node[0])**2+(this_node.FirstInFoF.pos[1]-position_of_node[1])**2+(this_node.FirstInFoF.pos[2]-position_of_node[2])**2)*np.random.normal(0,0.05)*temp_arr[i]
+                    # temp_arr[i] = np.random.normal(0,0.01)*temp_arr[i]
+                    temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])/sqrt((this_node.FirstInFoF.pos[0]-position_of_node[0])**2+(this_node.FirstInFoF.pos[1]-position_of_node[1])**2+(this_node.FirstInFoF.pos[2]-position_of_node[2])**2)*np.random.normal(0,0.05)*temp_arr[i]
         return temp_arr
 
 cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,str mode='Normal'):
