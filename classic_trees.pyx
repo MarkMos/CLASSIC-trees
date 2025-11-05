@@ -214,7 +214,8 @@ cdef double halo_Vmax(double mass):
     cdef double b = 0.61474034
     cdef double val
     val = sqrt(G_used*mass**b/a)
-    return val + random.gauss(0,0.1)*val
+    return np.random.lognormal(np.log(val),0.7*(mass/5e8)**(-0.1))
+    # return val + random.gauss(0,0.1)*val
 
 cdef int SubhaloLen(double m,double m_res):
     # Function to calculate the length of a halo.
@@ -1883,6 +1884,7 @@ def get_tree_vals_FoF(
                     # print('FoF-group pos:',merger_tree_FoF[lev_indx_FoF[level][k]].pos[j])
                     merger_tree_subs[ind_subs].velo[j] = merger_tree_FoF[lev_indx_FoF[level][k]].velo[j]
                     # print('FoF-group velo:',merger_tree_FoF[lev_indx_FoF[level][k]].velo[j])
+            '''
             for j in range(len(ms_group)):
                 m_group = ms_group[j]
                 ind_max_subs = ind_max_subs_list[j]
@@ -1946,7 +1948,7 @@ def get_tree_vals_FoF(
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                     else:
                         if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
-                            print('1. Safeguard')
+                            # print('1. Safeguard')
                             continue
                         arr_GroupMass[ind_subs] = 0.0
                         m_sum_list[j] += merger_tree_subs[ind_subs].mhalo
@@ -1962,7 +1964,7 @@ def get_tree_vals_FoF(
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                 else:
                     if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
-                            print('2. Safeguard')
+                            # print('2. Safeguard')
                             continue
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
@@ -1983,7 +1985,7 @@ def get_tree_vals_FoF(
                             merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
                             id_save = ind_subs
                     merger_tree_subs[id_save].NextInFoF = NULL
-            '''
+            
     if len(lev_indx_subs)==n_lev:
         # print('n_lev-part')
         for level in range(len(lev_indx_FoF),n_lev):
@@ -2190,30 +2192,14 @@ cdef double m_cen_of_FoF(double m):
 cdef double spin_abs(double m,str mode='Normal'):
     # Function to calculate the absolute value of the spin of a halo
     cdef double spin_val
-    if m<6e12:
-        spin_val = np.random.lognormal(log(10+(m/5e8)**0.9),0.1*log(0.1*(10+(m/5e8)**0.9)))
-    else:
-        # spin_val = np.random.normal(9e3,1e2)
-        spin_val = np.random.lognormal(log(10+(m/5e8)**0.9),0.1*log(0.1*(10+(m/5e8)**0.9)))
-    
-    if mode=='Upper':
-        if m<6e12:
-            spin_val = 100*(10+(m/5e8)**0.9)
-        else:
-            spin_val = 100*(10+(m/5e8)**0.9)
-            # spin_val = 2e4
+    if mode=='Normal':
+        spin_val = np.random.lognormal(np.log(10+(m/5e8)**0.9),np.log(0.1*(10+(m/5e8)**0.9))*m**(-0.1))
+    elif mode=='Upper':
+        spin_val = 100*(10+(m/5e8)**0.9)*m**(-0.1)
     elif mode=='Lower':
-        if m<6e12:
-            spin_val = 0.01*(10+(m/5e8)**0.9)
-        else:
-            spin_val = 0.01*(10+(m/5e8)**0.9)
-            # spin_val = 9e3
+        spin_val = 0.01*(10+(m/5e8)**0.9)#*m**(-0.1)
     elif mode=='Middle':
-        if m<6e12:
-            spin_val = 10+(m/5e8)**0.9
-        else:
-            spin_val = 10+(m/5e8)**0.9
-            # spin_val = 9e3
+        spin_val = 10+(m/5e8)**0.9
     return spin_val
 
 cdef int n_subs_in_FoF(double m):
@@ -2379,7 +2365,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
             temp_velo = this_node.velo
             for i in range(3):
                 # temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
-                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7)
+                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7*(this_node.mhalo/1e10)**(-0.1))
                 velo_summ += temp_velo[i]**2
         # print(temp_velo[0],' after')
         return temp_velo
