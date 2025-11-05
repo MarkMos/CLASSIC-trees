@@ -1606,7 +1606,8 @@ def get_tree_vals_FoF(
     int n_frag_tot,
     double[:] pos_base,
     double[:] vel_base,
-    double scaling):
+    double scaling,
+    int verbose):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1666,8 +1667,6 @@ def get_tree_vals_FoF(
     else:
         print('No Progenitors.')
     
-    # free(this_node)
-
     n_halos = n_subs_in_FoF(m_0)
     print('Number of subhalos in first FoF-group: ',n_halos)
     cdef double* m_halo = <double*>malloc((n_halos)*sizeof(double))
@@ -1687,9 +1686,6 @@ def get_tree_vals_FoF(
                 m_halo[0] = m_cen_of_FoF(m_0)
                 ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
                 c_halos = 0
-            # print(mass_sum)
-            # count +=1
-        # print(count)
         mass_temp.sort()
         mass_temp = mass_temp[::-1]
         for j in range(n_halos-1):
