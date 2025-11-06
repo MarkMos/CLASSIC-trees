@@ -19,6 +19,36 @@ def set_trees(obj):
     global trees
     trees = obj
 
+def print_level_1(*args):
+    if trees.verbose>0:
+        print(*args)
+    else:
+        None
+
+def print_level_2(*args):
+    if trees.verbose>1:
+        print(*args)
+    else:
+        None
+
+def print_level_3(*args):
+    if trees.verbose>2:
+        print(*args)
+    else:
+        None
+
+def print_level_4(*args):
+    if trees.verbose>3:
+        print(*args)
+    else:
+        None
+
+def print_level_5(*args):
+    if trees.verbose>4:
+        print(*args)
+    else:
+        None
+
 cdef double G_0=0.57
 cdef double gamma_1=0.38
 cdef double gamma_2=-0.01
@@ -214,8 +244,7 @@ cdef double halo_Vmax(double mass):
     cdef double b = 0.61474034
     cdef double val
     val = sqrt(G_used*mass**b/a)
-    return np.random.lognormal(np.log(val),0.7*(mass/5e8)**(-0.1))
-    # return val + random.gauss(0,0.1)*val
+    return val + random.gauss(0,0.1)*val
 
 cdef int SubhaloLen(double m,double m_res):
     # Function to calculate the length of a halo.
@@ -1183,7 +1212,7 @@ cdef int* indexsh(int n,double* arr,int* indx):
                         done3 = True
     return indx
 '''
-cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[:] pos_base,double[:] vel_base,sig_alph Sig,double scaling,int verbose) nogil:
+cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_lev,double[:] w_lev,int n_lev,int n_frag_max,int n_frag_tot,str mode,double[:] pos_base,double[:] vel_base,sig_alph Sig,double scaling) nogil:
     '''
     Function to make the merger tree of a certain mass.
     ----------------------
@@ -1491,9 +1520,9 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
     merger_tree = build_sibling(merger_tree,n_frag_tot+1,mode)
     if mode=='Normal':
         with gil:
-            merger_tree = pos_and_velo(merger_tree,n_frag_tot+1,pos_base,vel_base,a_lev,scaling,mode,verbose)
+            merger_tree = pos_and_velo(merger_tree,n_frag_tot+1,pos_base,vel_base,a_lev,scaling)
             # print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
-            merger_tree = spin_3_calc(merger_tree,n_frag_tot+1,n_lev,mode,verbose)
+            merger_tree = spin_3_calc(merger_tree,n_frag_tot+1)
 
     # Free allocated memory
     free(i_par)
@@ -1527,8 +1556,7 @@ def get_tree_vals(
     int n_frag_tot,
     double[:] pos_base,
     double[:] vel_base,
-    double scaling,
-    int verbose):
+    double scaling):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1546,7 +1574,6 @@ def get_tree_vals(
         pos_base  : Initial 3-position of base node
         velo_base : Initial 3-velocity of base node
         scaling   : Factor of scattering of positional change over time
-        verbose   : Level of output by the code
     ----------------------
     Output:
         count       : Counter that counts the length/number of nodes in the tree
@@ -1562,6 +1589,7 @@ def get_tree_vals(
         arr_velo    : Array of the velocities of the different nodes
         arr_spin    : Array of the spins of the different nodes
     '''
+
     i_seed_0 -=19*(1+i)
     cdef:
         int i_seed = i_seed_0
@@ -1572,24 +1600,23 @@ def get_tree_vals(
     srand(i_seed)
     Sig = sig_alph(trees)
     #print('Going into make_tree')
-    merger_tree,n_frag_tot = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base,Sig,scaling,verbose)
+    merger_tree,n_frag_tot = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base,Sig,scaling)
 
     # print('Made a tree ',i+1)
     this_node = merger_tree[0]
     # print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
     count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter(i,this_node,n_frag_max,merger_tree,m_min)
 
-    if verbose>0:
-        print('Number of nodes in tree',i+1,'is',count)
-        
-        print('Example information from tree:')
-        this_node = merger_tree[0]
-        print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-        if count>1:
-            this_node = this_node.child
-            print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-        else:
-            print('No Progenitors.')
+    print_level_1('Number of nodes in tree',i+1,'is',count)
+    
+    print_level_1('Example information from tree:')
+    this_node = merger_tree[0]
+    print_level_1('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    if count>1:
+        this_node = this_node.child
+        print_level_1('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print_level_1('No Progenitors.')
     free(merger_tree)
     free(this_node)
     return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen
@@ -1608,8 +1635,7 @@ def get_tree_vals_FoF(
     int n_frag_tot,
     double[:] pos_base,
     double[:] vel_base,
-    double scaling,
-    int verbose):
+    double scaling):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1628,7 +1654,6 @@ def get_tree_vals_FoF(
         pos_base  : Initial 3-position of base node
         velo_base : Initial 3-velocity of base node
         scaling   : Factor of scattering of positional change over time
-        verbose   : Level of output by the code
     ----------------------
     Output:
         count       : Counter that counts the length/number of nodes in the tree
@@ -1656,27 +1681,29 @@ def get_tree_vals_FoF(
         sig_alph Sig
     srand(i_seed)
     Sig = sig_alph(trees)
-    merger_tree_FoF,count = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base,Sig,scaling,verbose)
-    if verbose>0:
-        print('Number of nodes in FoF-group tree',i+1,'is',count)
+    # np.random.seed(i_seed)
+    merger_tree_FoF,count = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base,Sig,scaling)
 
-        print('Example information from FoF-group tree:')
-        this_node = merger_tree_FoF[0]
-        print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-        if count>1:
-            this_node = this_node.child
-            print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-        else:
-            print('No Progenitors.')
+    print_level_1('Number of nodes in FoF-group tree',i+1,'is',count)
+
+    print_level_1('Example information from FoF-group tree:')
+    this_node = merger_tree_FoF[0]
+    print_level_1('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    if count>1:
+        this_node = this_node.child
+        print_level_1('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print_level_1('No Progenitors.')
     
+    # free(this_node)
+
     n_halos = n_subs_in_FoF(m_0)
-    if verbose>0:
-        print('Number of subhalos in first FoF-group: ',n_halos)
+    print_level_1('Number of subhalos in first FoF-group: ',n_halos)
     cdef double* m_halo = <double*>malloc((n_halos)*sizeof(double))
     cdef int c_halos = 0
     m_halo[0] = m_cen_of_FoF(m_0)
 
-    if n_halos>1:
+    if n_halos>=1:
         ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
 
         # Routine to get the rest of the masses for this FoF-group
@@ -1685,11 +1712,13 @@ def get_tree_vals_FoF(
             mass_sum = m_halo[0] + np.sum(mass_temp)
             c_halos += 1
             if c_halos>1000:
-                if verbose>4:
-                    print('Still in the masses drawing for the FoF-group')
+                print_level_4('Still in the masses drawing for the FoF-group')
                 m_halo[0] = m_cen_of_FoF(m_0)
                 ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
                 c_halos = 0
+            # print(mass_sum)
+            # count +=1
+        # print(count)
         mass_temp.sort()
         mass_temp = mass_temp[::-1]
         for j in range(n_halos-1):
@@ -1699,12 +1728,10 @@ def get_tree_vals_FoF(
     cdef int* n_offset_arr = <int*>malloc((n_halos)*sizeof(int))
     cdef int n_offset_sum = 0
     for j in range(n_halos):
-        if verbose>1:
-            print('Merger-tree',j+1,'of',n_halos)
-        merger_trees[j],n_offset_arr[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base,Sig,scaling,verbose)
+        print_level_2('Merger-tree',j+1,'of',n_halos)
+        merger_trees[j],n_offset_arr[j] = make_tree(m_halo[j],a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'FoF',pos_base,vel_base,Sig,scaling)
         n_offset_sum += n_offset_arr[j]
-    if verbose>4:
-        print('Calculation until here!',n_offset_sum)
+    print_level_4('Calculation until here!',n_offset_sum)
     cdef Tree_Node** merger_tree_subs = <Tree_Node**>malloc((n_offset_sum)*sizeof(Tree_Node*))
     cdef int c = 0
     for j in range(n_halos):
@@ -1712,9 +1739,21 @@ def get_tree_vals_FoF(
             merger_tree_subs[c] = merger_trees[j][k]
             merger_tree_subs[c].index = c
             c += 1
-    if verbose>4:
-        print('It worked',c)
+    print_level_4('It worked',c)
     
+    # merger_tree_subs[-1].mhalo = 0.0
+    # merger_tree_subs[-1].jlevel = 0
+    # merger_tree_subs[-1].nchild = 0
+    # merger_tree_subs[-1].index  = n_offset_sum+1
+    # merger_tree_subs[-1].parent = NULL
+    # merger_tree_subs[-1].child  = NULL
+    # merger_tree_subs[-1].sibling= NULL
+    # merger_tree_subs[-1].FirstInFoF= NULL
+    # merger_tree_subs[-1].NextInFoF = NULL
+    # free(merger_trees)
+
+    # cdef int** lev_indx_FoF = <int**>malloc(n_lev*sizeof(int*))
+    # cdef int* temp_indx_pntr
     lev_indx_FoF_list = []
     for level in range(n_lev):
         temp_indx = []
@@ -1723,7 +1762,15 @@ def get_tree_vals_FoF(
                 temp_indx.append(j)
         if len(temp_indx)!=0:
             lev_indx_FoF_list.append(temp_indx)
+        # temp_indx_pntr = <int*>malloc(len(temp_indx)*sizeof(int))
+        # for k in range(len(temp_indx)):
+        #     temp_indx_pntr[k] = temp_indx[k]
+        # lev_indx_FoF[level] = temp_indx_pntr
+    # print(lev_indx_FoF_list)
+    # cdef int[:,:] 
     cdef list lev_indx_FoF = lev_indx_FoF_list
+    # print(merger_tree_FoF[lev_indx_FoF[5]].mhalo)
+    # cdef int** lev_indx_subs = <int**>malloc(n_lev*sizeof(int*))
     lev_indx_subs_list = []
     for level in range(n_lev):
         temp_indx = []
@@ -1732,14 +1779,24 @@ def get_tree_vals_FoF(
                 temp_indx.append(j)
         if len(temp_indx)!=0:
             lev_indx_subs_list.append(temp_indx)
+    # print(len(np.unique([i_ind for sub in lev_indx_subs_list for i_ind in sub])),n_offset_sum)
+    # print(len(lev_indx_subs_list[0]),n_halos)
+    # print(len(lev_indx_subs_list))
+    # cdef int[:,:] 
     cdef list lev_indx_subs = lev_indx_subs_list
+
+    #for level in range(n_lev):
+    #    print('Level:',level)
+    #    for j in lev_indx_subs[level]:
+    #        if j>=n_offset_sum:
+    #            print('ERROR with lev_indx_subs!')
     
     cdef double m_group, m_max_subs, m_sum, m_temp, m_sum_FoF, m
     cdef int ind_subs, ind_max_subs, n_range
+    # ind_max_subs = 0
 
     arr_GroupMass = np.zeros(n_offset_sum)
-    if verbose>5:
-        print('Going into FoF-routine')
+
     for level in range(len(lev_indx_FoF)):
         # print(level)
         if len(lev_indx_FoF[level])==1:
@@ -1856,7 +1913,6 @@ def get_tree_vals_FoF(
                     # print('FoF-group pos:',merger_tree_FoF[lev_indx_FoF[level][k]].pos[j])
                     merger_tree_subs[ind_subs].velo[j] = merger_tree_FoF[lev_indx_FoF[level][k]].velo[j]
                     # print('FoF-group velo:',merger_tree_FoF[lev_indx_FoF[level][k]].velo[j])
-            '''
             for j in range(len(ms_group)):
                 m_group = ms_group[j]
                 ind_max_subs = ind_max_subs_list[j]
@@ -1920,7 +1976,7 @@ def get_tree_vals_FoF(
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                     else:
                         if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
-                            # print('1. Safeguard')
+                            print('1. Safeguard')
                             continue
                         arr_GroupMass[ind_subs] = 0.0
                         m_sum_list[j] += merger_tree_subs[ind_subs].mhalo
@@ -1936,7 +1992,7 @@ def get_tree_vals_FoF(
                         #     merger_tree_subs[ind_subs].NextInFoF = NULL
                 else:
                     if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
-                            # print('2. Safeguard')
+                            print('2. Safeguard')
                             continue
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
@@ -1957,7 +2013,7 @@ def get_tree_vals_FoF(
                             merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
                             id_save = ind_subs
                     merger_tree_subs[id_save].NextInFoF = NULL
-            
+            '''
     if len(lev_indx_subs)==n_lev:
         # print('n_lev-part')
         for level in range(len(lev_indx_FoF),n_lev):
@@ -1980,6 +2036,43 @@ def get_tree_vals_FoF(
                 merger_tree_subs[ind_subs].NextInFoF = NULL
     # print(merger_tree_subs[ind_max_subs].FirstInFoF==merger_tree_subs[ind_max_subs],'4')
 
+    '''
+    cdef Tree_Node* this_node_FoF
+    cdef Tree_Node* this_node_subs = <Tree_Node*>malloc(sizeof(Tree_Node))
+    cdef double m_group
+
+    this_node_FoF = merger_tree_FoF[0]
+
+    while this_node_FoF is not NULL:
+        # print('While we are here!')
+        level = this_node_FoF.jlevel
+        m_group = this_node_FoF.mhalo
+        this_node_subs.mhalo = 0.0
+        # print(m_group)
+        for k in range(n_offset_sum):
+            # print(merger_tree_subs[k].mhalo)
+            if merger_tree_subs[k].jlevel==level:
+                # print(level)
+                # print(merger_tree_subs[k].mhalo)
+                # print(merger_tree_subs[k].FirstInFoF==NULL)
+                if this_node_subs.mhalo<merger_tree_subs[k].mhalo<m_group or k==0: # and merger_tree_subs[k].FirstInFoF==NULL:
+                    # print('In this if')
+                    merger_tree_subs[k].FirstInFoF = merger_tree_subs[k]
+                    merger_tree_subs[k].NextInFoF = merger_tree_subs[k+1]
+                    this_node_subs = merger_tree_subs[k]
+                else:
+                    if k==0:
+                        merger_tree_subs[k].FirstInFoF = merger_tree_FoF[k]
+                        this_node_subs = merger_tree_subs[k]
+                    else:
+                        merger_tree_subs[k].FirstInFoF = this_node_subs
+                    if merger_tree_subs[k].sibling==NULL:
+                        merger_tree_subs[k].NextInFoF = NULL
+                    else:
+                        merger_tree_subs[k].NextInFoF = merger_tree_subs[k+1]
+        this_node_FoF = walk_tree(this_node_FoF)
+
+    '''
     # print(merger_tree_subs[ind_max_subs].FirstInFoF==merger_tree_subs[ind_max_subs],'5')
 
     # print(merger_tree_subs[0].FirstInFoF==merger_tree_subs[0])
@@ -1998,8 +2091,7 @@ def get_tree_vals_FoF(
     #                         merger_tree_subs[id_save].NextInFoF = merger_tree_subs[j]
     #                         id_save = j
 
-    if verbose>5:
-        print('Out of FoF-routine')
+
     # cdef c_SubNr = 0
     # arr_SubhaloNr = np.zeros(n_offset_sum)
     arr_GroupMass_temp = np.zeros(n_offset_sum)
@@ -2015,33 +2107,32 @@ def get_tree_vals_FoF(
                 # c_SubNr += 1
     arr_GroupMass = arr_GroupMass_temp
 
-    merger_tree_subs = pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF',verbose)
-    merger_tree_subs = spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF',verbose)
+    merger_tree_subs = pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF')
+    merger_tree_subs = spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF')
 
     arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_halos,m_res)
 
-    if verbose>2:
-        print('Number of nodes in FoF-group subhalo-tree',1,'is',arr_count[0])
+    print_level_3('Number of nodes in FoF-group subhalo-tree',1,'is',arr_count[0])
 
-        print('Example information from FoF-group-tree',i+1,' subhalo-tree:')
-        this_node = merger_tree_subs[0]
-        print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-        if arr_count[0]>1:
+    print_level_3('Example information from FoF-group-tree',i+1,' subhalo-tree:')
+    this_node = merger_tree_subs[0]
+    print_level_3('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    if arr_count[0]>1:
+        this_node = this_node.child
+        print_level_3('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+    else:
+        print_level_3('No Progenitors.')
+    if len(arr_count)>1:
+        print_level_3('Number of nodes in FoF-group subhalo-tree',2,'is',arr_count[1])
+
+        print_level_3('Example information from FoF-group',i+1,' subhalo-tree:')
+        this_node = merger_tree_subs[n_offset_arr[0]]
+        print_level_3('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+        if this_node.nchild>0:
             this_node = this_node.child
-            print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+            print_level_3('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
         else:
-            print('No Progenitors.')
-        if len(arr_count)>1:
-            print('Number of nodes in FoF-group subhalo-tree',2,'is',arr_count[1])
-
-            print('Example information from FoF-group',i+1,' subhalo-tree:')
-            this_node = merger_tree_subs[n_offset_arr[0]]
-            print('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
-            if this_node.nchild>0:
-                this_node = this_node.child
-                print('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
-            else:
-                print('No Progenitors.')
+            print_level_3('No Progenitors.')
     free(m_halo)
     free(merger_trees)
     free(merger_tree_subs)
@@ -2084,7 +2175,7 @@ def speed_test(
         i_seed_0 -=19*(1+i)
         srand(i_seed_0)
         # Sig = sig_alph(trees)
-        merger_tree,n_frag_tot = make_tree(m_0,a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Speed',pos_base,vel_base,Sig,scaling,0)
+        merger_tree,n_frag_tot = make_tree(m_0,a_0,m_res,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Speed',pos_base,vel_base,Sig,scaling)
 
         this_node = merger_tree[0]
 
@@ -2153,7 +2244,7 @@ cdef int n_subs_in_FoF(double m):
     #     n_subs = np.random.normal(3e2,10)
     return int(n_subs)
 
-cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal',int verbose=0):
+cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
     '''
     Function that calculates the positions and velocities of the different halos 
     in a tree either in the FoF or Normal case.
@@ -2174,8 +2265,7 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
     cdef Tree_Node* this_node
     cdef int i,j,level,c,indx
     cdef double[:] temp_pos,temp_velo
-    if verbose>5:
-        print('In pos_and_velo')
+    print_level_5('In pos_and_velo')
     this_node = merger_tree[0]
     for j in range(3):
         this_node.pos[j] = pos_base[j]
@@ -2303,7 +2393,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
             temp_velo = this_node.velo
             for i in range(3):
                 # temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
-                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7*(this_node.mhalo/1e10)**(-0.1))
+                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7)#*(this_node.mhalo/1e10)**(-0.1))
                 velo_summ += temp_velo[i]**2
         # print(temp_velo[0],' after')
         return temp_velo
@@ -2375,7 +2465,7 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
                     temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])/sqrt((this_node.FirstInFoF.pos[0]-position_of_node[0])**2+(this_node.FirstInFoF.pos[1]-position_of_node[1])**2+(this_node.FirstInFoF.pos[2]-position_of_node[2])**2)*np.random.normal(0,0.05)*temp_arr[i]
         return temp_arr
 
-cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,str mode='Normal',int verbose=0):
+cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,str mode='Normal'):
     '''
     Function that calculates the 3-spins of the different halos 
     in a tree either in the FoF or Normal case.
@@ -2389,8 +2479,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
     Output:
         merger_tree: Updated merger tree
     '''
-    if verbose>5:
-        print('In spin_3_calc')
+    print_level_5('In spin_3_calc')
     cdef Tree_Node* this_node
     cdef int i,level
     cdef double s_1,s_2,s_3,s_sum,s_up,s_low,mass,scale,theta,u,s_abs

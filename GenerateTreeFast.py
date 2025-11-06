@@ -15,12 +15,12 @@ lock = Lock()
 filename = './CLASSIC-trees/Data/flat.txt'
 DELTA = functions(filename)
 
-def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,verbose):
+def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
     vel_base = np.random.lognormal(np.log(200),0.7,3)
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,verbose)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
     count = np.array([count],dtype='int_')
     i = np.array([i],dtype='int_')
 
@@ -41,7 +41,7 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
         'tree_index': i
     }
 
-def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,Boxsize,verbose):
+def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,Boxsize):
     if type(i)!=int:
         raise('Type Error with i')
     theta = 2*np.pi*np.random.uniform(0,1)
@@ -52,7 +52,7 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
-    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,verbose)
+    count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
     # arr_MostBoundID = np.array(arr_nodid,dtype=np.uint32) # np.zeros(np.sum(count),dtype='int_')
     arr_vel_disp = np.zeros(np.sum(count),dtype=np.float32)
     # arr_SubhaloNr = arr_nodid # np.zeros(np.sum(count),dtype='int_')
@@ -94,11 +94,12 @@ def append_create_dataset(grp,name,data):
 
 # Parallel execution:
 def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,mode,pos_base,vel_base,scaling,verbose):
-    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,verbose)
+    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
         results = pool.starmap(tree_process, args_list)
-    print('Here')
+    if verbose>2:
+        print('Here')
     with h5py.File(file_name,'a',libver='latest') as f:
         # Create or access groups of the merger tree file
         if 'TreeHalos' not in f:
@@ -141,7 +142,7 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
         return start_offset
 
 def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,mode,pos_base,vel_base,scaling,verbose):
-    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,BoxSize,verbose)
+    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,BoxSize)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
         results = pool.starmap(tree_process_FoF, args_list)
@@ -263,7 +264,7 @@ def compute_tree_fast(random_mass,
             a_lev.append(1/(1 + z_max*(i_lev)/(n_lev-1)))
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
-            if verbose>1:
+            if verbose>0:
                 print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
@@ -274,7 +275,7 @@ def compute_tree_fast(random_mass,
             # a_lev.append(1/(1+1/(z_max+1)*i_lev/(n_lev-1)))
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
-            if verbose>1:
+            if verbose>0:
                 print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
@@ -288,7 +289,7 @@ def compute_tree_fast(random_mass,
                 a_lev.append(a_temp)
                 d_c = DELTA.delta_crit(a_temp)
                 w_lev.append(d_c)
-                if verbose>1:
+                if verbose>0:
                     print('z = ',1/a_temp-1,' at which delta_crit = ',d_c)
             a_lev = np.array(a_lev)
             w_lev = np.array(w_lev)
