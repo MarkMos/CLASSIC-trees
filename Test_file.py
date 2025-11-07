@@ -340,7 +340,7 @@ from tqdm import tqdm
 
 import CLASSIC_trees as ct
 # import numpy as np
-from classic_trees import set_trees#, functions, random_masses,sig_alph
+# from classic_trees import set_trees#, functions, random_masses,sig_alph
 
 # file = 'TestTree1000_NoOutput2.0.hdf5'
 file = 'TestTreeTrash2.0.hdf5'
@@ -355,11 +355,11 @@ z = np.array([127.000, 79.998, 50.000, 30.000, 19.916, 18.244, 16.725, 15.343, 1
     0.116, 0.089, 0.064, 0.041, 0.020, 0.000])[::-1]
 tree = ct.trees()
 # tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':0.75}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
-tree.set(pk_method='default',verbose_level=1)
-set_trees(tree)
+tree.set(pk_method='default',verbose_level=0)
+# set_trees(tree)
 # # tree.comp_speed()
 # np.random.seed(0)
-# tree.compute_slow(mass=1e14,times = a,mode='FoF',m_res=1e9)
+# tree.compute_slow(mass=1e14,times = 'equal a',mode='FoF',m_res=1e9)
 # np.random.seed(0)
 # tree.compute_slow(mass=1e14,times = a,mode='FoF',m_res=1e9)
 # tree.compute_slow(mass=5e13,m_res=1e9,z_max=20,n_lev=27,mode='Normal',vel_base=np.array([100,90,100],dtype=np.float64))#,n_halo_max=1e7)#,file_name=file)
