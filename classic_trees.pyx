@@ -244,7 +244,8 @@ cdef double halo_Vmax(double mass):
     cdef double b = 0.61474034
     cdef double val
     val = sqrt(G_used*mass**b/a)
-    return val + random.gauss(0,0.1)*val
+    return np.random.lognormal(np.log(val),0.7*(mass/1e8)**(-0.1))
+    # return val + random.gauss(0,0.1)*val
 
 cdef int SubhaloLen(double m,double m_res):
     # Function to calculate the length of a halo.
@@ -984,7 +985,7 @@ cdef split_result split(
         double diff_hf, diff12_hf, diff32_hf, v_hf, s_fac
         double beta, two_pow_beta, b, eta, half_pow_eta
         double eta_inv, q_min_exp, f_fac, dn_dw
-        double dw_eps2, dw, n_av, z, f, mu
+        double dw_eps2, dw, n_av, z, f, mu,R_q
         int n_prog = 0
 
     if fabs(m_min - m_min_last) > eps_eta:
