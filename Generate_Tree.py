@@ -6,7 +6,7 @@ import random
 # from Delta_crit import *
 from classic_trees import functions, get_tree_vals#node_vals_and_counter, make_tree
 import numpy as np
-# import h5py
+import h5py
 import time
 
 filename = './CLASSIC-trees/Data/flat.txt'
@@ -29,7 +29,7 @@ def append_create_dataset(grp,name,data):
 n_lev = 10
 n_halo_lev = 10
 
-mp_halo = 1e13
+mp_halo = 1e10
 m_res   = 1e8
 n_tree  = 1
 
@@ -147,32 +147,32 @@ for i in range(n_tree):
     # this_node = this_node.sibling
     # print('  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     # print(arr_mhalo)
-    # with h5py.File('./Code_own/Trees/tree_selftest1e12_2.hdf5','a') as f:
-    #     # Create or access groups of the merger tree file
-    #     if 'TreeHalos' not in f:
-    #         grp1 = f.create_group('TreeHalos')
-    #     else:
-    #         grp1 = f['TreeHalos']
-    #         nth_run = True
-    #     if 'TreeTable' not in f:
-    #         grp2 = f.create_group('TreeTable')
-    #     else:
-    #         grp2 = f['TreeTable']
+    with h5py.File('./Code_own/Trees/tree_selftest1e10.hdf5','a') as f:
+        # Create or access groups of the merger tree file
+        if 'TreeHalos' not in f:
+            grp1 = f.create_group('TreeHalos')
+        else:
+            grp1 = f['TreeHalos']
+            nth_run = True
+        if 'TreeTable' not in f:
+            grp2 = f.create_group('TreeTable')
+        else:
+            grp2 = f['TreeTable']
         
-    #     if nth_run is False:
-    #         grp3 = f.create_group('TreeTimes')
-    #         d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
-    #         d_time= grp3.create_dataset('Time',data=a_lev)
+        if nth_run is False:
+            grp3 = f.create_group('TreeTimes')
+            d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
+            d_time= grp3.create_dataset('Time',data=a_lev)
         
-    #     append_create_dataset(grp1,'SnapNum',arr_time)
-    #     append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
-    #     append_create_dataset(grp1,'TreeDescendant',arr_desc)
-    #     append_create_dataset(grp1,'TreeFirstProgenitor',arr_1prog)
-    #     append_create_dataset(grp1,'TreeID',data=arr_treeid)
-    #     append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
-    #     append_create_dataset(grp2,'Length',data=np.array([count]))
-    #     append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
-    #     append_create_dataset(grp2,'TreeID',data=np.array([i]))
+        append_create_dataset(grp1,'SnapNum',arr_time)
+        append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
+        append_create_dataset(grp1,'TreeDescendant',arr_desc)
+        append_create_dataset(grp1,'TreeFirstProgenitor',arr_1prog)
+        append_create_dataset(grp1,'TreeID',data=arr_treeid)
+        append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
+        append_create_dataset(grp2,'Length',data=np.array([count]))
+        append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
+        append_create_dataset(grp2,'TreeID',data=np.array([i]))
 
     start_offset += count
 
