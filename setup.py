@@ -6,8 +6,8 @@ python_include = sysconfig.get_paths()['include']
 
 extensions = [
     Extension(
-        'CLASSIC_trees.classic_trees',
-        sources=['src/classic_trees/classic_trees.pyx'],
+        'classic_trees.classic_trees_module',
+        sources=['src/classic_trees.pyx'],
         language='c',
         extra_compile_args=['-std=c99'],
         include_dirs=[np.get_include(),python_include]
@@ -25,7 +25,9 @@ setup(
             'wraparound': False
         }
     ),
-    packages=['CLASSIC_trees'],
+    packages=['classic_trees'],
     package_dir={'':'src'},
+    package_data={'classic_trees':['src/classic_trees.pyx']},
+    include_package_data=True,
     zip_safe = False,
 )

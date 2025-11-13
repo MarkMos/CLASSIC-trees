@@ -338,7 +338,7 @@ from tqdm import tqdm
 
 # print(np.sqrt(sig_halo_func(1e15)))
 
-import CLASSIC_trees as ct
+import classic_trees.CLASSIC_trees as ct
 # import numpy as np
 # from classic_trees import set_trees#, functions, random_masses,sig_alph
 
