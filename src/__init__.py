@@ -1,1 +1,1 @@
-from CLASSIC_trees import trees
+from classic_trees.CLASSIC_trees import trees

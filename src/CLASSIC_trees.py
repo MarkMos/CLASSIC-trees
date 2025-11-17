@@ -142,7 +142,7 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        from GenerateTreeFast import compute_tree_fast
+        from classsic_trees.GenerateTreeFast import compute_tree_fast
         compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
                           a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling,verbose)
     def compute_slow(self,
@@ -200,6 +200,6 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        from Generate_Tree import compute_tree
+        from classic_trees.Generate_Tree import compute_tree
         compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
                      m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling,verbose)
