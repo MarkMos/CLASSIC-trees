@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools","wheel","Cython==0.29.32","numpy","astropy","scipy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="CLASSIC_trees_class"
+version="1.0.0"
+authors = [
+    {name="M. Braun"}
+]
+description = "A new code to generate dark mater halo merger trees directly from running CLASS, for use with semi-analytical galaxy modeling codes."
+readme = "README.md"
+requires-python = ">=3.5"
+
+
+dependencies = [
+    "tqdm",
+    "classy",
+    "h5py",
+    "classic_trees"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/MarkMos/CLASSIC-trees.git"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
