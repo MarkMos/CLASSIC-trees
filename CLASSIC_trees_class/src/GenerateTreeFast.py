@@ -1,10 +1,4 @@
-# from Make_Tree import *
-# from Tree_Node_and_Memory import *
-# from Moving_in_Tree import *
-# from Delta_crit import *
-# from sigma_cdm_func import *
 from classic_trees import get_tree_vals, get_tree_vals_FoF, functions, random_masses
-# from random_masses import ppf_ST, ppf_PS
 import numpy as np
 import h5py
 from multiprocessing import Pool, Lock
@@ -12,11 +6,15 @@ from tqdm import tqdm
 
 lock = Lock()
 
-filename = './CLASSIC-trees/Data/flat.txt'
+filename = './Data/flat.txt'
 DELTA = functions(filename)
 
-def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
-    vel_base = np.random.lognormal(np.log(200),0.7,3)
+def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,Boxsize):
+    theta = 2*np.pi*np.random.uniform(0,1)
+    u = 2*np.random.uniform(0,1)-1
+    norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
+    vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
+    pos_base = np.random.uniform(0,Boxsize,3)
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
         n_halo_max=10000000
@@ -47,7 +45,7 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
     theta = 2*np.pi*np.random.uniform(0,1)
     u = 2*np.random.uniform(0,1)-1
     norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
-    vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e10)**(-0.1))*norm_vel
+    vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
     pos_base = np.random.uniform(0,Boxsize,3)
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
@@ -93,8 +91,8 @@ def append_create_dataset(grp,name,data):
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
 # Parallel execution:
-def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,mode,pos_base,vel_base,scaling,verbose):
-    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,pos_base,vel_base,scaling,verbose):
+    args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,BoxSize)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
         results = pool.starmap(tree_process, args_list)
@@ -141,7 +139,7 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
             start_offset += result['count']
         return start_offset
 
-def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,mode,pos_base,vel_base,scaling,verbose):
+def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0,l_0,h_0,BoxSize,pos_base,vel_base,scaling,verbose):
     args_list = [(i,i_seed_0,mp_halo[i],a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,BoxSize)
                   for i in range(j*n_tree,n_tree+j*n_tree)]
     with Pool() as pool:
@@ -184,9 +182,7 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
             append_create_dataset(grp1,'SubhaloVel',np.array(result['arr_velo'],dtype=np.float32))
             append_create_dataset(grp1,'SubhaloSpin',np.array(result['arr_spin'],dtype=np.float32))
             append_create_dataset(grp1,'SubhaloLen',np.array(result['arr_sublen'],dtype=np.int32))
-            # append_create_dataset(grp1,'SubhaloIDMostbound',result['arr_MostBoundID'])
             append_create_dataset(grp1,'SubhaloVelDisp',result['arr_vel_disp'])
-            # append_create_dataset(grp1,'SubhaloNr',result['arr_SubhaloNr'])
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
             append_create_dataset(grp1,'TreeIndex',data=np.array(result['arr_nodid'],dtype=np.int32))
             append_create_dataset(grp2,'Length',data=np.array([int(np.sum(result['count']))],dtype='int32'))
@@ -195,7 +191,7 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
             start_offset += np.sum(result['count'])
         return start_offset
 
-def compute_tree_fast(random_mass,
+def compute_tree_parallel(random_mass,
                       mass,
                       file_name,
                       omega_0,
@@ -272,7 +268,6 @@ def compute_tree_fast(random_mass,
         a_lev = np.linspace(1,1/(z_max+1),n_lev)
         w_lev = []
         for i_lev in range(n_lev):
-            # a_lev.append(1/(1+1/(z_max+1)*i_lev/(n_lev-1)))
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
             if verbose>0:
@@ -323,10 +318,10 @@ def compute_tree_fast(random_mass,
     start_offset = 0
     if mode!='FoF':
         for j in tqdm(range(n_part)):
-            start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,mode,pos_base,vel_base,scaling,verbose)
+            start_offset = parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,pos_base,vel_base,scaling,verbose)
     else:
         for j in tqdm(range(n_part)):
-            start_offset = parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,mode,pos_base,vel_base,scaling,verbose)
+            start_offset = parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,nth_run,start_offset,file_name,omega_0, l_0, h_0,BoxSize,pos_base,vel_base,scaling,verbose)
     with h5py.File(file_name,'a') as f:
         grp = f.create_group('Header')
         grp.attrs['LastSnapShotNr'] = np.int32(n_lev - 1)
@@ -337,16 +332,12 @@ def compute_tree_fast(random_mass,
             grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
         else:
             grp.attrs['Ntrees_ThisFile'] = int(n_tree*n_part)
-            # grp.attrs['NtreesPerFile'] = np.int32(n_tree*n_part)
             grp.attrs['Ntrees_Total'] = int(n_tree*n_part)
-            # grp.attrs['ParticleMass'] = 0.0860657
-            # grp.attrs['NumberOfOutputFiles'] = np.int32(1)
             grp1 = f['TreeHalos']
             arr_SubhaloNr = np.zeros(start_offset,dtype='int_')
             arr_MostBoundID = np.array([i for i in range(start_offset)],dtype=np.uint32)
             SnapNum = f['TreeHalos/SnapNum'][:]
             masses = f['TreeHalos/Group_M_Crit200'][:]
-            # masses = f['TreeHalos/SubhaloMass'][:]
             for i in range(n_lev-1,0,-1):
                 indx_lev = np.where(SnapNum==i)[0]
                 if len(indx_lev)!=0:

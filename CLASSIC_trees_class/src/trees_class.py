@@ -82,7 +82,7 @@ class trees:
         from classic_trees import set_trees
         set_trees(self)
 
-    def compute_fast(self,
+    def compute_parallel(self,
                      file_name,
                      random_mass = None,
                      m_max = 1e16,
@@ -142,10 +142,10 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        from .GenerateTreeFast import compute_tree_fast
-        compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
+        from .GenerateTreeFast import compute_tree_parallel
+        compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
                           a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling,verbose)
-    def compute_slow(self,
+    def compute_inline(self,
                      mass = None,
                      n_halo_max = 1000000,
                      file_name = None,
