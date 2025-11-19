@@ -1471,6 +1471,8 @@ def get_tree_vals_FoF(
         print_level_1('No Progenitors.')
     
     n_halos = n_subs_in_FoF(m_0)
+    if n_halos==0:
+        n_halos = 1
     print_level_1('Number of subhalos in first FoF-group: ',n_halos)
     cdef double* m_halo = <double*>malloc((n_halos)*sizeof(double))
     cdef int c_halos = 0
@@ -1538,6 +1540,7 @@ def get_tree_vals_FoF(
     arr_GroupMass = np.zeros(n_offset_sum)
 
     for level in range(len(lev_indx_FoF)):
+        print_level_5(level)
         if len(lev_indx_FoF[level])==1:
             m_max_subs = 0.0
             m_group = merger_tree_FoF[lev_indx_FoF[level][0]].mhalo
@@ -1546,15 +1549,18 @@ def get_tree_vals_FoF(
             else:
                 n_range = n_subs_in_FoF(m_group)
             for ind_subs in lev_indx_subs[level]:
+                print_level_5(ind_subs)
                 if m_max_subs<merger_tree_subs[ind_subs].mhalo<m_group:
                     m_max_subs = merger_tree_subs[ind_subs].mhalo
                     ind_max_subs = ind_subs
+            print_level_5(ind_max_subs)
             merger_tree_subs[ind_max_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
             arr_GroupMass[ind_max_subs] = m_group
             if merger_tree_subs[ind_max_subs].jlevel!=0:
                 for j in range(3):
                     merger_tree_subs[ind_max_subs].pos[j] = merger_tree_FoF[lev_indx_FoF[level][0]].pos[j]
                     merger_tree_subs[ind_max_subs].velo[j] = merger_tree_FoF[lev_indx_FoF[level][0]].velo[j]
+            print_level_5('After Position and Velocity assignment.')
             c = 0
             m_sum = 0.0
             m_temp = 0.0
@@ -1575,7 +1581,7 @@ def get_tree_vals_FoF(
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                     merger_tree_subs[ind_subs].NextInFoF = NULL
-
+            print_level_5('After assigning the FirstInFoF.')
             for ind_subs in same_ind_max:
                 if merger_tree_subs[ind_max_subs].NextInFoF==NULL:
                     merger_tree_subs[ind_max_subs].NextInFoF = merger_tree_subs[ind_subs]
@@ -1583,6 +1589,8 @@ def get_tree_vals_FoF(
                 else:
                     merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
                     id_save = ind_subs
+            if same_ind_max==[]:
+                id_save = ind_max_subs
             merger_tree_subs[id_save].NextInFoF = NULL
         elif len(lev_indx_FoF[level])>1:
             ms_group = []
@@ -1644,6 +1652,8 @@ def get_tree_vals_FoF(
                     else:
                         merger_tree_subs[id_save].NextInFoF = merger_tree_subs[ind_subs]
                         id_save = ind_subs
+                if same_ind_max==[]:
+                    id_save = ind_max_subs
                 merger_tree_subs[id_save].NextInFoF = NULL
             for ind_subs in lev_indx_subs[level]:
                 if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
@@ -1736,7 +1746,7 @@ cdef double spin_abs(double m,str mode='Normal'):
     elif mode=='Upper':
         spin_val = 100*(10+(m/5e8)**0.9)*m**(-0.1)
     elif mode=='Lower':
-        spin_val = 0.01*(10+(m/5e8)**0.9)#*m**(-0.1)
+        spin_val = 0.01*(10+(m/5e8)**0.9)
     elif mode=='Middle':
         spin_val = 10+(m/5e8)**0.9
     return spin_val
@@ -1749,8 +1759,10 @@ cdef int n_subs_in_FoF(double m):
             n_subs +=1
         else:
             n_subs -=1
-    elif 1e11<=m: #<4e13:
+    elif 1e11<=m:
         n_subs += np.random.normal(0,0.1)*n_subs
+    if n_subs<=0:
+        n_subs = 1
     return int(n_subs)
 
 cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
@@ -1790,9 +1802,11 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                 if this_node.parent!=NULL:
                     timestep =  (a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel])/(1e2*a_lev[this_node.parent.jlevel]*trees.h_0*sqrt(trees.omega_0*(1/a_lev[this_node.parent.jlevel])**3+trees.l_0))
                     if this_node.FirstInFoF==this_node:
+                        temp_pos = velo_routine(this_node,timestep,'pos','cen',this_node.parent.pos,scaling)
+                        temp_velo = velo_routine(this_node,timestep,'velo','cen',this_node.parent.pos,scaling)
                         for j in range(3):
-                            this_node.pos[j] = pos_base[j]
-                            this_node.velo[j] = vel_base[j]
+                            this_node.pos[j] = temp_pos[j]
+                            this_node.velo[j] = temp_velo[j]
                     else:
                         temp_pos = velo_routine(this_node,timestep,'pos','sat',pos_base,scaling)
                         temp_velo = velo_routine(this_node,timestep,'velo','sat',pos_base,scaling)
@@ -1816,18 +1830,20 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                         if this_node.parent!=NULL:
                             timestep =  (a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel])/(1e2*a_lev[this_node.parent.jlevel]*trees.h_0*sqrt(trees.omega_0*(1/a_lev[this_node.parent.jlevel])**3+trees.l_0))
                             if this_node.FirstInFoF==this_node:
+                                temp_pos = velo_routine(this_node,timestep,'pos','cen',this_node.parent.pos,scaling)
+                                temp_velo = velo_routine(this_node,timestep,'velo','cen',this_node.parent.pos,scaling)
                                 for j in range(3):
-                                    this_node.pos[j] = pos_base[j]
-                                    this_node.velo[j] = vel_base[j]
+                                    this_node.pos[j] = temp_pos[j]
+                                    this_node.velo[j] = temp_velo[j]
                             else:
-                                temp_pos = velo_routine(this_node,timestep,'pos','sat',pos_base,scaling)
-                                temp_velo = velo_routine(this_node,timestep,'velo','sat',pos_base,scaling)
+                                temp_pos = velo_routine(this_node,timestep,'pos','sat',this_node.FirstInFoF.pos,scaling)
+                                temp_velo = velo_routine(this_node,timestep,'velo','sat',temp_pos,scaling)
                                 for j in range(3):
                                     this_node.pos[j] = temp_pos[j]
                                     this_node.velo[j] = temp_velo[j]
                         else:
                             temp_pos = velo_routine(this_node,1,'pos','sat',pos_base,scaling)
-                            temp_velo = velo_routine(this_node,1,'velo','sat',pos_base,scaling)
+                            temp_velo = velo_routine(this_node,1,'velo','sat',temp_pos,scaling)
                             for j in range(3):
                                 this_node.pos[j] = temp_pos[j]
                                 this_node.velo[j] = temp_velo[j]
@@ -1875,7 +1891,12 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
             velo_summ = 0.0
             temp_velo = this_node.velo
             for i in range(3):
-                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7)#*(this_node.mhalo/1e10)**(-0.1))
+                if adding[i]<0:
+                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                elif adding[i]>0:
+                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                else:
+                    temp_velo[i] = 0
                 velo_summ += temp_velo[i]**2
         return temp_velo
     elif halo_type=='sat' and mode=='pos':
