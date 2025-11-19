@@ -2331,7 +2331,7 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                             # print('At time-level',this_node.jlevel)
                             timestep =  (a_lev[this_node.parent.jlevel] - a_lev[this_node.jlevel])/(1e2*a_lev[this_node.parent.jlevel]*trees.h_0*sqrt(trees.omega_0*(1/a_lev[this_node.parent.jlevel])**3+trees.l_0))
                             if math.isnan(timestep):
-                                raise('Value Error occurred at this timestep and time:',timestep,level)
+                                raise ValueError('Value Error occurred at this timestep and time:',timestep,level)
                             if this_node.FirstInFoF==this_node:
                                 # print('We are here!',i,'of',n_frag_tot)
                                 # print('Parent pos:',this_node.parent.pos[0])
@@ -2342,9 +2342,13 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                                 for j in range(3):
                                     # print('Working for',j+1)
                                     # this_node.pos[j] = pos_base[j]
+                                    if math.isnan(temp_pos[j]):
+                                        raise ValueError('Value error in central Position at time ',level)
                                     this_node.pos[j] = temp_pos[j]
                                     # print(this_node.pos[j])
                                     # this_node.velo[j] = vel_base[j]
+                                    if math.isnan(temp_velo[j]):
+                                        raise ValueError('Value error in central Velocity at time ',level)
                                     this_node.velo[j] = temp_velo[j]
                                     # print(this_node.velo[j])
                             else:
@@ -2352,15 +2356,23 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                                 temp_pos = velo_routine(this_node,timestep,'pos','sat',this_node.FirstInFoF.pos,scaling)
                                 temp_velo = velo_routine(this_node,timestep,'velo','sat',temp_pos,scaling)
                                 for j in range(3):
+                                    if math.isnan(temp_pos[j]):
+                                        raise ValueError('Value error in satellite Position 1 at time ',level)
                                     this_node.pos[j] = temp_pos[j]
+                                    if math.isnan(temp_velo[j]):
+                                        raise ValueError('Value error in satellite Velocity 1 at time ',level)
                                     this_node.velo[j] = temp_velo[j]
                         else:
                             # print('Timelecel',this_node.jlevel,'and id',this_node.index)
                             temp_pos = velo_routine(this_node,1,'pos','sat',pos_base,scaling)
                             temp_velo = velo_routine(this_node,1,'velo','sat',temp_pos,scaling)
                             for j in range(3):
+                                if math.isnan(temp_pos[j]):
+                                        raise ValueError('Value error in satellite Position 2 at time ',level)
                                 this_node.pos[j] = temp_pos[j]
                                 # print('First pos:',this_node.pos[j])
+                                if math.isnan(temp_velo[j]):
+                                        raise ValueError('Value error in satellite Velocity 2 at time ',level)
                                 this_node.velo[j] = temp_velo[j]
                                 # print('First velo:',this_node.velo[j])
                 if this_node.FirstInFoF!=NULL:
@@ -2410,7 +2422,12 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
             temp_velo = this_node.velo
             for i in range(3):
                 # temp_velo[i] += adding[i]*np.random.normal(0.0,0.05)
-                temp_velo[i] = np.random.lognormal(log(adding[i]),0.7)#*(this_node.mhalo/1e10)**(-0.1))
+                if adding[i]<0:
+                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                elif adding[i]>0:
+                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                else:
+                    temp_velo[i] = 0
                 velo_summ += temp_velo[i]**2
         # print(temp_velo[0],' after')
         return temp_velo

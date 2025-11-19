@@ -47,7 +47,7 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
     theta = 2*np.pi*np.random.uniform(0,1)
     u = 2*np.random.uniform(0,1)-1
     norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
-    vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e10)**(-0.1))*norm_vel
+    vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
     pos_base = np.random.uniform(0,Boxsize,3)
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
