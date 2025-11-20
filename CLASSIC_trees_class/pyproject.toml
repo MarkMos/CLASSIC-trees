@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools","wheel","Cython==0.29.32","numpy","astropy","scipy"]
+requires = ["setuptools","numpy"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name="CLASSIC_trees_class"
-version="1.0.0"
+name="CLASSIC_trees"
+version="1.1.0"
 authors = [
     {name="M. Braun"}
 ]
@@ -17,7 +17,7 @@ dependencies = [
     "tqdm",
     "classy",
     "h5py",
-    "classic_trees"
+    "classic_trees_module"
 ]
 
 classifiers = [

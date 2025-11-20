@@ -1,4 +1,4 @@
-from classic_trees import get_tree_vals, get_tree_vals_FoF, functions, random_masses
+from classic_trees_module import get_tree_vals, get_tree_vals_FoF, functions, random_masses
 import numpy as np
 import h5py
 from multiprocessing import Pool, Lock

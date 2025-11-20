@@ -1,4 +1,4 @@
-from classic_trees import functions, get_tree_vals, get_tree_vals_FoF
+from classic_trees_module import functions, get_tree_vals, get_tree_vals_FoF
 import numpy as np
 import h5py
 

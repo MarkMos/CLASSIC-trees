@@ -79,7 +79,7 @@ class trees:
                 self.Pk_0_np = pk_data[1]
             elif P_values=='uncorrected':
                 self.Pk_0_np = pk_data[1]*h_0**3
-        from classic_trees import set_trees
+        from classic_trees_module import set_trees
         set_trees(self)
 
     def compute_parallel(self,

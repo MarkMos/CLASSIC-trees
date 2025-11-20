@@ -6,7 +6,7 @@ python_include = sysconfig.get_paths()['include']
 
 extensions = [
     Extension(
-        'classic_trees',
+        'classic_trees_module',
         sources=['src/classic_trees.pyx'],
         language='c',
         extra_compile_args=['-std=c99'],
@@ -15,8 +15,8 @@ extensions = [
 ]
 
 setup(
-    name='classic_trees',
-    version='0.0.1',
+    name='classic_trees_module',
+    version='0.0.2',
     ext_modules=cythonize(
         extensions,
         compiler_directives={
