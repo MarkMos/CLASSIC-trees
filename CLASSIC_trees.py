@@ -22,7 +22,7 @@ class trees:
             pk_method = self.pk_method
             file_name_pk = None
         elif pk_method=='default':
-            file_name_pk = './CLASSIC-trees/pk_CLASS_default.txt'
+            file_name_pk = './pk_CLASS_default.txt'
             self.file_name_pk = file_name_pk
         elif pk_method=='self':
             file_name_pk = file
@@ -37,7 +37,7 @@ class trees:
         self.verbose = verbose_level
 
 
-        if file_name_pk=='./CLASSIC-trees/pk_CLASS_default.txt':
+        if file_name_pk=='./pk_CLASS_default.txt':
             h_0 = cosmo_params['h']
             omega_0 = cosmo_params['Omega_m']
             l_0 = cosmo_params['Omega_Lambda']

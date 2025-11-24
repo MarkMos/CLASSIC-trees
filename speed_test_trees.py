@@ -2,7 +2,7 @@ from classic_trees import functions,speed_test,set_trees
 import numpy as np
 from multiprocessing import Pool, Lock
 
-lock = Lock()
+# lock = Lock()
 
 # import CLASSIC_trees as ct
 
@@ -10,16 +10,16 @@ lock = Lock()
 # tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 # set_trees(tree)
 
-filename = './CLASSIC-trees/Data/flat.txt'
+filename = './Data/flat.txt'
 DELTA = functions(filename)
 
-def tree_speed(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
-    speed_test(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+# def tree_speed(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
+#     speed_test(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
 
-def parallel_speed(n_part,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
-    arg_list = [(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling) for j in range(n_part)]
-    with Pool() as pool:
-        pool.starmap(tree_speed, arg_list)
+# def parallel_speed(n_part,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
+#     arg_list = [(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling) for j in range(n_part)]
+#     with Pool() as pool:
+#         pool.starmap(tree_speed, arg_list)
 
 
 def compute_speed():
@@ -35,8 +35,8 @@ def compute_speed():
     n_halo = 1
     n_halo_max = 5000
 
-    pos_base = np.array([0,0,0],dtype=np.float64)
-    vel_base = np.array([100,100,100],dtype=np.float64)
+    # pos_base = np.array([0,0,0],dtype=np.float64)
+    # vel_base = np.array([100,100,100],dtype=np.float64)
 
 
     a_lev = []
@@ -56,4 +56,6 @@ def compute_speed():
     # parallel_speed(n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,0.3)
 
     # parallel_speed(n_part,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,0.3)
-    speed_test(0,n_part*n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,0.3)
+    speed_test(0,n_part*n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,0.3)
+
+compute_speed()
