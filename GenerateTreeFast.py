@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 lock = Lock()
 
-filename = './CLASSIC-trees/Data/flat.txt'
+filename = './Data/flat.txt'
 DELTA = functions(filename)
 
 def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
@@ -195,7 +195,7 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
             start_offset += np.sum(result['count'])
         return start_offset
 
-def compute_tree_fast(random_mass,
+def compute_tree_parallel(random_mass,
                       mass,
                       file_name,
                       omega_0,

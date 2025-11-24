@@ -10,7 +10,7 @@ lock = Lock()
 # tree.set(pk_method='default') #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 # set_trees(tree)
 
-filename = './CLASSIC-trees/Data/flat.txt'
+filename = './Data/flat.txt'
 DELTA = functions(filename)
 
 def tree_speed(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):

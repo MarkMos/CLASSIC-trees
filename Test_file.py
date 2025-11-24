@@ -354,10 +354,10 @@ z = np.array([127.000, 79.998, 50.000, 30.000, 19.916, 18.244, 16.725, 15.343, 1
     0.828, 0.755, 0.687, 0.624, 0.564, 0.509, 0.457, 0.408, 0.362, 0.320, 0.280, 0.242, 0.208, 0.175, 0.144, 
     0.116, 0.089, 0.064, 0.041, 0.020, 0.000])[::-1]
 tree = ct.trees()
-tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':0.75}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
-# tree.set(pk_method='default',verbose_level=5)
+# tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':0.75}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
+tree.set(pk_method='default')#,verbose_level=5)
 # set_trees(tree)
-# # tree.comp_speed()
+tree.comp_speed()
 # np.random.seed(0)
 # tree.compute_slow(mass=1e14,times = 'equal a',mode='FoF',m_res=1e9)
 # np.random.seed(0)
@@ -367,7 +367,7 @@ tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':
 # tree.compute_fast(random_mass='ST',m_max=2e13,m_min=1e13,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),file_name=file,n_part=100,n_tree=10,BoxSize=63.0)
 # tree.compute_fast(mass=np.array([1e14,5e13]),random_mass='Self',m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),file_name=file,n_part=1,n_tree=2,BoxSize=63.0)
 # tree.compute_fast(m_max=1e16,m_min=1e11,random_mass='ST',m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),file_name=file,n_part=5,n_tree=20,BoxSize=62.5)
-tree.compute_fast(m_max=1e16,m_min=1e11,random_mass='ST',m_res=1e9,mode='FoF',times=z,vel_base=np.array([100,90,100],dtype=np.float64),file_name=file,n_part=50,n_tree=20,BoxSize=62.5)
+# tree.compute_fast(m_max=1e16,m_min=1e11,random_mass='ST',m_res=1e9,mode='FoF',times=z,vel_base=np.array([100,90,100],dtype=np.float64),file_name=file,n_part=50,n_tree=20,BoxSize=62.5)
 # tree.compute_fast(random_mass='ST',m_max=5e14,m_min=1e12,m_res=1e9,mode='FoF',z_max=20,n_lev=27,vel_base=np.array([100,90,100],dtype=np.float64),n_part=5000,n_tree=4,file_name=file)
 # tree.compute_fast(random_mass='ST',file_name=file,n_part=50,n_tree=40,scaling=0.5,z_max=15,n_lev=20)
 # tree.compute_fast(mass=1e12,times=a,n_halo_max=100000,file_name=file,n_part=500,n_tree=20)

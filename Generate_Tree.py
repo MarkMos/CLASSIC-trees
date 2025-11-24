@@ -8,7 +8,7 @@ from classic_trees import functions, get_tree_vals, get_tree_vals_FoF
 import numpy as np
 import h5py
 
-filename = './CLASSIC-trees/Data/flat.txt'
+filename = './Data/flat.txt'
 DELTA = functions(filename)
 
 def append_create_dataset(grp,name,data):
@@ -265,3 +265,4 @@ def compute_tree(mass,
                     grp.attrs['Ntrees_Total'] = n_tree
                     grp.attrs['NumFiles'] = 1
                 start_offset += count
+    return arr_mhalo,arr_time,1/a_lev-1

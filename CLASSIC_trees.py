@@ -16,13 +16,16 @@ class trees:
         self.m_max = 1e16
         self.m_min = 1e8
         self.verbose = 0
+        self.masses = None
+        self.jlevels = None
+        self.redshifts = None
     def set(self,pk_method='class',cosmo_params=None,
             add_cosmo_params=None,file=None,P_values='uncorrected',verbose_level=0):
         if pk_method=='class':
             pk_method = self.pk_method
             file_name_pk = None
         elif pk_method=='default':
-            file_name_pk = './CLASSIC-trees/pk_CLASS_default.txt'
+            file_name_pk = './pk_CLASS_default.txt'
             self.file_name_pk = file_name_pk
         elif pk_method=='self':
             file_name_pk = file
@@ -37,7 +40,7 @@ class trees:
         self.verbose = verbose_level
 
 
-        if file_name_pk=='./CLASSIC-trees/pk_CLASS_default.txt':
+        if file_name_pk=='./pk_CLASS_default.txt':
             h_0 = cosmo_params['h']
             omega_0 = cosmo_params['Omega_m']
             l_0 = cosmo_params['Omega_Lambda']
@@ -81,7 +84,7 @@ class trees:
         from classic_trees import set_trees
         set_trees(self)
 
-    def compute_fast(self,
+    def compute_parallel(self,
                      file_name,
                      random_mass = None,
                      m_max = 1e16,
@@ -141,10 +144,10 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        from GenerateTreeFast import compute_tree_fast
-        compute_tree_fast(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
+        from GenerateTreeFast import compute_tree_parallel
+        compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
                           a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling,verbose)
-    def compute_slow(self,
+    def compute_serial(self,
                      mass = None,
                      n_halo_max = 1000000,
                      file_name = None,
@@ -200,9 +203,27 @@ class trees:
         h_0 = self.h_0
         verbose = self.verbose
         from Generate_Tree import compute_tree
-        compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
+        self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
                      m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling,verbose)
 
     def comp_speed(self):
         from speed_test_trees import compute_speed
         compute_speed()
+    def hmf_at_z(self,z,n_bins=50,filename=None):
+        if filename==None:
+            mass = self.masses
+            time_level = self.jlevels
+            z_arr = self.redshifts
+            z_level = np.where(z_arr==z)[0][0]
+            mass_z = mass[np.where(time_level==z_level)[0]]
+            hmf_bin,hmf_bin_edge = np.histogram(mass_z,bins=np.geomspace(min(mass_z),max(mass_z),n_bins))
+        else:
+            import h5py
+            f = h5py.File(filename)
+            mass = f['TreeHalos/SubhaloMass'][:]
+            time_level = f['TreeHalos/SnapNum'][:]
+            z_arr = f['TreeTimes/Redshift'][:]
+            z_level = np.where(z_arr==z)[0][0]
+            mass_z = mass[np.where(time_level==z_level)[0]]
+            hmf_bin,hmf_bin_edge = np.histogram(mass_z,bins=np.geomspace(min(mass_z),max(mass_z),n_bins))
+        return hmf_bin,hmf_bin_edge
