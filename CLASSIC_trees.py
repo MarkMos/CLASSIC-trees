@@ -25,7 +25,7 @@ class trees:
             pk_method = self.pk_method
             file_name_pk = None
         elif pk_method=='default':
-            file_name_pk = './pk_CLASS_default.txt'
+            file_name_pk = './PowerSpectra/pk_CLASS_default.txt'
             self.file_name_pk = file_name_pk
         elif pk_method=='self':
             file_name_pk = file
@@ -40,7 +40,7 @@ class trees:
         self.verbose = verbose_level
 
 
-        if file_name_pk=='./pk_CLASS_default.txt':
+        if file_name_pk=='./PowerSpectra/pk_CLASS_default.txt':
             h_0 = cosmo_params['h']
             omega_0 = cosmo_params['Omega_m']
             l_0 = cosmo_params['Omega_Lambda']
@@ -76,11 +76,11 @@ class trees:
             self.omega_0 = omega_0
             self.l_0 = l_0
             pk_data = np.loadtxt(file_name_pk)
-            self.k_0_np = pk_data[0]
+            self.k_0_np = pk_data[:,0]
             if P_values=='corrected':
-                self.Pk_0_np = pk_data[1]
+                self.Pk_0_np = pk_data[:,1]
             elif P_values=='uncorrected':
-                self.Pk_0_np = pk_data[1]*h_0**3
+                self.Pk_0_np = pk_data[:,1]*h_0**3
         from classic_trees import set_trees
         set_trees(self)
 
@@ -205,11 +205,21 @@ class trees:
         from Generate_Tree import compute_tree
         self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
                      m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling,verbose)
-
-    def comp_speed(self):
-        from speed_test_trees import compute_speed
-        compute_speed()
+        
     def hmf_at_z(self,z,n_bins=50,filename=None):
+        '''
+        Function to compute the halo mass function at certain z.
+        IMPORTANT: Only use z that you gave as an input!
+        ----------------------
+        Input:
+            z       : Redshift to extract information for the halo mass function
+            n_bins  : Number of bins for the mass histogramm
+            filename: Name of the tree-file
+        ----------------------
+        Output:
+            hmf_bin     : Mass bins of the halos at redshift z
+            hmf_bin_edge: Corresponding bin edges
+        '''
         if filename==None:
             mass = self.masses
             time_level = self.jlevels

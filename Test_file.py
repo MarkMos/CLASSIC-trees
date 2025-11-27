@@ -2,7 +2,7 @@
 # from classy import Class
 import numpy as np
 # import scipy.interpolate as intp
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from alpha_func import *
 # from halo_velo_func import sig_halo_func
 # from functions import *
@@ -80,7 +80,7 @@ import h5py
 
 # # print('here: ',np.exp(interpolation(np.log(mass))))
 # print('alpha = ', alpha(np.log(mass/2)))
-from tqdm import tqdm
+# from tqdm import tqdm
 
 # m_array = np.logspace(8,15,3000)
 
@@ -357,9 +357,9 @@ tree = ct.trees()
 # tree.set(pk_method='class',cosmo_params={'h':0.73,'Omega_m':0.25,'Omega_Lambda':0.75}) #,add_cosmo_params={'N_ncdm':1})#,cosmo_params={'h':0.8,'Omega_m':0.15,'Omega_Lambda':0.85})
 tree.set(pk_method='default')#,verbose_level=5)
 # set_trees(tree)
-tree.comp_speed()
+# tree.comp_speed()
 # np.random.seed(0)
-# tree.compute_slow(mass=1e14,times = 'equal a',mode='FoF',m_res=1e9)
+tree.compute_serial(mass=1e14,times = 'equal a',mode='FoF',m_res=1e9)
 # np.random.seed(0)
 # tree.compute_slow(mass=1e11,times = 'equal a',mode='FoF',m_res=1e9,n_tree=10)
 # tree.compute_slow(mass=5e13,m_res=1e9,z_max=20,n_lev=27,mode='Normal',vel_base=np.array([100,90,100],dtype=np.float64))#,n_halo_max=1e7)#,file_name=file)

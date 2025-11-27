@@ -1,10 +1,4 @@
-# from Make_Tree import *
-# from Tree_Node_and_Memory import *
-# from Moving_in_Tree import *
-# from Delta_crit import *
-# from sigma_cdm_func import *
 from classic_trees import functions, get_tree_vals, get_tree_vals_FoF
-# from random_masses import ppf_PS, ppf_ST
 import numpy as np
 import h5py
 
@@ -97,7 +91,6 @@ def compute_tree(mass,
         a_lev = np.linspace(1,1/(z_max+1),n_lev)
         w_lev = []
         for i_lev in range(n_lev):
-            # a_lev.append(1/(1+1/(z_max+1)*i_lev/(n_lev-1)))
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
             print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
@@ -130,25 +123,15 @@ def compute_tree(mass,
     nth_run = False
     if mode!='FoF':
         for i in range(n_tree):
-            print(pos_base)
-            vel_base = np.array([100,100,90],dtype=np.float64)
-            print(vel_base)
+            theta = 2*np.pi*np.random.uniform(0,1)
+            u = 2*np.random.uniform(0,1)-1
+            norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
+            vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
+            pos_base = np.random.uniform(0,BoxSize,3)
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)#,verbose)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)#,verbose)
-            print(arr_pos[0])
-            print(arr_velo[0])
-            print(len(arr_mhalo),count)
-            print(np.unique(arr_spin))
-            print(arr_pos)
-            print(arr_velo)
-            # np.savetxt('PositionNormalTree_100percentPos.txt',arr_pos)
-            # np.savetxt('TimeNormalTree_100percentPos.txt',arr_time)
-            # np.savetxt('ScaleFactorNormalTree_100percentPos.txt',a_lev)
-            # np.savetxt('MassTestTree1.txt',arr_mhalo)
-            # np.savetxt('VeloTestTree1.txt',arr_velo)
-            # np.savetxt('SpinTestTree1.txt',arr_spin)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             if file_name!=None:    
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
@@ -168,10 +151,12 @@ def compute_tree(mass,
                         d_time= grp3.create_dataset('Time',data=a_lev)
                     
                     append_create_dataset(grp1,'SnapNum',arr_time)
-                    append_create_dataset(grp1,'mass',data=arr_mhalo)
+                    append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
                     append_create_dataset(grp1,'SubhaloVmax',arr_Vmax)
                     append_create_dataset(grp1,'SubhaloPos',arr_pos)
                     append_create_dataset(grp1,'SubhaloVelo',arr_velo)
+                    append_create_dataset(grp1,'SubhaloSpin',arr_spin)
+                    append_create_dataset(grp1,'SubhaloLen',arr_sublen)
                     append_create_dataset(grp1,'TreeDescendant',arr_desc)
                     append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
                     append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
@@ -182,9 +167,9 @@ def compute_tree(mass,
                     append_create_dataset(grp2,'TreeID',data=np.array([i]))
                     if 'Parameters' not in f:
                         f.create_group('Parameters')
-                        f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
-                        f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
-                        f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
+                        f['Parameters'].attrs['HubbleParam'] = h_0
+                        f['Parameters'].attrs['Omega0'] = omega_0
+                        f['Parameters'].attrs['OmegaLambda'] = l_0
                         f['Parameters'].attrs['BoxSize'] = BoxSize
                     grp = f.create_group('Header')
                     grp.attrs['LastSnapShotNr'] = 19
@@ -196,32 +181,15 @@ def compute_tree(mass,
                 start_offset += count
     else:
         for i in range(n_tree):
+            theta = 2*np.pi*np.random.uniform(0,1)
+            u = 2*np.random.uniform(0,1)-1
+            norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
+            vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
+            pos_base = np.random.uniform(0,BoxSize,3)
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)#,verbose)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)#,verbose)
-            print(count)
-            print(sum(count))
-            print(len(np.unique(arr_1FoF)))
-            print(np.unique(arr_1FoF,return_counts=True))
-            print(arr_nextprog)
-            print(arr_1FoF[arr_nextprog[0]])
-            print(len(np.unique(arr_pos)))
-            print(np.unique(arr_spin,return_counts=True))
-            print(np.unique(arr_nextFoF,return_counts=True))
-            print(arr_GroupMass)
-            print(arr_pos)
-            print(arr_velo)
-            print(sum(arr_pos))
-            # np.savetxt('GroupMassTest.txt',arr_GroupMass)
-            # np.savetxt('Spins_test_better6.txt',arr_spin)
-            # np.savetxt('Mass_test_better6.txt',arr_mhalo)
-            # np.savetxt('Velocity_test_better6.txt',arr_velo)
-            # np.savetxt('Position_test4.txt',arr_pos)
-            # np.savetxt('Time_test4.txt',arr_time)
-            # for arr in arr_1FoF:
-            #     if arr !=-1:
-            #         print(arr)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             if file_name!=None:
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
@@ -241,11 +209,18 @@ def compute_tree(mass,
                         d_time= grp3.create_dataset('Time',data=a_lev)
                     
                     append_create_dataset(grp1,'SnapNum',arr_time)
-                    append_create_dataset(grp1,'mass',data=arr_mhalo)
+                    append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
+                    append_create_dataset(grp1,'Group_MCrit_200',data=arr_GroupMass)
+                    append_create_dataset(grp1,'SubhaloPos',arr_pos)
+                    append_create_dataset(grp1,'SubhaloVelo',arr_velo)
+                    append_create_dataset(grp1,'SubhaloSpin',arr_spin)
                     append_create_dataset(grp1,'SubhaloVmax',arr_Vmax)
+                    append_create_dataset(grp1,'SubhaloLen',arr_sublen)
                     append_create_dataset(grp1,'TreeDescendant',arr_desc)
-                    append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
-                    append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
+                    append_create_dataset(grp1,'TreeFirstProgenitor',arr_1prog)
+                    append_create_dataset(grp1,'TreeNextProgenitor',arr_nextprog)
+                    append_create_dataset(grp1,'TreeFirstHaloInFOFgroup',arr_1FoF)
+                    append_create_dataset(grp1,'TreeNextHaloInFOFgroup',arr_nextFoF)
                     append_create_dataset(grp1,'TreeID',data=arr_treeid)
                     append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
                     append_create_dataset(grp2,'Length',data=np.array([count]))
