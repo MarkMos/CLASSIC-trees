@@ -1,4 +1,4 @@
-from classic_trees import functions, get_tree_vals, get_tree_vals_FoF
+from .module import functions, get_tree_vals, get_tree_vals_FoF,random_masses
 import numpy as np
 import h5py
 
@@ -27,6 +27,7 @@ def compute_tree(mass,
                  n_lev = 10,
                  m_res = 1e8,
                  m_min = 1e11,
+                 m_max = 1e16,
                  n_tree = 1,
                  n_halo = 1,
                  i_seed_0 = -8635,
@@ -67,16 +68,6 @@ def compute_tree(mass,
     Output:
         hdf5-file if file_name is not None
     '''
-    if random_mass=='PS':
-        from random_masses import ppf_PS
-        u_PS = np.random.rand(n_tree)
-        mp_halo = ppf_PS(u_PS)
-    elif random_mass=='ST':
-        from random_masses import ppf_ST
-        u_ST = np.random.rand(n_tree)
-        mp_halo = ppf_ST(u_ST)
-    else:
-        mp_halo = mass
     if type(times)==str and times=='equal z':
         a_lev = []
         w_lev = []
@@ -118,7 +109,18 @@ def compute_tree(mass,
                 print('z = ',1/a-1,' at which delta_crit = ',d_c)
             a_lev = np.array(a_lev)
             w_lev = np.array(w_lev)
-            
+    if random_mass=='PS':
+        u_PS = np.random.rand(int(n_tree))
+        ppf_PS = random_masses(w_lev[0]).random_PS(m_min,m_max)
+        mp_halo = ppf_PS(u_PS)
+        mp_halo = np.sort(mp_halo)[::-1]
+    elif random_mass=='ST':
+        u_ST = np.random.rand(int(n_tree))
+        ppf_ST = random_masses(w_lev[0]).random_ST(m_min,m_max)
+        mp_halo = ppf_ST(u_ST)
+        mp_halo = np.sort(mp_halo)[::-1]
+    else:
+        mp_halo = mass            
     start_offset = 0
     nth_run = False
     if mode!='FoF':

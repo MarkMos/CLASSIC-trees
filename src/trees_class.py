@@ -1,6 +1,6 @@
 import numpy as np
 
-class trees:
+class tree:
     def __init__(self):
         self.pk_method = 'class'
         self.default = {'output':'mPk','P_k_max_h/Mpc':10000}
@@ -81,7 +81,7 @@ class trees:
                 self.Pk_0_np = pk_data[:,1]
             elif P_values=='uncorrected':
                 self.Pk_0_np = pk_data[:,1]*h_0**3
-        from classic_trees import set_trees
+        from .module import set_trees
         set_trees(self)
 
     def compute_parallel(self,
@@ -144,7 +144,7 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        from GenerateTreeFast import compute_tree_parallel
+        from .parallel import compute_tree_parallel
         compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
                           a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling,verbose)
     def compute_serial(self,
@@ -202,9 +202,9 @@ class trees:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        from Generate_Tree import compute_tree
+        from .serial import compute_tree
         self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
-                     m_min,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling,verbose)
+                     m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling,verbose)
         
     def hmf_at_z(self,z,n_bins=50,filename=None):
         '''
