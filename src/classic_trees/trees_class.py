@@ -24,9 +24,9 @@ class tree:
         if pk_method=='class':
             pk_method = self.pk_method
             file_name_pk = None
-        elif pk_method=='default':
-            file_name_pk = './PowerSpectra/pk_CLASS_default.txt'
-            self.file_name_pk = file_name_pk
+        # elif pk_method=='default':
+        #     file_name_pk = './PowerSpectra/pk_CLASS_default.txt'
+        #     self.file_name_pk = file_name_pk
         elif pk_method=='self':
             file_name_pk = file
             self.file_name_pk = file
@@ -40,14 +40,14 @@ class tree:
         self.verbose = verbose_level
 
 
-        if file_name_pk=='./PowerSpectra/pk_CLASS_default.txt':
-            h_0 = cosmo_params['h']
-            omega_0 = cosmo_params['Omega_m']
-            l_0 = cosmo_params['Omega_Lambda']
-            pk_data = np.loadtxt(file_name_pk)
-            self.k_0_np = pk_data[0]
-            self.Pk_0_np = pk_data[1]*h_0**3
-        elif file_name_pk==None:
+        # if file_name_pk=='./PowerSpectra/pk_CLASS_default.txt':
+        #     h_0 = cosmo_params['h']
+        #     omega_0 = cosmo_params['Omega_m']
+        #     l_0 = cosmo_params['Omega_Lambda']
+        #     pk_data = np.loadtxt(file_name_pk)
+        #     self.k_0_np = pk_data[0]
+        #     self.Pk_0_np = pk_data[1]*h_0**3
+        if file_name_pk==None:
             from classy import Class
 
             z = np.array([0],dtype='float64')

@@ -1,8 +1,10 @@
 from .module import functions, get_tree_vals, get_tree_vals_FoF,random_masses
 import numpy as np
 import h5py
+import importlib.resources
+import os
 
-filename = './Data/flat.txt'
+filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
 DELTA = functions(filename)
 
 def append_create_dataset(grp,name,data):

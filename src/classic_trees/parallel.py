@@ -3,10 +3,12 @@ import numpy as np
 import h5py
 from multiprocessing import Pool, Lock
 from tqdm import tqdm
+import importlib.resources
+import os
 
 lock = Lock()
 
-filename = './Data/flat.txt'
+filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
 DELTA = functions(filename)
 
 def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
