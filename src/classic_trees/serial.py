@@ -3,8 +3,12 @@ import numpy as np
 import h5py
 import importlib.resources
 import os
+import sys
 
-filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
+if sys.version<'3.9':
+    filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
+else:
+    filename = str(importlib.resources.files('classic_trees.Data').joinpath('flat.txt'))
 DELTA = functions(filename)
 
 def append_create_dataset(grp,name,data):

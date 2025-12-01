@@ -5,10 +5,14 @@ from multiprocessing import Pool, Lock
 from tqdm import tqdm
 import importlib.resources
 import os
+import sys
 
 lock = Lock()
 
-filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
+if sys.version<'3.9':
+    filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
+else:
+    filename = str(importlib.resources.files('classic_trees.Data').joinpath('flat.txt'))
 DELTA = functions(filename)
 
 def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling):
