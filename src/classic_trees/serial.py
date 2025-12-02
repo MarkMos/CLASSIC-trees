@@ -5,7 +5,7 @@ import importlib.resources
 import os
 import sys
 
-if sys.version<'3.9':
+if float(sys.version[2:6])<9:
     filename = str(importlib.resources.path('classic_trees.Data', 'flat.txt'))
 else:
     filename = str(importlib.resources.files('classic_trees.Data').joinpath('flat.txt'))

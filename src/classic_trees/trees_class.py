@@ -53,7 +53,7 @@ class tree:
             z = np.array([0],dtype='float64')
             N_k = 1000
             k_array = np.zeros((N_k, 1, 1),dtype='float64')
-            k_array[:,0,0] = np.logspace(-6,3,N_k)
+            k_array[:,0,0] = np.logspace(-6,4,N_k)
             cosmo = Class()
             cosmo.set(self.default)
             cosmo.set(cosmo_params)
