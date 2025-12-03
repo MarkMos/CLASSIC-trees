@@ -41,9 +41,7 @@ def compute_tree(mass,
                  z_max = 4,
                  times = 'equal a',
                  mode = 'FoF',
-                 pos_base = np.array([0,0,0],dtype=np.float64),
-                 vel_base = np.array([0,0,0],dtype=np.float64),
-                 scaling = 0.5,
+                 scaling = 0.3,
                  verbose = 0):
     '''
     Function to call the routines of classic_trees for small numbers of trees to 
@@ -81,7 +79,8 @@ def compute_tree(mass,
             a_lev.append(1/(1 + z_max*(i_lev)/(n_lev-1)))
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
-            print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+            if verbose>0:
+                print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
     elif type(times)==str and times=='equal a':
@@ -90,7 +89,8 @@ def compute_tree(mass,
         for i_lev in range(n_lev):
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
-            print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+            if verbose>0:
+                print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
     elif type(times)!=str and len(times)>1:
@@ -103,7 +103,8 @@ def compute_tree(mass,
                 a_lev.append(a_temp)
                 d_c = DELTA.delta_crit(a_temp)
                 w_lev.append(d_c)
-                print('z = ',1/a_temp-1,' at which delta_crit = ',d_c)
+                if verbose>0:
+                    print('z = ',1/a_temp-1,' at which delta_crit = ',d_c)
             a_lev = np.array(a_lev)
             w_lev = np.array(w_lev)
         else:

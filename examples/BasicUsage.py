@@ -31,4 +31,4 @@ merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
                            a_halo = 1,           # scale factor today
                            z_max = 4,            # redshift to which the tree is tracked
                            times = 'equal a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
-                           mode ='Normal')       # mode of the algorithm; Normal means no substructure FoF means substructure
+                           substructure ='Off')  # mode of the algorithm; Off means no substructure On means substructure

@@ -101,38 +101,36 @@ class tree:
                      n_halo = 1,
                      n_part = 40000,
                      times = 'equal a',
-                     mode='FoF',
-                     pos_base = np.array([0,0,0],dtype=np.float64),
-                     vel_base = np.array([10,10,10],dtype=np.float64),
+                     substructure='On',
                      scaling = 0.3):
         '''
         Function to call the routines of classic_trees for huge numbers of trees to 
         compute. Ideally to produce large merger tree files.
         ----------------------
         Input:
-            random_mass : Distribution to draw the mass of the base node(s) of merger tree(s)
-            mass        : Mass of the base node of a merger tree (only if random_mass=None)
-            file_name   : Name of hdf5-file
-            omega_0     : Relative density of matter in the universe
-            l_0         : Relative cosmological constant
-            h_0         : Reduced Hubble-parameter
-            BoxSize     : Size of the volume
-            n_tree      : Number of trees that are computed in one Pool
-            i_seed_0    : Used for seed to generate random numbers
-            a_halo      : Value of scale factor today (default) or up to which time the tree is calculated
-            m_res       : Mass resolution limit; minimum mass
-            m_min       : Minimum mass for the random drawing of masses
-            m_max       : Maximum mass for the random drawing of masses
-            z_max       : Maximum redshift for lookback
-            n_lev       : Number of time levels
-            n_halo_max  : Maximum number of nodes per tree; used for preallocation 
-            n_halo      : Start of counter of nodes inside the tree(s)
-            n_part      : Number of runs of a Pool
-            times       : Either equally spaced times in z or a, or a custom array of z or a
-            mode    	: Defining the usage of the merger tree.
-            pos_base    : Initial 3 position of base node
-            velo_base   : Initial 3 velocity of base node
-            scaling     : Factor of scattering of positional change over time
+            random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s)
+            mass         : Mass of the base node of a merger tree (only if random_mass=None)
+            file_name    : Name of hdf5-file
+            omega_0      : Relative density of matter in the universe
+            l_0          : Relative cosmological constant
+            h_0          : Reduced Hubble-parameter
+            BoxSize      : Size of the volume
+            n_tree       : Number of trees that are computed in one Pool
+            i_seed_0     : Used for seed to generate random numbers
+            a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
+            m_res        : Mass resolution limit; minimum mass
+            m_min        : Minimum mass for the random drawing of masses
+            m_max        : Maximum mass for the random drawing of masses
+            z_max        : Maximum redshift for lookback
+            n_lev        : Number of time levels
+            n_halo_max   : Maximum number of nodes per tree; used for preallocation 
+            n_halo       : Start of counter of nodes inside the tree(s)
+            n_part       : Number of runs of a Pool
+            times        : Either equally spaced times in z or a, or a custom array of z or a
+            substructure : Defining the usage of the merger tree with or without substructure.
+            pos_base     : Initial 3 position of base node
+            velo_base    : Initial 3 velocity of base node
+            scaling      : Factor of scattering of positional change over time
         ----------------------
         Output:
             hdf5-file with values of random or constant mass merger trees
@@ -144,9 +142,13 @@ class tree:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
+        if substructure=='On':
+            mode = 'FoF'
+        else:
+            mode = 'Normal'
         from .parallel import compute_tree_parallel
         compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
-                          a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,pos_base,vel_base,scaling,verbose)
+                          a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,scaling,verbose)
     def compute_serial(self,
                      mass = None,
                      n_halo_max = 1000000,
@@ -163,34 +165,32 @@ class tree:
                      a_halo = 1,
                      z_max = 4,
                      times = 'equal a',
-                     mode ='FoF',
-                     pos_base = np.array([0,0,0],dtype=np.float64),
-                     vel_base = np.array([10,10,10],dtype=np.float64),
+                     substructure ='On',
                      scaling = 0.3):
         '''
         Function to call the routines of classic_trees for small numbers of trees to 
         compute. Ideally to see what different starting values yield.
         ----------------------
         Input:
-            mass        : Mass of the base node of a merger tree (only if random_mass=None)
-            random_mass : Distribution to draw the mass of the base node(s) of merger tree(s)
-            file_name   : Name of hdf5-file (optional)
-            omega_0     : Relative density of matter in the universe
-            l_0         : Relative cosmological constant
-            h_0         : Reduced Hubble-parameter
-            BoxSize     : Size of the volume
-            n_lev       : Number of time levels
-            m_res       : Mass resolution limit; minimum mass
-            n_tree      : Number of trees that are computed
-            n_halo      : Start of counter of nodes inside the tree(s)
-            i_seed_0    : Used for seed to generate random numbers
-            a_halo      : Value of scale factor today (default) or up to which time the tree is calculated
-            z_max       : Maximum redshift for lookback
-            times       : Either equally spaced times in z or a, or a custom array of z or a
-            mode    	: Defining the usage of the merger tree.
-            pos_base    : Initial 3 position of base node
-            velo_base   : Initial 3 velocity of base node
-            scaling     : Factor of scattering of positional change over time
+            mass         : Mass of the base node of a merger tree (only if random_mass=None)
+            random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s)
+            file_name    : Name of hdf5-file (optional)
+            omega_0      : Relative density of matter in the universe
+            l_0          : Relative cosmological constant
+            h_0          : Reduced Hubble-parameter
+            BoxSize      : Size of the volume
+            n_lev        : Number of time levels
+            m_res        : Mass resolution limit; minimum mass
+            n_tree       : Number of trees that are computed
+            n_halo       : Start of counter of nodes inside the tree(s)
+            i_seed_0     : Used for seed to generate random numbers
+            a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
+            z_max        : Maximum redshift for lookback
+            times        : Either equally spaced times in z or a, or a custom array of z or a
+            substructure : Defining the usage of the merger tree with or without substructure.
+            pos_base     : Initial 3 position of base node
+            velo_base    : Initial 3 velocity of base node
+            scaling      : Factor of scattering of positional change over time
         ----------------------
         Output:
             hdf5-file if file_name is not None
@@ -202,9 +202,13 @@ class tree:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
+        if substructure=='On':
+            mode = 'FoF'
+        else:
+            mode = 'Normal'
         from .serial import compute_tree
         self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
-                     m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,pos_base,vel_base,scaling,verbose)
+                     m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,scaling,verbose)
         
     def hmf_at_z(self,z,n_bins=50,filename=None):
         '''
