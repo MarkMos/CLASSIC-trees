@@ -711,7 +711,7 @@ cdef class sig_alph:
         self.Pk_0_np = np.asarray(self.trees.Pk_0_np, dtype=np.float64)
         self.k_0 = self.k_0_np
         self.Pk_0 = self.Pk_0_np
-        self.num_points = 2000
+        self.num_points = 10000
         self.m_rough = np.geomspace(1e7, 1e17, self.num_points)
         self.m_array = np.geomspace(1e8, 1e17, self.num_points)
         self.Sig = np.zeros_like(self.m_rough)
