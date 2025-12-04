@@ -4,7 +4,7 @@ import classic_trees as ct
 # Then we use some basic lines to get our first merger tree
 
 # First we need to get the class 'tree' in order to access the differenet asspects
-merger_tree = ct.tree()
+merger_tree = ct.forrest()
 
 # Then we need to set our cosmology and get our Power-Spectrum
 merger_tree.set(pk_method='self',                      # one of two methods; here for speed a pre-computed Power-Spectrum, other method is directly running class to get it

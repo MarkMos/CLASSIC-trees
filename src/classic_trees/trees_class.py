@@ -1,6 +1,6 @@
 import numpy as np
 
-class tree:
+class forrest:
     def __init__(self):
         self.pk_method = 'class'
         self.default = {'output':'mPk','P_k_max_h/Mpc':10000}
@@ -24,9 +24,6 @@ class tree:
         if pk_method=='class':
             pk_method = self.pk_method
             file_name_pk = None
-        # elif pk_method=='default':
-        #     file_name_pk = './PowerSpectra/pk_CLASS_default.txt'
-        #     self.file_name_pk = file_name_pk
         elif pk_method=='self':
             file_name_pk = file
             self.file_name_pk = file
@@ -39,14 +36,6 @@ class tree:
             cosmo_params = self.cosmo_params
         self.verbose = verbose_level
 
-
-        # if file_name_pk=='./PowerSpectra/pk_CLASS_default.txt':
-        #     h_0 = cosmo_params['h']
-        #     omega_0 = cosmo_params['Omega_m']
-        #     l_0 = cosmo_params['Omega_Lambda']
-        #     pk_data = np.loadtxt(file_name_pk)
-        #     self.k_0_np = pk_data[0]
-        #     self.Pk_0_np = pk_data[1]*h_0**3
         if file_name_pk==None:
             from classy import Class
 
@@ -98,11 +87,9 @@ class tree:
                      z_max  = 4,
                      n_lev = 10,
                      n_halo_max = 1000000,
-                     n_halo = 1,
                      n_part = 40000,
                      times = 'equal a',
-                     substructure='On',
-                     scaling = 0.3):
+                     substructure='On'):
         '''
         Function to call the routines of classic_trees for huge numbers of trees to 
         compute. Ideally to produce large merger tree files.
@@ -111,30 +98,25 @@ class tree:
             random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s)
             mass         : Mass of the base node of a merger tree (only if random_mass=None)
             file_name    : Name of hdf5-file
-            omega_0      : Relative density of matter in the universe
-            l_0          : Relative cosmological constant
-            h_0          : Reduced Hubble-parameter
             BoxSize      : Size of the volume
             n_tree       : Number of trees that are computed in one Pool
             i_seed_0     : Used for seed to generate random numbers
             a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
             m_res        : Mass resolution limit; minimum mass
-            m_min        : Minimum mass for the random drawing of masses
             m_max        : Maximum mass for the random drawing of masses
+            m_min        : Minimum mass for the random drawing of masses
             z_max        : Maximum redshift for lookback
             n_lev        : Number of time levels
             n_halo_max   : Maximum number of nodes per tree; used for preallocation 
-            n_halo       : Start of counter of nodes inside the tree(s)
             n_part       : Number of runs of a Pool
             times        : Either equally spaced times in z or a, or a custom array of z or a
             substructure : Defining the usage of the merger tree with or without substructure.
-            pos_base     : Initial 3 position of base node
-            velo_base    : Initial 3 velocity of base node
-            scaling      : Factor of scattering of positional change over time
         ----------------------
         Output:
             hdf5-file with values of random or constant mass merger trees
         '''
+        n_halo = 1 # Start of counter of nodes inside the tree(s)
+        scaling = 0.3
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max
@@ -165,8 +147,7 @@ class tree:
                      a_halo = 1,
                      z_max = 4,
                      times = 'equal a',
-                     substructure ='On',
-                     scaling = 0.3):
+                     substructure ='On'):
         '''
         Function to call the routines of classic_trees for small numbers of trees to 
         compute. Ideally to see what different starting values yield.
@@ -175,26 +156,23 @@ class tree:
             mass         : Mass of the base node of a merger tree (only if random_mass=None)
             random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s)
             file_name    : Name of hdf5-file (optional)
-            omega_0      : Relative density of matter in the universe
-            l_0          : Relative cosmological constant
-            h_0          : Reduced Hubble-parameter
+            m_max        : Maximum mass for the random drawing of masses
+            m_min        : Minimum mass for the random drawing of masses
             BoxSize      : Size of the volume
             n_lev        : Number of time levels
             m_res        : Mass resolution limit; minimum mass
             n_tree       : Number of trees that are computed
-            n_halo       : Start of counter of nodes inside the tree(s)
             i_seed_0     : Used for seed to generate random numbers
             a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
             z_max        : Maximum redshift for lookback
             times        : Either equally spaced times in z or a, or a custom array of z or a
             substructure : Defining the usage of the merger tree with or without substructure.
-            pos_base     : Initial 3 position of base node
-            velo_base    : Initial 3 velocity of base node
-            scaling      : Factor of scattering of positional change over time
         ----------------------
         Output:
             hdf5-file if file_name is not None
         '''
+        n_halo = 1 # Start of counter of nodes inside the tree(s)
+        scaling = 0.3
         if random_mass is not None:
             self.m_min = m_min
             self.m_max = m_max

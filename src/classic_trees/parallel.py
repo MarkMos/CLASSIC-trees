@@ -45,7 +45,7 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
         'tree_index': i
     }
 
-def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,Boxsize):
+def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_halo_max,n_halo,scaling,Boxsize):
     if type(i)!=int:
         raise('Type Error with i')
     theta = 2*np.pi*np.random.uniform(0,1)
