@@ -13,7 +13,7 @@ merger_tree.set(pk_method='self',                      # one of two methods; her
                 cosmo_params = {'h':0.6781,            #
                              'Omega_m':0.309974,       # cosmological parameters as one would set in class
                              'Omega_Lambda':0.690026}, # also add_cosmo_params for more then the three listed here
-                verbose_level=1)                       # level of verbosity, here set to 1 to see some basic output of the code
+                verbose_level=4)                       # level of verbosity, here set to 1 to see some basic output of the code
 
 # After setting the cosmology we can e.g. run the following line to get one merger tree
 merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
@@ -31,4 +31,4 @@ merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
                            a_halo = 1,           # scale factor today
                            z_max = 4,            # redshift to which the tree is tracked
                            times = 'equal a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
-                           substructure ='Off')  # mode of the algorithm; Off means no substructure On means substructure
+                           substructure ='On')  # mode of the algorithm; Off means no substructure On means substructure
