@@ -1480,9 +1480,11 @@ def get_tree_vals_FoF(
 
     if n_halos>=1:
         ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
+        if n_halos==1:
+            mass_sum = m_halo[0]
 
         # Routine to get the rest of the masses for this FoF-group
-        while mass_sum>m_0 or mass_sum<0.8*m_0:
+        while mass_sum>m_0 or mass_sum<0.7*m_0:
             mass_temp = ppf_ST(np.random.rand(n_halos-1))
             mass_sum = m_halo[0] + np.sum(mass_temp)
             c_halos += 1
@@ -1491,10 +1493,11 @@ def get_tree_vals_FoF(
                 m_halo[0] = m_cen_of_FoF(m_0)
                 ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
                 c_halos = 0
-        mass_temp.sort()
-        mass_temp = mass_temp[::-1]
-        for j in range(n_halos-1):
-            m_halo[j+1] = mass_temp[j]
+        if n_halos>1:
+            mass_temp.sort()
+            mass_temp = mass_temp[::-1]
+            for j in range(n_halos-1):
+                m_halo[j+1] = mass_temp[j]
 
     cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos)*sizeof(Tree_Node**))
     cdef int* n_offset_arr = <int*>malloc((n_halos)*sizeof(int))
@@ -1514,7 +1517,7 @@ def get_tree_vals_FoF(
     print_level_4('It worked',c)
 
     lev_indx_FoF =np.zeros(n_lev,dtype=object)
-    cdef int levcounter = 0
+    cdef int levcounter_FoF = 0
     cdef int tempcounter
     for level in range(n_lev):
         temp_indices = np.zeros(count,dtype=int)
@@ -1524,10 +1527,9 @@ def get_tree_vals_FoF(
                 temp_indices[tempcounter] = j
                 tempcounter += 1
         if tempcounter !=0:
-            lev_indx_FoF[levcounter] = np.copy(temp_indices[0:tempcounter])
-            levcounter += 1    
-    lev_indx_FoF = np.copy(lev_indx_FoF[0:levcounter])
-    print_level_5('After indices FoF')
+            lev_indx_FoF[levcounter_FoF] = np.copy(temp_indices[0:tempcounter])
+            levcounter_FoF += 1    
+    lev_indx_FoF = np.copy(lev_indx_FoF[0:levcounter_FoF])
     # lev_indx_FoF_list = []
     # for level in range(n_lev):
     #     temp_indx = []
@@ -1540,7 +1542,7 @@ def get_tree_vals_FoF(
     # cdef list lev_indx_FoF = lev_indx_FoF_list
 
     lev_indx_subs =np.zeros(n_lev,dtype=object)
-    levcounter = 0
+    cdef int levcounter_subs = 0
     tempcounter = 0
     for level in range(n_lev):
         temp_indices = np.zeros(n_offset_sum,dtype=int)
@@ -1550,10 +1552,10 @@ def get_tree_vals_FoF(
                 temp_indices[tempcounter] = j
                 tempcounter += 1
         if tempcounter !=0:
-            lev_indx_subs[levcounter] = np.copy(temp_indices[0:tempcounter])
-            levcounter += 1
-    lev_indx_subs = np.copy(lev_indx_subs[0:levcounter])
-    print_level_5('After indices Subhalos')
+            lev_indx_subs[levcounter_subs] = np.copy(temp_indices[0:tempcounter])
+            levcounter_subs += 1
+    lev_indx_subs = np.copy(lev_indx_subs[0:levcounter_subs])
+
     # lev_indx_subs_list = []
     # for level in range(n_lev):
     #     temp_indx = []
@@ -1563,15 +1565,22 @@ def get_tree_vals_FoF(
     #     if len(temp_indx)!=0:
     #         lev_indx_subs_list.append(temp_indx)
 
-    # cdef list lev_indx_subs = lev_indx_subs_list    
+    # cdef list lev_indx_subs = lev_indx_subs_list
+    # if not isinstance(lev_indx_subs, list):
+    #     print("DEBUG: lev_indx_subs is", type(lev_indx_subs), repr(lev_indx_subs))
+    #     return None  # or raise ValueError
+    # cdef Py_ssize_t n_levels = len(lev_indx_subs)
+
     cdef double m_group, m_max_subs, m_sum, m_temp, m_sum_FoF, m
     cdef int ind_subs, ind_max_subs, n_range
 
     arr_GroupMass = np.zeros(n_offset_sum)
 
-    for level in range(len(lev_indx_FoF)):
+    cdef int n_lev_actual = int(min2(len(lev_indx_FoF),len(lev_indx_subs)))
+
+    for level in range(n_lev_actual):
         print_level_5(level)
-        if len(lev_indx_FoF[level])==1: # and sum(lev_indx_FoF[level])!=0:
+        if len(lev_indx_FoF[level])==1:
             m_max_subs = 0.0
             m_group = merger_tree_FoF[lev_indx_FoF[level][0]].mhalo
             if level==0:
@@ -1852,7 +1861,6 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
     else:
         for level in range(len(a_lev)+1):
             for i in range(1,n_frag_tot):
-                print_level_5('Still running here in pos_and_velo at',i)
                 this_node = merger_tree[i]
                 if this_node.FirstInFoF!=NULL:
                     indx = this_node.FirstInFoF.index
@@ -1881,7 +1889,6 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                 if this_node.FirstInFoF!=NULL:
                     if this_node.FirstInFoF.index!=indx:
                         print('Problem here in Normal at index=',indx,' now ',this_node.FirstInFoF.index)
-                print_level_5('Running untill here in pos_and_velo at',i)
                 merger_tree[i] = this_node
     return merger_tree
 
@@ -1904,13 +1911,11 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
                    --or--
         temp_velo: 3-velocity of the halo 
     '''
-    print_level_5('In velo_routine')
     cdef double[:] temp_velo,temp_pos
     cdef double adding[3]
     cdef double velo_summ
     cdef int i
     if halo_type=='cen' and mode=='pos':
-        print_level_5('cen + pos')
         temp_pos = this_node.pos
         for i in range(3):
             adding[i] = this_node.parent.velo[i]*timestep
@@ -1919,10 +1924,10 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
             temp_pos[i] = this_node.parent.pos[i] + np.random.normal(adding[i],abs(scaling*adding[i]))
         return temp_pos
     elif halo_type=='cen' and mode=='velo':
-        print_level_5('cen + velo')
         adding = this_node.parent.velo
         velo_summ = 0.0
         while velo_summ<=0.0:
+            print_level_5('In while loop for central velo')
             velo_summ = 0.0
             temp_velo = this_node.velo
             for i in range(3):
@@ -1935,17 +1940,16 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
                 velo_summ += temp_velo[i]**2
         return temp_velo
     elif halo_type=='sat' and mode=='pos':
-        print_level_5('sat + pos')
         adding = this_node.FirstInFoF.pos
         temp_pos = satelite_pos_velo(this_node,'pos',position_of_node)
         for i in range(3):
             temp_pos[i] += adding[i]
         return temp_pos
     else:
-        print_level_5('sat + velo')
         adding = this_node.FirstInFoF.velo
         velo_summ = 0.0
         while velo_summ<=0.0:
+            print_level_5('In while loop for satelite velo')
             velo_summ = 0.0
             temp_velo = satelite_pos_velo(this_node,'velo',position_of_node)
             for i in range(3):
@@ -1968,7 +1972,6 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
                   --or--
         temp_arr: 3-velocity of the satelite halo
     '''
-    print_level_5('In satelite_pos_velo')
     cdef int i,dirr
     cdef double random_number
     cdef double[:] temp_arr
@@ -2036,6 +2039,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                     s_up = spin_abs(mass,'Upper')
                     s_low = spin_abs(mass,'Lower')
                     while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
+                        print_level_5('In while loop for spin without substructure')
                         s_abs = spin_abs(mass)
                         s_1 = s_abs*norm_vel[0]
                         s_2 = s_abs*norm_vel[1]
@@ -2082,6 +2086,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                             s_up = spin_abs(mass,'Upper')
                             s_low = spin_abs(mass,'Lower')
                             while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
+                                print_level_5('In while loop for spin with substructure but the main branch')
                                 s_abs = spin_abs(mass)
                                 s_1 = s_abs*norm_vel[0]
                                 s_2 = s_abs*norm_vel[1]
@@ -2100,6 +2105,7 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                             s_up = spin_abs(mass,'Upper')
                             s_low = spin_abs(mass,'Lower')
                             while s_sum>s_up or s_sum<0.0 and s_sum!=0.0:
+                                print_level_5('In while loop for spin with substructure')
                                 scale = spin_abs(mass)
                                 s_1 = scale*this_node.parent.spin[0]/s_abs
                                 s_2 = scale*this_node.parent.spin[1]/s_abs
