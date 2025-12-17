@@ -70,8 +70,9 @@ class forrest:
                 self.Pk_0_np = pk_data[:,1]
             elif P_values=='uncorrected':
                 self.Pk_0_np = pk_data[:,1]*h_0**3
-        from .module import set_trees
+        from .module import set_trees, set_sig_alph
         set_trees(self)
+        set_sig_alph()
 
     def compute_parallel(self,
                      file_name,

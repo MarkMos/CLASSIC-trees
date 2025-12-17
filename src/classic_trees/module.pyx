@@ -544,7 +544,7 @@ cdef int tree_index(Tree_Node* node) nogil:
     index = node.index
     return index
 
-cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i) nogil:
+cdef void associated_siblings(Tree_Node* this_node, Tree_Node** merger_tree,int i) nogil:
     '''
     Function to associate the siblings of a certain node and as well sort them by their mass
     in descending order.
@@ -573,9 +573,8 @@ cdef Tree_Node** associated_siblings(Tree_Node* this_node, Tree_Node** merger_tr
         # 2. Update sibling pointers
         for k in range(child_index, child_index + this_node.nchild - 1):
             merger_tree[k].sibling = merger_tree[k + 1]
-    return merger_tree
 
-cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode) nogil:
+cdef void build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode) nogil:
     '''
     Function to go through the whole merger tree and build the siblings of each node.
     ----------------------
@@ -589,13 +588,12 @@ cdef Tree_Node** build_sibling(Tree_Node** merger_tree,int n_frag_tot,str mode) 
     cdef int i
     if mode=='FoF':
         for i in range(n_frag_tot):
-            merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
+            associated_siblings(merger_tree[i],merger_tree,i)
     else:
         for i in range(n_frag_tot):
             merger_tree[i].FirstInFoF = merger_tree[i]
         for i in range(n_frag_tot):
-            merger_tree = associated_siblings(merger_tree[i],merger_tree,i)
-    return merger_tree
+            associated_siblings(merger_tree[i],merger_tree,i)
 
 cdef class functions:
     # class to define the function for delta_crit used in the making of the tree
@@ -911,6 +909,10 @@ cdef class JLookup:
         free(self.J_tab)
 
 cdef JLookup J_lookup = JLookup()
+cdef sig_alph Sig = None
+def set_sig_alph():
+    global Sig 
+    Sig = sig_alph(trees)
 
 cdef double SQRT2OPI = 1.0/sqrt(pi/2.0)
 
@@ -935,7 +937,7 @@ cdef extern from 'stdlib.h':
 cdef struct split_result:
     double dw
     int n_prog
-    double* m_prog
+    double[2] m_prog
     double m_min_last
 
 cdef split_result split(
@@ -970,7 +972,7 @@ cdef split_result split(
 
     cdef:
         split_result res
-        double* m_prog = <double*>malloc(2*sizeof(double))
+        double[2] m_prog #= <double*>malloc(2*sizeof(double))
         double eps_eta = 1e-6
         double eps_q = 6e-6
         
@@ -1162,7 +1164,6 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
     n_v = int(n_frag_max/5)
     cdef:
         split_result split_fct
-        Tree_Node* node
         int i_err = 0
         int j_frag = -1
         int n_ch
@@ -1174,7 +1175,7 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
         int* i_frag_lev = <int*>malloc(n_lev*sizeof(int))
         double dw, m, dw_max
         int n_prog
-        double* m_prog = <double*>malloc(2*sizeof(double))
+        double[2] m_prog # = <double*>malloc(2*sizeof(double))
         double w, w_fin, m_min_last
         int i_lev, i_lev_wk, i_node
         int* child_ref = <int*>malloc(n_frag_max*sizeof(int))
@@ -1223,7 +1224,9 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
     i_child[0] = -1
     while m_left[i_node] > 0.0:
         if i_frag+2 > n_frag_max:
-            raise MemoryError('Number of pre-allocated nodes is not enough! Increase n_halo_max!')
+            with gil:
+                raise MemoryError('Number of pre-allocated nodes is not enough! Increase n_halo_max!')
+            return NULL,-1
         dw_max = w_lev[i_lev] - w
         split_fct = split(Sig, m, w, m_min, dw_max, eps_1, eps_2,m_minlast)
         dw = split_fct.dw
@@ -1315,17 +1318,17 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
     cdef Tree_Node** merger_tree = <Tree_Node**>malloc((n_frag_tot+2)*sizeof(Tree_Node*))
 
     for i_frag in range(n_frag_tot+2):
-        node = <Tree_Node*>malloc(sizeof(Tree_Node))
-        node.mhalo = 0.0
-        node.jlevel = 0
-        node.nchild = 0
-        node.index  = i_frag
-        node.parent = NULL
-        node.child  = NULL
-        node.sibling= NULL
-        node.FirstInFoF= NULL
-        node.NextInFoF = NULL
-        merger_tree[i_frag] = node
+        merger_tree[i_frag] = <Tree_Node*>malloc(sizeof(Tree_Node))
+        merger_tree[i_frag].mhalo = 0.0
+        merger_tree[i_frag].jlevel = 0
+        merger_tree[i_frag].nchild = 0
+        merger_tree[i_frag].index  = i_frag
+        merger_tree[i_frag].parent = NULL
+        merger_tree[i_frag].child  = NULL
+        merger_tree[i_frag].sibling= NULL
+        merger_tree[i_frag].FirstInFoF= NULL
+        merger_tree[i_frag].NextInFoF = NULL
+
     # Asigning the parents of nodes in the merger tree, as well as masses
     # and time-level
     for i_lev_wk in range(n_lev):
@@ -1379,20 +1382,19 @@ cdef (Tree_Node**,int) make_tree(double m_0,double a_0,double m_min,double[:] a_
             merger_tree[j_frag].nchild = n_ch
     
     # Build the siblings, also in decreasing mass order
-    merger_tree = build_sibling(merger_tree,n_frag_tot+1,mode)
+    build_sibling(merger_tree,n_frag_tot+1,mode)
     if mode=='Normal':
         with gil:
-            merger_tree = pos_and_velo(merger_tree,n_frag_tot+1,pos_base,vel_base,a_lev,scaling)
+            pos_and_velo(merger_tree,n_frag_tot+1,pos_base,vel_base,a_lev,scaling)
             # print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
-            merger_tree = spin_3_calc(merger_tree,n_frag_tot+1)
+            spin_3_calc(merger_tree,n_frag_tot+1)
 
     # Free allocated memory
     free(i_par)
     free(i_sib)
     free(i_child)
-    free(node)
     free(i_frag_lev)
-    free(m_prog)
+    #free(m_prog)
     free(child_ref)
     free(j_index)
     free(m_tr)
@@ -1474,13 +1476,13 @@ def get_tree_vals(
         int i_seed = i_seed_0
         Tree_Node** merger_tree
         Tree_Node* this_node
-        sig_alph Sig
+        #sig_alph Sig
         int count = 0
     srand(i_seed)
-    Sig = sig_alph(trees)
+    #Sig = sig_alph(trees)
     #print('Going into make_tree')
     merger_tree,n_frag_tot = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base,Sig,scaling)
-    del Sig
+    #del Sig
     # print('Made a tree ',i+1)
     this_node = merger_tree[0]
     # print(merger_tree[0].pos[0],merger_tree[0].pos[1],merger_tree[0].pos[2])
@@ -1496,7 +1498,7 @@ def get_tree_vals(
         print_level_1('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
     else:
         print_level_1('No Progenitors.')
-    free_trees(merger_tree,n_frag_tot)
+    free_trees(merger_tree,n_frag_tot+1)
     # free(this_node)
     return count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen
 
@@ -1557,9 +1559,9 @@ def get_tree_vals_FoF(
         int n_halos, j, k, level
         double mass_sum = 0.0
         np.ndarray mass_temp
-        sig_alph Sig
+        #sig_alph Sig
     srand(i_seed)
-    Sig = sig_alph(trees)
+    #Sig = sig_alph(trees)
     merger_tree_FoF,count = make_tree(m_0,a_0,m_min,a_lev,w_lev,n_lev,n_frag_max,n_frag_tot,'Normal',pos_base,vel_base,Sig,scaling)
 
     print_level_1('Number of nodes in FoF-group tree',i+1,'is',count)
@@ -1826,8 +1828,8 @@ def get_tree_vals_FoF(
                 c += 1
     arr_GroupMass = arr_GroupMass_temp
 
-    merger_tree_subs = pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF')
-    merger_tree_subs = spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF')
+    pos_and_velo(merger_tree_subs,n_offset_sum,pos_base,vel_base,a_lev,scaling,'FoF')
+    spin_3_calc(merger_tree_subs,n_offset_sum,n_lev,'FoF')
 
     arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_sublen = node_vals_and_counter_FoF(i,int(n_offset_sum+10),merger_tree_subs,n_halos,m_res)
 
@@ -1854,10 +1856,10 @@ def get_tree_vals_FoF(
             print_level_3('No Progenitors.')
     free(m_halo)
     for i in range(n_halos):
-        free_trees(merger_trees[i],n_offset_arr[i])
+        free_trees(merger_trees[i],n_offset_arr[i]+1)
     free(merger_trees)
     # free_trees(merger_tree_subs,n_offset_sum)
-    free_trees(merger_tree_FoF,count)
+    free_trees(merger_tree_FoF,count+1)
     free(n_offset_arr)
 
     return arr_count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen
@@ -1910,7 +1912,7 @@ cdef int n_subs_in_FoF(double m):
         n_subs = 1
     return int(n_subs)
 
-cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
+cdef void pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] pos_base,double[:] vel_base,double[:] a_lev,double scaling,str mode='Normal'):
     '''
     Function that calculates the positions and velocities of the different halos 
     in a tree either in the FoF or Normal case.
@@ -1996,7 +1998,6 @@ cdef Tree_Node** pos_and_velo(Tree_Node** merger_tree,int n_frag_tot,double[:] p
                     if this_node.FirstInFoF.index!=indx:
                         print('Problem here in Normal at index=',indx,' now ',this_node.FirstInFoF.index)
                 merger_tree[i] = this_node
-    return merger_tree
 
 cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str halo_type,double[:] position_of_node,double scaling):
     '''
@@ -2110,7 +2111,7 @@ cdef double[:] satelite_pos_velo(Tree_Node* this_node,str mode,double[:] positio
                     temp_arr[i] = dirr*(this_node.FirstInFoF.pos[i]-position_of_node[i])/sqrt((this_node.FirstInFoF.pos[0]-position_of_node[0])**2+(this_node.FirstInFoF.pos[1]-position_of_node[1])**2+(this_node.FirstInFoF.pos[2]-position_of_node[2])**2)*np.random.normal(0,0.05)*temp_arr[i]
         return temp_arr
 
-cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,str mode='Normal'):
+cdef void spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,str mode='Normal'):
     '''
     Function that calculates the 3-spins of the different halos 
     in a tree either in the FoF or Normal case.
@@ -2221,7 +2222,6 @@ cdef Tree_Node** spin_3_calc(Tree_Node** merger_tree,int n_frag_tot,int n_lev=0,
                             this_node.spin[1] = s_2
                             this_node.spin[2] = s_3
                 merger_tree[i] = this_node
-    return merger_tree
 
 cdef class random_masses:
     # Class to draw masses randomly following either the Press & Schechter (PS)
