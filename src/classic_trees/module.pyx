@@ -2026,9 +2026,10 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
         temp_pos = this_node.pos
         for i in range(3):
             adding[i] = this_node.parent.velo[i]*timestep
-            if np.random.random()<0.01:
-                adding[i] = -adding[i]
-            temp_pos[i] = this_node.parent.pos[i] + np.random.normal(adding[i],abs(scaling*adding[i]))
+            if adding[i]<0:
+                temp_pos[i] = this_node.parent.pos[i] - np.random.normal(abs(adding[i]),abs(scaling*adding[i]))
+            else:
+                temp_pos[i] = this_node.parent.pos[i] + np.random.normal(abs(adding[i]),abs(scaling*adding[i]))
         return temp_pos
     elif halo_type=='cen' and mode=='velo':
         adding = this_node.parent.velo
@@ -2041,7 +2042,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
                 if adding[i]<0:
                     temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
                 elif adding[i]>0:
-                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                    temp_velo[i] = np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
                 else:
                     temp_velo[i] = 0
                 velo_summ += temp_velo[i]**2

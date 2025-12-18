@@ -310,8 +310,6 @@ def compute_tree_parallel(random_mass,
         ppf_ST = random_masses(w_lev[0]).random_ST(m_min,m_max)
         mp_halo = ppf_ST(u_ST)
         mp_halo = np.sort(mp_halo)[::-1]
-    elif random_mass=='Self':
-        mp_halo = mass*np.ones(int(n_part*n_tree))
     else:
         mp_halo = mass*np.ones(int(n_part*n_tree))
     nth_run = False

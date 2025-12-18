@@ -72,6 +72,7 @@ def compute_tree(mass,
     Output:
         hdf5-file if file_name is not None
     '''
+    np.random.seed(abs(i_seed_0+1))
     if type(times)==str and times=='equal z':
         a_lev = []
         w_lev = []
