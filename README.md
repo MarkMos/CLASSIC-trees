@@ -5,11 +5,9 @@ It combines the idea of a fast and user-friendly code with modern output format.
 
 Features of CLASSIC-trees:
     
-    * Easy to use
-    
-    * HDF5 output format
-    
-    * Interface with CLASS for custom cosmologies
+* Easy to use
+* HDF5 output format
+* Interface with CLASS for custom cosmologies
 
 ## Installation
 
@@ -20,12 +18,12 @@ In order to install CLASSIC-trees one should have pre-installed cython and numpy
 CLASSIC-trees can be downloaded by cloning the GitHub repository:
 
 ```bash
-$ git clone https://github.com/MarkMos/CLASSIC-trees.git
-$ cd CLASSIC-trees
+git clone https://github.com/MarkMos/CLASSIC-trees.git
+cd CLASSIC-trees
 ```
 
 and running the following line in the terminal:
 
 ```bash
-$ pip install .
+pip install .
 ```
