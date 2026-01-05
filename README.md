@@ -4,9 +4,12 @@ A new code to generate dark matter halo merger trees directly from running CLASS
 It combines the idea of a fast and user-friendly code with modern output format. CLASSIC-trees can be used to get synthetic dark matter halo merger trees for different cosmologies in a few hours.
 
 Features of CLASSIC-trees:
-    - Easy to use
-    - HDF5 output format
-    - Interface with CLASS for custom cosmologies
+    
+    * Easy to use
+    
+    * HDF5 output format
+    
+    * Interface with CLASS for custom cosmologies
 
 ## Installation
 
