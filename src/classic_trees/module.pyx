@@ -1558,6 +1558,7 @@ def get_tree_vals_FoF(
         int count = 0
         int n_halos, j, k, level
         double mass_sum = 0.0
+        double m_cen
         np.ndarray mass_temp
         #sig_alph Sig
     srand(i_seed)
@@ -1575,34 +1576,48 @@ def get_tree_vals_FoF(
     else:
         print_level_1('No Progenitors.')
     
+    m_cen = m_cen_of_FoF(m_0)
     n_halos = n_subs_in_FoF(m_0)
+    while float(n_halos-1)>=(m_0 - m_cen)/m_res:
+        n_halos = n_subs_in_FoF(m_0)
+
     if n_halos==0:
         n_halos = 1
-    print_level_1('Number of subhalos in first FoF-group: ',n_halos)
-    cdef double* m_halo = <double*>malloc((n_halos)*sizeof(double))
+    #print_level_1('Number of subhalos in first FoF-group: ',n_halos)
+    cdef double* m_halo#  = <double*>malloc((n_halos)*sizeof(double))
     cdef int c_halos = 0
-    m_halo[0] = m_cen_of_FoF(m_0)
+    # m_halo[0] = m_cen
 
     if n_halos>=1:
-        ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
+        if n_halos>1:
+            ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_0-m_cen)
         if n_halos==1:
-            mass_sum = m_halo[0]
+            mass_sum = m_cen # m_halo[0]
+            ppf_ST = None
 
         # Routine to get the rest of the masses for this FoF-group
         while mass_sum>m_0 or mass_sum<0.7*m_0:
             mass_temp = ppf_ST(np.random.rand(n_halos-1))
-            mass_sum = m_halo[0] + np.sum(mass_temp)
+            mass_sum = m_cen + np.sum(mass_temp)
             c_halos += 1
             if c_halos>1000:
-                print_level_4('Still in the masses drawing for the FoF-group')
-                m_halo[0] = m_cen_of_FoF(m_0)
-                ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_halo[0])
+                print_level_4('Still in the masses drawing for the FoF-group with mass-fraction',mass_sum/m_0)
+                # m_halo[0] = m_cen_of_FoF(m_0)
+                # ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_0-m_halo[0])
+                n_halos -= 1
                 c_halos = 0
+                if n_halos==1:
+                    mass_sum = m_cen
+                if n_halos<=0:
+                    raise ValueError('Could not draw masses for subhalos in FoF-group!')
+        m_halo = <double*>malloc((n_halos)*sizeof(double))
+        m_halo[0] = m_cen
         if n_halos>1:
             mass_temp.sort()
             mass_temp = mass_temp[::-1]
             for j in range(n_halos-1):
                 m_halo[j+1] = mass_temp[j]
+    print_level_1('Number of subhalos in first FoF-group: ',n_halos)
 
     cdef Tree_Node*** merger_trees = <Tree_Node***>malloc((n_halos)*sizeof(Tree_Node**))
     cdef int* n_offset_arr = <int*>malloc((n_halos)*sizeof(int))
@@ -1867,22 +1882,30 @@ def get_tree_vals_FoF(
 cdef double m_cen_of_FoF(double m):
     # Function to calculate the mass of the central halo in a FoF group
     cdef double m_cen
-    if m<2e12:
-        m_cen = m*np.random.normal(0.8,0.05)
-        if m_cen>m:
-            m_cen = m
-    elif 2e12<=m<3e13:
-        m_cen = m*np.random.normal(0.8,0.05)
-        if m_cen>m:
-            m_cen = 0.9*m
-    elif 3e13<=m<1e14:
-        m_cen = m*np.random.normal(0.8,0.05)
-        if m_cen>m:
-            m_cen = 0.8*m
-    else:
-        m_cen = m*np.random.normal(0.6,0.06)
-        if m_cen>m:
-            m_cen = 0.4*m
+    # if m<2e12:
+    #     m_cen = m*np.random.normal(0.9,0.01)
+    #     if m_cen>m:
+    #         m_cen = 0.9*m
+    # elif 2e12<=m<3e13:
+    #     m_cen = m*np.random.normal(0.8,0.05)
+    #     if m_cen>m:
+    #         m_cen = 0.8*m
+    # elif 3e13<=m<1e14:
+    #     m_cen = m*np.random.normal(0.7,0.05)
+    #     if m_cen>m:
+    #         m_cen = 0.7*m
+    # else:
+    #     m_cen = m*np.random.normal(0.6,0.06)
+    #     if m_cen>m:
+    #         m_cen = 0.4*m
+    m_cen = m*np.random.normal(0.9,0.01*(m/1e8)**(0.1))
+    if m_cen>m:
+        m_cen = (m_cen/m-1)*m
+    if m_cen/m<0.2:
+        while m_cen/m<0.2 or m_cen/m>1:
+            m_cen = m*np.random.normal(0.9,0.1*(m/1e8)**(0.1))
+            if m_cen>m:
+                m_cen = (m_cen/m-1)*m
     return m_cen
 
 cdef double spin_abs(double m,str mode='Normal'):
@@ -2026,10 +2049,9 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
         temp_pos = this_node.pos
         for i in range(3):
             adding[i] = this_node.parent.velo[i]*timestep
-            if adding[i]<0:
-                temp_pos[i] = this_node.parent.pos[i] - np.random.normal(abs(adding[i]),abs(scaling*adding[i]))
-            else:
-                temp_pos[i] = this_node.parent.pos[i] + np.random.normal(abs(adding[i]),abs(scaling*adding[i]))
+            if np.random.random()<0.01:
+                adding[i] = -adding[i]
+            temp_pos[i] = this_node.parent.pos[i] + np.random.normal(adding[i],abs(scaling*adding[i]))
         return temp_pos
     elif halo_type=='cen' and mode=='velo':
         adding = this_node.parent.velo
@@ -2042,7 +2064,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
                 if adding[i]<0:
                     temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
                 elif adding[i]>0:
-                    temp_velo[i] = np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
                 else:
                     temp_velo[i] = 0
                 velo_summ += temp_velo[i]**2
@@ -2276,6 +2298,10 @@ cdef class random_masses:
         cdef np.ndarray temp_ST = np.zeros(n) 
         cdef np.ndarray cdf_ST
 
+        if m_min==m_max:
+            return lambda x: m_min
+        if m_min>m_max:
+            raise ValueError('m_min should be smaller than m_max in random_ST function.')
         for i in range(n):
             temp_ST[i] = self.ST_func(masses[i])
         
@@ -2300,6 +2326,11 @@ cdef class random_masses:
         cdef int i
         cdef np.ndarray temp_PS = np.zeros(n) 
         cdef np.ndarray cdf_PS
+
+        if m_min==m_max:
+            return lambda x: m_min
+        if m_min>m_max:
+            raise ValueError('m_min should be smaller than m_max in random_PS function.')
 
         for i in range(n):
             temp_PS[i] = self.PS_func(masses[i])
