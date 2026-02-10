@@ -9,6 +9,16 @@ from libc.math cimport sqrt, log, exp, pi, cos, sin, fabs, acosh, sinh, cosh, ro
 from scipy.interpolate import UnivariateSpline, interp1d
 from libc.stdlib cimport malloc, realloc, free, rand, srand
 from libc.string cimport memcpy
+import importlib.resources
+import os
+import sys
+
+if float(sys.version[2:6])<9:
+    file_J = str(importlib.resources.path('classic_trees.Data', 'J_tab.txt'))
+    file_z = str(importlib.resources.path('classic_trees.Data', 'z_tab.txt'))
+else:
+    file_J = str(importlib.resources.files('classic_trees.Data').joinpath('J_tab.txt'))
+    file_z = str(importlib.resources.files('classic_trees.Data').joinpath('z_tab.txt'))
 
 trees = None
 def set_trees(obj):
@@ -851,62 +861,36 @@ cdef class sig_alph:
 #     return exp(log_J_used)
 
 cdef class JLookup:
-    """Precompute tables once, lookup blazing fast"""
-    cdef double* z_tab
-    cdef double* J_tab
-    cdef int N_TAB
-    cdef double dz, inv_dz, z_max, eps
+    cdef:
+        np.ndarray z_tab
+        np.ndarray J_tab
+        int n
+        double* log_z_arr
+        double* J_arr
+        cspline* J_spline
     
     def __cinit__(self):
-        self.N_TAB = 10000
-        self.z_max = 10.0
-        self.eps = 1e-5
-        
-        self.z_tab = <double*>malloc(self.N_TAB * sizeof(double))
-        self.J_tab = <double*>malloc(self.N_TAB * sizeof(double))
-        
-        self._build_tables()
-    
-    cdef void _build_tables(self) nogil:
-        """Build lookup tables ONCE"""
-        self.dz = self.z_max / self.N_TAB
-        self.inv_dz = 1.0 / self.dz
-        
-        cdef int i
-        self.z_tab[0] = self.dz
-        
-        if fabs(1.0-gamma_1) > self.eps:
-            self.J_tab[0] = pow(self.dz, 1.0-gamma_1) / (1.0-gamma_1)
-        else:
-            self.J_tab[0] = log(self.dz)
-        
-        for i in range(1, self.N_TAB):
-            self.z_tab[i] = (i+1) * self.dz
-            self.J_tab[i] = self.J_tab[i-1] + \
-                pow(1.0 + 1.0/self.z_tab[i]*self.z_tab[i], 0.5*gamma_1)*0.5*self.dz + \
-                pow(1.0 + 1.0/self.z_tab[i-1]*self.z_tab[i-1], 0.5*gamma_1)*0.5*self.dz
-    
-    cpdef double eval(self, double z):
-        """1000x faster lookup - NO malloc, FULLY nogil"""
-        if fabs(gamma_1) <= self.eps:
-            return z
-        cdef double h
-        cdef int i = <int>(z * self.inv_dz) - 1
-        
-        if i < 1:
-            if fabs(1.0-gamma_1) > self.eps:
-                return pow(z, 1.0-gamma_1)/(1.0-gamma_1) 
-            else:
-                return log(z)
-        elif i >= self.N_TAB-1:
-            return self.J_tab[self.N_TAB-1] + z - self.z_tab[self.N_TAB-1]
-        else:
-            h = (z - self.z_tab[i]) * self.inv_dz
-            return self.J_tab[i]*(1.0-h) + self.J_tab[i+1]*h
-    
+        self.z_tab = np.loadtxt(file_z)
+        self.J_tab = np.loadtxt(file_J)
+        self.n = len(self.z_tab)
+        self.log_z_arr = <double*>malloc(self.n*sizeof(double))
+        self.J_arr = <double*>malloc(self.n*sizeof(double))
+        self._precompute_J()
+    cdef void _precompute_J(self):
+        cdef int i 
+        for i in range(self.n):
+            self.log_z_arr[i] = log(self.z_tab[i])
+            self.J_arr[i] = log(self.J_tab[i])
+        self.J_spline = cspline_alloc(self.n,self.log_z_arr,self.J_arr)
+    cpdef double eval(self,double z):
+        if z<0:
+            raise ValueError('z needs to be positive')
+        cdef double log_J_used = cspline_eval(self.J_spline,log(z))
+        return exp(log_J_used)
     def __dealloc__(self):
-        free(self.z_tab)
-        free(self.J_tab)
+        free(self.log_z_arr)
+        free(self.J_arr)
+        cspline_free(self.J_spline)
 
 cdef JLookup J_lookup = JLookup()
 cdef sig_alph Sig = None
