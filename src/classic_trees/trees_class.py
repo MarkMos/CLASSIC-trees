@@ -19,7 +19,8 @@ class forrest:
         self.masses = None
         self.jlevels = None
         self.redshifts = None
-    def set(self,pk_method='class',cosmo_params=None,
+        self.factor = 1.0
+    def set(self,pk_method='class',cosmo_params=None,spin_factor = 1,
             add_cosmo_params=None,file=None,P_values='uncorrected',verbose_level=0):
         if pk_method=='class':
             pk_method = self.pk_method
@@ -35,6 +36,7 @@ class forrest:
         if cosmo_params==None:
             cosmo_params = self.cosmo_params
         self.verbose = verbose_level
+        self.factor = spin_factor
 
         if file_name_pk==None:
             from classy import Class

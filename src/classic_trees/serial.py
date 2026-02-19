@@ -249,5 +249,5 @@ def compute_tree(mass,
                     grp.attrs['Ntrees_ThisFile'] = n_tree
                     grp.attrs['Ntrees_Total'] = n_tree
                     grp.attrs['NumFiles'] = 1
-                start_offset += count
+                start_offset += sum(count)
     return arr_mhalo,arr_time,1/a_lev-1

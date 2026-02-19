@@ -1896,13 +1896,13 @@ cdef double spin_abs(double m,str mode='Normal'):
     # Function to calculate the absolute value of the spin of a halo
     cdef double spin_val
     if mode=='Normal':
-        spin_val = np.random.lognormal(np.log(10+(m/5e8)**0.9),np.log(0.1*(10+(m/5e8)**0.9))*m**(-0.1))
+        spin_val = trees.factor*np.random.lognormal(np.log(10+(m/5e8)**0.9),2*(m/1e5)**(-0.1))
     elif mode=='Upper':
-        spin_val = 100*(10+(m/5e8)**0.9)*m**(-0.1)
+        spin_val = trees.factor*100*(10+(m/5e8)**0.9)*m**(-0.1)
     elif mode=='Lower':
-        spin_val = 0.01*(10+(m/5e8)**0.9)
+        spin_val = trees.factor*0.01*(10+(m/5e8)**0.9)
     elif mode=='Middle':
-        spin_val = 10+(m/5e8)**0.9
+        spin_val = trees.factor*(10+(m/5e8)**0.9)
     return spin_val
 
 cdef int n_subs_in_FoF(double m):
@@ -2040,7 +2040,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
     elif halo_type=='cen' and mode=='velo':
         adding = this_node.parent.velo
         velo_summ = 0.0
-        while velo_summ<=0.0:
+        while velo_summ<=0.0 or velo_summ>1e8:
             print_level_5('In while loop for central velo')
             velo_summ = 0.0
             temp_velo = this_node.velo
@@ -2048,7 +2048,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
                 if adding[i]<0:
                     temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
                 elif adding[i]>0:
-                    temp_velo[i] = -np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
+                    temp_velo[i] = np.random.lognormal(log(abs(adding[i])),0.7*(this_node.mhalo/1e4)**(-0.1))
                 else:
                     temp_velo[i] = 0
                 velo_summ += temp_velo[i]**2
@@ -2062,7 +2062,7 @@ cdef double[:] velo_routine(Tree_Node* this_node,double timestep,str mode,str ha
     else:
         adding = this_node.FirstInFoF.velo
         velo_summ = 0.0
-        while velo_summ<=0.0:
+        while velo_summ<=0.0 or velo_summ>1e8:
             print_level_5('In while loop for satelite velo')
             velo_summ = 0.0
             temp_velo = satelite_pos_velo(this_node,'velo',position_of_node)
