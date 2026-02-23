@@ -1866,22 +1866,6 @@ def get_tree_vals_FoF(
 cdef double m_cen_of_FoF(double m):
     # Function to calculate the mass of the central halo in a FoF group
     cdef double m_cen
-    # if m<2e12:
-    #     m_cen = m*np.random.normal(0.9,0.01)
-    #     if m_cen>m:
-    #         m_cen = 0.9*m
-    # elif 2e12<=m<3e13:
-    #     m_cen = m*np.random.normal(0.8,0.05)
-    #     if m_cen>m:
-    #         m_cen = 0.8*m
-    # elif 3e13<=m<1e14:
-    #     m_cen = m*np.random.normal(0.7,0.05)
-    #     if m_cen>m:
-    #         m_cen = 0.7*m
-    # else:
-    #     m_cen = m*np.random.normal(0.6,0.06)
-    #     if m_cen>m:
-    #         m_cen = 0.4*m
     m_cen = m*np.random.normal(0.9,0.01*(m/1e8)**(0.1))
     if m_cen>m:
         m_cen = (m_cen/m-1)*m

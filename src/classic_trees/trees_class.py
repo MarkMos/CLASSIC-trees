@@ -1,6 +1,6 @@
 import numpy as np
 
-class forrest:
+class forest:
     def __init__(self):
         self.pk_method = 'class'
         self.default = {'output':'mPk','P_k_max_h/Mpc':10000}

@@ -4,7 +4,7 @@ import classic_trees as ct
 # Then we use some basic lines to get our first merger tree
 
 # First we need to get the class 'tree' in order to access the differenet asspects
-merger_tree = ct.forrest()
+merger_tree = ct.forest()
 
 # Then we need to set our cosmology and get our Power-Spectrum
 merger_tree.set(pk_method='self',                      # one of two methods; here for speed a pre-computed Power-Spectrum, other method is directly running class to get it
@@ -13,7 +13,8 @@ merger_tree.set(pk_method='self',                      # one of two methods; her
                 cosmo_params = {'h':0.6781,            #
                              'Omega_m':0.309974,       # cosmological parameters as one would set in class
                              'Omega_Lambda':0.690026}, # also add_cosmo_params for more then the three listed here
-                verbose_level=4)                       # level of verbosity, here set to 1 to see some basic output of the code
+                verbose_level=4, # level of verbosity, here set to 1 to see some basic output of the code
+                spin_factor=1e-3)   #  Factor to adjust the placement of the spins absolute value         
 
 # After setting the cosmology we can e.g. run the following line to get one merger tree
 merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
