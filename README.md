@@ -30,3 +30,7 @@ and running the following line in the terminal:
 ```bash
 pip install .
 ```
+
+## Working with CLASSIC-trees
+
+In the examples folder is a python file and a jupyter-notebook, to gain experience with the code.
