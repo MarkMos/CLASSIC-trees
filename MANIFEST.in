@@ -1,0 +1,3 @@
+include src/classic_trees/module.pyx
+recursive-include src/classic_trees/Data *
+include src/classic_trees/Data/flat.txt
