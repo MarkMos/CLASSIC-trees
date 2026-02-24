@@ -10,7 +10,7 @@ It combines the idea of a fast and user-friendly code with modern output format.
 Features of CLASSIC-trees:
     
 * Easy to use
-* HDF5 output as in GADGET4 format
+* HDF5 output format as in GADGET4
 * Interface with CLASS for custom cosmologies
 
 ## Installation
