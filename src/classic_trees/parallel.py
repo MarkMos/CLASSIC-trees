@@ -211,7 +211,7 @@ def compute_tree_parallel(random_mass,
                       n_halo_max = 1000000,
                       n_halo = 1,
                       n_part = 40000,
-                      times = 'equal a',
+                      times = 'equal_a',
                       mode='FoF',
                       scaling = 0.3,
                       verbose = 0):
@@ -253,7 +253,7 @@ def compute_tree_parallel(random_mass,
         raise('Type Error with verbose')
     if type(i_seed_0)!=int:
         raise('Type Error with i_seed_0')
-    if type(times)==str and times=='equal z':
+    if type(times)==str and times=='equal_z':
         a_lev = []
         w_lev = []
         for i_lev in range(n_lev):
@@ -264,7 +264,7 @@ def compute_tree_parallel(random_mass,
                 print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
-    elif type(times)==str and times=='equal a':
+    elif type(times)==str and times=='equal_a':
         a_lev = np.linspace(1,1/(z_max+1),n_lev)
         w_lev = []
         for i_lev in range(n_lev):

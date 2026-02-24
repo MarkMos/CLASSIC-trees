@@ -30,7 +30,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 merger_tree = ct.forrest()
-merger_tree.set(pk_method='self',file='./PowerSpectra/pk_class.txt',
+merger_tree.set(pk_method='file',file='./PowerSpectra/pk_class.txt',
                 cosmo_params={'h':0.6781,'Omega_m':0.309974,'Omega_Lambda':0.690026})
 comm.Barrier()
 Boxsize = 50.0

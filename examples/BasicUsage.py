@@ -7,14 +7,14 @@ import classic_trees as ct
 merger_tree = ct.forest()
 
 # Then we need to set our cosmology and get our Power-Spectrum
-merger_tree.set(pk_method='self',                      # one of two methods; here for speed a pre-computed Power-Spectrum, other method is directly running class to get it
+merger_tree.set(pk_method='file',                      # one of two methods; here for speed a pre-computed Power-Spectrum, other method is directly running class to get it
                 file='./PowerSpectra/pk_class.txt',    # relative path two the Power-Spectrum file
-                P_values = 'corrected',                # multiplies the Power-Spectrum values by h^3 if needed
+                h_units = True,                        # multiplies the Power-Spectrum values by h^3 if needed
                 cosmo_params = {'h':0.6781,            #
                              'Omega_m':0.309974,       # cosmological parameters as one would set in class
                              'Omega_Lambda':0.690026}, # also add_cosmo_params for more then the three listed here
-                verbose_level=4, # level of verbosity, here set to 1 to see some basic output of the code
-                spin_factor=1e-3)   #  Factor to adjust the placement of the spins absolute value         
+                verbose_level=4,                       # level of verbosity, here set to 1 to see some basic output of the code
+                spin_factor=1e-3)                      # Factor to adjust the placement of the spins absolute value         
 
 # After setting the cosmology we can e.g. run the following line to get one merger tree
 merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
@@ -24,12 +24,11 @@ merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
                            m_max = 1e16,         # maximum mass to draw masses from
                            m_min = 1e11,         # minimum mass to draw masses from
                            BoxSize = 479.0,      # Boxsize of the simulation volume
-                           n_lev = 10,           # number of time-levels of the tree
+                           n_steps = 10,         # number of timesteps of the tree
                            m_res = 1e8,          # mass resolution
                            n_tree = 1,           # number of trees to be made
-                           n_halo = 1,           # start of counter of nodes inside the tree
                            i_seed_0 = -8635,     # seed to generate always the same random trees
                            a_halo = 1,           # scale factor today
                            z_max = 4,            # redshift to which the tree is tracked
-                           times = 'equal a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
-                           substructure ='On')  # mode of the algorithm; Off means no substructure On means substructure
+                           times = 'equal_a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
+                           subhalos = True)      # mode of the algorithm; False means no substructure True means substructure

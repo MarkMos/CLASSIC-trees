@@ -73,7 +73,7 @@ def compute_tree(mass,
         hdf5-file if file_name is not None
     '''
     np.random.seed(abs(i_seed_0+1))
-    if type(times)==str and times=='equal z':
+    if type(times)==str and times=='equal_z':
         a_lev = []
         w_lev = []
         for i_lev in range(n_lev):
@@ -84,7 +84,7 @@ def compute_tree(mass,
                 print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
-    elif type(times)==str and times=='equal a':
+    elif type(times)==str and times=='equal_a':
         a_lev = np.linspace(1,1/(z_max+1),n_lev)
         w_lev = []
         for i_lev in range(n_lev):
@@ -114,7 +114,8 @@ def compute_tree(mass,
             for a in a_lev:
                 d_c = DELTA.delta_crit(a)
                 w_lev.append(d_c)
-                print('z = ',1/a-1,' at which delta_crit = ',d_c)
+                if verbose>0:
+                    print('z = ',1/a-1,' at which delta_crit = ',d_c)
             a_lev = np.array(a_lev)
             w_lev = np.array(w_lev)
     if random_mass=='PS':
@@ -128,7 +129,7 @@ def compute_tree(mass,
         mp_halo = ppf_ST(u_ST)
         mp_halo = np.sort(mp_halo)[::-1]
     else:
-        mp_halo = mass            
+        mp_halo = mass*np.ones(n_tree)          
     start_offset = 0
     nth_run = False
     if mode!='FoF':
@@ -136,10 +137,10 @@ def compute_tree(mass,
             theta = 2*np.pi*np.random.uniform(0,1)
             u = 2*np.random.uniform(0,1)-1
             norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
-            vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
+            vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo[i]/1e4)**(-0.1))*norm_vel
             pos_base = np.random.uniform(0,BoxSize,3)
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             if file_name!=None:    
@@ -194,10 +195,10 @@ def compute_tree(mass,
             theta = 2*np.pi*np.random.uniform(0,1)
             u = 2*np.random.uniform(0,1)-1
             norm_vel = np.array([np.sqrt(1-u**2)*np.cos(theta),np.sqrt(1-u**2)*np.sin(theta),u])
-            vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo/1e4)**(-0.1))*norm_vel
+            vel_base = np.random.lognormal(np.log(200),0.7*(mp_halo[i]/1e4)**(-0.1))*norm_vel
             pos_base = np.random.uniform(0,BoxSize,3)
             if random_mass==None:
-                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo,a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+                count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             if file_name!=None:

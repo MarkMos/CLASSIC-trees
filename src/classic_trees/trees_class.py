@@ -21,18 +21,17 @@ class forest:
         self.redshifts = None
         self.factor = 1.0
     def set(self,pk_method='class',cosmo_params=None,spin_factor = 1,
-            add_cosmo_params=None,file=None,P_values='uncorrected',verbose_level=0):
+            add_cosmo_params=None,file=None,h_units=True,verbose_level=0):
         if pk_method=='class':
             pk_method = self.pk_method
             file_name_pk = None
-        elif pk_method=='self':
+        elif pk_method=='file':
             file_name_pk = file
             self.file_name_pk = file
         else:
             raise KeyError('Choose one of the three options for pk_method:' \
                         '\n - class' \
-                        '\n - default' \
-                        '\n - self')
+                        '\n - file')
         if cosmo_params==None:
             cosmo_params = self.cosmo_params
         self.verbose = verbose_level
@@ -40,6 +39,8 @@ class forest:
 
         if file_name_pk==None:
             from classy import Class
+            if verbose_level>0:
+                print('Now calculating Power-Spectrum in class.')
 
             z = np.array([0],dtype='float64')
             N_k = 1000
@@ -68,9 +69,9 @@ class forest:
             self.l_0 = l_0
             pk_data = np.loadtxt(file_name_pk)
             self.k_0_np = pk_data[:,0]
-            if P_values=='corrected':
+            if h_units==True:
                 self.Pk_0_np = pk_data[:,1]
-            elif P_values=='uncorrected':
+            elif h_units==False:
                 self.Pk_0_np = pk_data[:,1]*h_0**3
         from .module import set_trees, set_sig_alph
         set_trees(self)
@@ -83,37 +84,37 @@ class forest:
                      m_min = 1e11,
                      mass = None,
                      BoxSize = 479.0,
-                     n_tree = 30,
+                     n_tree_per_batch = 30,
                      i_seed_0 = -8635,
                      a_halo = 1,
                      m_res = 1e8,
                      z_max  = 4,
-                     n_lev = 10,
+                     n_steps = 10,
                      n_halo_max = 1000000,
-                     n_part = 40000,
-                     times = 'equal a',
-                     substructure='On'):
+                     n_batches = 40000,
+                     times = 'equal_a',
+                     subhalos=True):
         '''
         Function to call the routines of classic_trees for huge numbers of trees to 
         compute. Ideally to produce large merger tree files.
         ----------------------
         Input:
-            random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s)
-            mass         : Mass of the base node of a merger tree (only if random_mass=None)
-            file_name    : Name of hdf5-file
-            BoxSize      : Size of the volume
-            n_tree       : Number of trees that are computed in one Pool
-            i_seed_0     : Used for seed to generate random numbers
-            a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
-            m_res        : Mass resolution limit; minimum mass
-            m_max        : Maximum mass for the random drawing of masses
-            m_min        : Minimum mass for the random drawing of masses
-            z_max        : Maximum redshift for lookback
-            n_lev        : Number of time levels
-            n_halo_max   : Maximum number of nodes per tree; used for preallocation 
-            n_part       : Number of runs of a Pool
-            times        : Either equally spaced times in z or a, or a custom array of z or a
-            substructure : Defining the usage of the merger tree with or without substructure.
+            random_mass      : Distribution to draw the mass of the base node(s) of merger tree(s)
+            mass             : Mass of the base node of a merger tree (only if random_mass=None)
+            file_name        : Name of hdf5-file
+            BoxSize          : Size of the volume
+            n_tree_per_batch : Number of trees that are computed in one Pool
+            i_seed_0         : Used for seed to generate random numbers
+            a_halo           : Value of scale factor today (default) or up to which time the tree is calculated
+            m_res            : Mass resolution limit; minimum mass
+            m_max            : Maximum mass for the random drawing of masses
+            m_min            : Minimum mass for the random drawing of masses
+            z_max            : Maximum redshift for lookback
+            n_steps          : Number of timesteps
+            n_halo_max       : Maximum number of nodes per tree; used for preallocation 
+            n_batches        : Number of runs of a Pool
+            times            : Either equally spaced times in z or a, or a custom array of z or a
+            subhalos         : Defining the usage of the merger tree with or without substructure; True with and False without.
         ----------------------
         Output:
             hdf5-file with values of random or constant mass merger trees
@@ -127,13 +128,13 @@ class forest:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        if substructure=='On':
+        if subhalos==True:
             mode = 'FoF'
         else:
             mode = 'Normal'
         from .parallel import compute_tree_parallel
-        compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree,i_seed_0,
-                          a_halo,m_res,m_min,m_max,z_max,n_lev,n_halo_max,n_halo,n_part,times,mode,scaling,verbose)
+        compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree_per_batch,i_seed_0,
+                          a_halo,m_res,m_min,m_max,z_max,n_steps,n_halo_max,n_halo,n_batches,times,mode,scaling,verbose)
     def compute_serial(self,
                      mass = None,
                      n_halo_max = 1000000,
@@ -142,15 +143,14 @@ class forest:
                      m_max = 1e16,
                      m_min = 1e11,
                      BoxSize = 479.0,
-                     n_lev = 10,
+                     n_steps = 10,
                      m_res = 1e8,
                      n_tree = 1,
-                     n_halo = 1,
                      i_seed_0 = -8635,
                      a_halo = 1,
                      z_max = 4,
-                     times = 'equal a',
-                     substructure ='On'):
+                     times = 'equal_a',
+                     subhalos = True):
         '''
         Function to call the routines of classic_trees for small numbers of trees to 
         compute. Ideally to see what different starting values yield.
@@ -162,14 +162,14 @@ class forest:
             m_max        : Maximum mass for the random drawing of masses
             m_min        : Minimum mass for the random drawing of masses
             BoxSize      : Size of the volume
-            n_lev        : Number of time levels
+            n_steps      : Number of timesteps
             m_res        : Mass resolution limit; minimum mass
             n_tree       : Number of trees that are computed
             i_seed_0     : Used for seed to generate random numbers
             a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
             z_max        : Maximum redshift for lookback
             times        : Either equally spaced times in z or a, or a custom array of z or a
-            substructure : Defining the usage of the merger tree with or without substructure.
+            subhalos     : Defining the usage of the merger tree with or without substructure; True with and False without.
         ----------------------
         Output:
             hdf5-file if file_name is not None
@@ -183,12 +183,12 @@ class forest:
         l_0 = self.l_0
         h_0 = self.h_0
         verbose = self.verbose
-        if substructure=='On':
+        if subhalos==True:
             mode = 'FoF'
         else:
             mode = 'Normal'
         from .serial import compute_tree
-        self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_lev,m_res,
+        self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_steps,m_res,
                      m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,scaling,verbose)
         
     def hmf_at_z(self,z,n_bins=50,filename=None):
