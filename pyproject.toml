@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools","wheel","Cython","numpy"]
+requires = ["setuptools>=61","wheel","Cython>=0.29","numpy"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,7 +10,7 @@ authors = [
 ]
 description = "A new code to generate dark mater halo merger trees directly from running CLASS, for use with semi-analytical galaxy modeling codes."
 readme = "README.md"
-requires-python = ">=3.5"
+requires-python = ">=3.8"
 
 
 dependencies = [
