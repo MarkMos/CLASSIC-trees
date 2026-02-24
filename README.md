@@ -1,6 +1,7 @@
 # CLASSIC-trees
 
-#### CLASSIC-trees is still undergoing development and tests. It is not ready for production yet.
+#### !!!CLASSIC-trees is still undergoing development and tests. It is not ready for production yet!!!
+#### !!!This code is based on Parkinson, Cole and Helly 2008 MNRAS (383,557) (astro-ph/07081382)!!!
 
 A new code to generate dark matter halo merger trees directly from running CLASS, for use with semi-analytical galaxy modeling codes.
 
@@ -13,9 +14,6 @@ Features of CLASSIC-trees:
 * Interface with CLASS for custom cosmologies
 
 ## Installation
-
-### Pre-requisites
-In order to install CLASSIC-trees one should have pre-installed cython and numpy.
 
 ### Downloading
 CLASSIC-trees can be downloaded by cloning the GitHub repository:
