@@ -17,18 +17,18 @@ merger_tree.set(pk_method='file',                      # one of two methods; her
                 spin_factor=1e-3)                      # Factor to adjust the placement of the spins absolute value         
 
 # After setting the cosmology we can e.g. run the following line to get one merger tree
-merger_tree.compute_serial(mass = 1e13,          # mass of the halo today
-                           n_halo_max = 1000000, # number of maximum halos that can be within a merger tree
-                           file_name = None,     # file_name; has to be set to .hdf5 which is the output-format in classic_trees
-                           random_mass = None,   # random mass that can be drawn either from the Press-Schechter or Sheth-Torman approximation or neither for same mass trees
-                           m_max = 1e16,         # maximum mass to draw masses from
-                           m_min = 1e11,         # minimum mass to draw masses from
-                           BoxSize = 479.0,      # Boxsize of the simulation volume
-                           n_steps = 10,         # number of timesteps of the tree
-                           m_res = 1e8,          # mass resolution
-                           n_tree = 1,           # number of trees to be made
-                           i_seed_0 = -8635,     # seed to generate always the same random trees
-                           a_halo = 1,           # scale factor today
-                           z_max = 4,            # redshift to which the tree is tracked
-                           times = 'equal_a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
-                           subhalos = True)      # mode of the algorithm; False means no substructure True means substructure
+merger_tree.compute_serial(mass = 1e13,                 # mass of the halo today in M_sun/h
+                           n_halo_max = 1000000,        # number of maximum halos that can be within a merger tree
+                           file_name = None,            # file_name; has to be set to .hdf5 which is the output-format in classic_trees
+                           random_mass = None,          # random mass that can be drawn either from the Press-Schechter or Sheth-Torman approximation or neither for same mass trees; masses in M_sun/h
+                           m_max = 1e16,                # maximum mass to draw masses from in M_sun/h
+                           m_min = 1e11,                # minimum mass to draw masses from in M_sun/h
+                           BoxSize = 479.0,             # Boxsize of the simulation volume in (Mpc/h)^3
+                           n_steps = 10,                # number of timesteps of the tree
+                           m_res = 1e8,                 # mass resolution in M_sun/h
+                           n_tree = 1,                  # number of trees to be made
+                           i_seed_0 = -8635,            # seed to generate always the same random trees
+                           a_halo = 1,                  # scale factor today
+                           z_max = 4,                   # redshift to which the tree is tracked
+                           time_spacing = 'equal_a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
+                           subhalos = True)             # mode of the algorithm; False means no substructure True means substructure

@@ -92,28 +92,28 @@ class forest:
                      n_steps = 10,
                      n_halo_max = 1000000,
                      n_batches = 40000,
-                     times = 'equal_a',
+                     time_spacing = 'equal_a',
                      subhalos=True):
         '''
         Function to call the routines of classic_trees for huge numbers of trees to 
         compute. Ideally to produce large merger tree files.
         ----------------------
         Input:
-            random_mass      : Distribution to draw the mass of the base node(s) of merger tree(s)
-            mass             : Mass of the base node of a merger tree (only if random_mass=None)
             file_name        : Name of hdf5-file
-            BoxSize          : Size of the volume
+            random_mass      : Distribution to draw the mass of the base node(s) of merger tree(s); masses in M_sun/h
+            m_max            : Maximum mass for the random drawing of masses in M_sun/h
+            m_min            : Minimum mass for the random drawing of masses in M_sun/h
+            mass             : Mass of the base node of a merger tree (only if random_mass=None) in M_sun/h
+            BoxSize          : Size of the volume in (Mpc/h)^3
             n_tree_per_batch : Number of trees that are computed in one Pool
             i_seed_0         : Used for seed to generate random numbers
             a_halo           : Value of scale factor today (default) or up to which time the tree is calculated
-            m_res            : Mass resolution limit; minimum mass
-            m_max            : Maximum mass for the random drawing of masses
-            m_min            : Minimum mass for the random drawing of masses
+            m_res            : Mass resolution limit; minimum mass in M_sun/h
             z_max            : Maximum redshift for lookback
             n_steps          : Number of timesteps
             n_halo_max       : Maximum number of nodes per tree; used for preallocation 
             n_batches        : Number of runs of a Pool
-            times            : Either equally spaced times in z or a, or a custom array of z or a
+            time_spacing     : Either equally spaced times in z or a, or a custom array of z or a
             subhalos         : Defining the usage of the merger tree with or without substructure; True with and False without.
         ----------------------
         Output:
@@ -134,7 +134,7 @@ class forest:
             mode = 'Normal'
         from .parallel import compute_tree_parallel
         compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree_per_batch,i_seed_0,
-                          a_halo,m_res,m_min,m_max,z_max,n_steps,n_halo_max,n_halo,n_batches,times,mode,scaling,verbose)
+                          a_halo,m_res,m_min,m_max,z_max,n_steps,n_halo_max,n_halo,n_batches,time_spacing,mode,scaling,verbose)
     def compute_serial(self,
                      mass = None,
                      n_halo_max = 1000000,
@@ -149,26 +149,27 @@ class forest:
                      i_seed_0 = -8635,
                      a_halo = 1,
                      z_max = 4,
-                     times = 'equal_a',
+                     time_spacing = 'equal_a',
                      subhalos = True):
         '''
         Function to call the routines of classic_trees for small numbers of trees to 
         compute. Ideally to see what different starting values yield.
         ----------------------
         Input:
-            mass         : Mass of the base node of a merger tree (only if random_mass=None)
-            random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s)
+            mass         : Mass of the base node of a merger tree (only if random_mass=None) in M_sun/h
+            n_halo_max   : Maximum number of nodes per tree; used for preallocation 
             file_name    : Name of hdf5-file (optional)
-            m_max        : Maximum mass for the random drawing of masses
-            m_min        : Minimum mass for the random drawing of masses
-            BoxSize      : Size of the volume
+            random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s); masses in M_sun/h
+            m_max        : Maximum mass for the random drawing of masses in M_sun/h
+            m_min        : Minimum mass for the random drawing of masses in M_sun/h
+            BoxSize      : Size of the volume in (Mpc/h)^3
             n_steps      : Number of timesteps
-            m_res        : Mass resolution limit; minimum mass
+            m_res        : Mass resolution limit; minimum mass in M_sun/h
             n_tree       : Number of trees that are computed
             i_seed_0     : Used for seed to generate random numbers
             a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
             z_max        : Maximum redshift for lookback
-            times        : Either equally spaced times in z or a, or a custom array of z or a
+            time_spacing : Either equally spaced times in z or a, or a custom array of z or a
             subhalos     : Defining the usage of the merger tree with or without substructure; True with and False without.
         ----------------------
         Output:
@@ -189,7 +190,7 @@ class forest:
             mode = 'Normal'
         from .serial import compute_tree
         self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_steps,m_res,
-                     m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,times,mode,scaling,verbose)
+                     m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,time_spacing,mode,scaling,verbose)
         
     def hmf_at_z(self,z,n_bins=50,filename=None):
         '''
