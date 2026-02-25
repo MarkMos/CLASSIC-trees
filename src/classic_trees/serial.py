@@ -183,7 +183,7 @@ def compute_tree(mass,
                         f['Parameters'].attrs['OmegaLambda'] = l_0
                         f['Parameters'].attrs['BoxSize'] = BoxSize
                     grp = f.create_group('Header')
-                    grp.attrs['LastSnapShotNr'] = 19
+                    grp.attrs['LastSnapShotNr'] = n_lev-1
                     grp.attrs['Nhalos_ThisFile'] = count
                     grp.attrs['Nhalos_Total'] = count
                     grp.attrs['Ntrees_ThisFile'] = n_tree
@@ -244,7 +244,7 @@ def compute_tree(mass,
                         f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
                         f['Parameters'].attrs['BoxSize'] = BoxSize
                     grp = f.create_group('Header')
-                    grp.attrs['LastSnapShotNr'] = 19
+                    grp.attrs['LastSnapShotNr'] = n_lev-1
                     grp.attrs['Nhalos_ThisFile'] = count
                     grp.attrs['Nhalos_Total'] = count
                     grp.attrs['Ntrees_ThisFile'] = n_tree
