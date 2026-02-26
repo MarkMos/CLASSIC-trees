@@ -131,6 +131,8 @@ def compute_tree(mass,
     else:
         mp_halo = mass*np.ones(n_tree)          
     start_offset = 0
+    mass_arr = []
+    j_arr = []
     nth_run = False
     if mode!='FoF':
         for i in range(n_tree):
@@ -143,6 +145,8 @@ def compute_tree(mass,
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_pos,arr_velo,arr_spin,arr_sublen = get_tree_vals(i,i_seed_0,mp_halo[i],a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+            mass_arr += np.ndarray.tolist(arr_mhalo)
+            j_arr += np.ndarray.tolist(arr_time)
             if file_name!=None:    
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
@@ -161,19 +165,19 @@ def compute_tree(mass,
                         d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
                         d_time= grp3.create_dataset('Time',data=a_lev)
                     
-                    append_create_dataset(grp1,'SnapNum',arr_time)
-                    append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
-                    append_create_dataset(grp1,'SubhaloVmax',arr_Vmax)
-                    append_create_dataset(grp1,'SubhaloPos',arr_pos)
-                    append_create_dataset(grp1,'SubhaloVelo',arr_velo)
-                    append_create_dataset(grp1,'SubhaloSpin',arr_spin)
-                    append_create_dataset(grp1,'SubhaloLen',arr_sublen)
-                    append_create_dataset(grp1,'TreeDescendant',arr_desc)
-                    append_create_dataset(grp1,'FirstProgenitor',arr_1prog)
-                    append_create_dataset(grp1,'NextProgenitor',arr_nextprog)
+                    append_create_dataset(grp1,'SnapNum',np.array(n_lev-1-arr_time,dtype=np.int32))
+                    append_create_dataset(grp1,'SubhaloMass',data=np.array(arr_mhalo/1e10,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloVmax',np.array(arr_Vmax,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloPos',np.array(arr_pos,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloVelo',np.array(arr_velo,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloSpin',np.array(arr_spin,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloLen',np.array(arr_sublen,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeDescendant',np.array(arr_desc,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeFirstProgenitor',np.array(arr_1prog,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeNextProgenitor',np.array(arr_nextprog,dtype=np.int32))
                     append_create_dataset(grp1,'TreeID',data=arr_treeid)
-                    append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
-                    append_create_dataset(grp2,'Length',data=np.array([count]))
+                    append_create_dataset(grp1,'TreeIndex',data=np.array(arr_nodid,dtype=np.int32))
+                    append_create_dataset(grp2,'Length',data=np.array([count],dtype=np.int32))
                     append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
                     append_create_dataset(grp2,'TreeID',data=np.array([i]))
                     if 'Parameters' not in f:
@@ -182,13 +186,6 @@ def compute_tree(mass,
                         f['Parameters'].attrs['Omega0'] = omega_0
                         f['Parameters'].attrs['OmegaLambda'] = l_0
                         f['Parameters'].attrs['BoxSize'] = BoxSize
-                    grp = f.create_group('Header')
-                    grp.attrs['LastSnapShotNr'] = n_lev-1
-                    grp.attrs['Nhalos_ThisFile'] = count
-                    grp.attrs['Nhalos_Total'] = count
-                    grp.attrs['Ntrees_ThisFile'] = n_tree
-                    grp.attrs['Ntrees_Total'] = n_tree
-                    grp.attrs['NumFiles'] = 1
                 start_offset += count
     else:
         for i in range(n_tree):
@@ -201,6 +198,8 @@ def compute_tree(mass,
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
             else:
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling)
+            mass_arr += np.ndarray.tolist(arr_mhalo)
+            j_arr += np.ndarray.tolist(arr_time)
             if file_name!=None:
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file
@@ -216,39 +215,67 @@ def compute_tree(mass,
                     
                     if nth_run is False:
                         grp3 = f.create_group('TreeTimes')
-                        d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
-                        d_time= grp3.create_dataset('Time',data=a_lev)
+                        d_red = grp3.create_dataset('Redshift',data=1/a_lev[::-1]-1)
+                        d_time= grp3.create_dataset('Time',data=a_lev[::-1])
                     
-                    append_create_dataset(grp1,'SnapNum',arr_time)
-                    append_create_dataset(grp1,'SubhaloMass',data=arr_mhalo)
-                    append_create_dataset(grp1,'Group_MCrit_200',data=arr_GroupMass)
-                    append_create_dataset(grp1,'SubhaloPos',arr_pos)
-                    append_create_dataset(grp1,'SubhaloVelo',arr_velo)
-                    append_create_dataset(grp1,'SubhaloSpin',arr_spin)
-                    append_create_dataset(grp1,'SubhaloVmax',arr_Vmax)
-                    append_create_dataset(grp1,'SubhaloLen',arr_sublen)
-                    append_create_dataset(grp1,'TreeDescendant',arr_desc)
-                    append_create_dataset(grp1,'TreeFirstProgenitor',arr_1prog)
-                    append_create_dataset(grp1,'TreeNextProgenitor',arr_nextprog)
-                    append_create_dataset(grp1,'TreeFirstHaloInFOFgroup',arr_1FoF)
-                    append_create_dataset(grp1,'TreeNextHaloInFOFgroup',arr_nextFoF)
+                    append_create_dataset(grp1,'SnapNum',np.array(n_lev-1-arr_time,dtype=np.int32))
+                    append_create_dataset(grp1,'SubhaloMass',data=np.array(arr_mhalo/1e10,dtype=np.float32))
+                    append_create_dataset(grp1,'Group_M_Crit200',data=np.array(arr_GroupMass/1e10,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloPos',np.array(arr_pos,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloVelo',np.array(arr_velo,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloSpin',np.array(arr_spin,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloVmax',np.array(arr_Vmax,dtype=np.float32))
+                    append_create_dataset(grp1,'SubhaloLen',np.array(arr_sublen,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeDescendant',np.array(arr_desc,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeFirstProgenitor',np.array(arr_1prog,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeNextProgenitor',np.array(arr_nextprog,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeFirstHaloInFOFgroup',np.array(arr_1FoF,dtype=np.int32))
+                    append_create_dataset(grp1,'TreeNextHaloInFOFgroup',np.array(arr_nextFoF,dtype=np.int32))
+                    append_create_dataset(grp1,'SubhaloVelDisp',np.zeros(np.sum(count),dtype=np.float32))
                     append_create_dataset(grp1,'TreeID',data=arr_treeid)
-                    append_create_dataset(grp1,'TreeIndex',data=arr_nodid)
-                    append_create_dataset(grp2,'Length',data=np.array([count]))
+                    append_create_dataset(grp1,'TreeIndex',data=np.array(arr_nodid,dtype=np.int32))
+                    append_create_dataset(grp2,'Length',data=np.array([int(np.sum(count))],dtype=np.int32))
                     append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
                     append_create_dataset(grp2,'TreeID',data=np.array([i]))
                     if 'Parameters' not in f:
                         f.create_group('Parameters')
-                        f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
-                        f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
-                        f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
+                        f['Parameters'].attrs['HubbleParam'] = h_0
+                        f['Parameters'].attrs['Omega0'] = omega_0
+                        f['Parameters'].attrs['OmegaLambda'] = l_0
                         f['Parameters'].attrs['BoxSize'] = BoxSize
-                    grp = f.create_group('Header')
-                    grp.attrs['LastSnapShotNr'] = n_lev-1
-                    grp.attrs['Nhalos_ThisFile'] = count
-                    grp.attrs['Nhalos_Total'] = count
-                    grp.attrs['Ntrees_ThisFile'] = n_tree
-                    grp.attrs['Ntrees_Total'] = n_tree
-                    grp.attrs['NumFiles'] = 1
                 start_offset += sum(count)
-    return arr_mhalo,arr_time,1/a_lev-1
+    if file_name!=None:
+        with h5py.File(file_name,'a') as f:
+            grp = f.create_group('Header')
+            grp.attrs['LastSnapShotNr'] = np.int32(n_lev-1)
+            grp.attrs['Nhalos_ThisFile'] = start_offset
+            grp.attrs['Nhalos_Total'] = start_offset
+            grp.attrs['Ntrees_ThisFile'] = n_tree
+            grp.attrs['Ntrees_Total'] = n_tree
+            grp.attrs['NumFiles'] = np.int32(1)
+            if mode=='FoF':
+                grp1 = f['TreeHalos']
+                arr_SubhaloNr = np.zeros(start_offset,dtype='int_')
+                arr_MostBoundID = np.array([i for i in range(start_offset)],dtype=np.uint32)
+                SnapNum = f['TreeHalos/SnapNum'][:]
+                masses = f['TreeHalos/Group_M_Crit200'][:]
+                for i in range(n_lev-1,0,-1):
+                    indx_lev = np.where(SnapNum==i)[0]
+                    if len(indx_lev)!=0:
+                        mass_lev = masses[indx_lev]
+                        temp_arr = []
+                        m_temp = 0
+                        for indx,j in enumerate(indx_lev):
+                            if mass_lev[indx]>0:
+                                m_temp = mass_lev[indx]
+                                temp_arr.append([mass_lev[indx],j])
+                            else:
+                                temp_arr.append([m_temp,j])
+                        sorted(temp_arr,key = lambda x:x[0],reverse=True)
+                        c = 0
+                        for j in range(len(temp_arr)):
+                            arr_SubhaloNr[temp_arr[j][1]] = c
+                            c += 1
+                append_create_dataset(grp1,'SubhaloNr',arr_SubhaloNr)
+                append_create_dataset(grp1,'SubhaloIDMostbound',arr_MostBoundID)
+    return np.array(mass_arr),np.array(j_arr),1/a_lev-1

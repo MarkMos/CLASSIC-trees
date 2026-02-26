@@ -29,11 +29,11 @@ def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_
     i = np.array([i],dtype='int_')
 
     return {
-        'arr_mhalo': arr_mhalo,
+        'arr_mhalo': arr_mhalo/1e10,
         'arr_Vmax': arr_Vmax,
         'arr_nodid': arr_nodid,
         'arr_treeid': arr_treeid,
-        'arr_time': arr_time,
+        'arr_time': n_lev-1-arr_time,
         'arr_1prog': arr_1prog,
         'arr_desc': arr_desc,
         'arr_nextprog': arr_nextprog,
@@ -114,28 +114,28 @@ def parallel_exe(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo
         
         if nth_run is False:
             grp3 = f.create_group('TreeTimes')
-            d_red = grp3.create_dataset('Redshift',data=1/a_lev-1)
-            d_time= grp3.create_dataset('Time',data=a_lev)
+            d_red = grp3.create_dataset('Redshift',data=1/a_lev[::-1]-1)
+            d_time= grp3.create_dataset('Time',data=a_lev[::-1])
         if 'Parameters' not in f:
             f.create_group('Parameters')
-            f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
-            f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
-            f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
+            f['Parameters'].attrs['HubbleParam'] = h_0
+            f['Parameters'].attrs['Omega0'] = omega_0
+            f['Parameters'].attrs['OmegaLambda'] = l_0
             f['Parameters'].attrs['BoxSize'] = BoxSize
         for result in results:
-            append_create_dataset(grp1,'SnapNum',result['arr_time'])
-            append_create_dataset(grp1,'SubhaloMass',data=result['arr_mhalo'])
-            append_create_dataset(grp1,'SubhaloVmax',result['arr_Vmax'])
-            append_create_dataset(grp1,'TreeDescendant',result['arr_desc'])
-            append_create_dataset(grp1,'TreeFirstProgenitor',result['arr_1prog'])
-            append_create_dataset(grp1,'NextProgenitor',result['arr_nextprog'])
-            append_create_dataset(grp1,'SubhaloPos',result['arr_pos'])
-            append_create_dataset(grp1,'SubhaloVelo',result['arr_velo'])
-            append_create_dataset(grp1,'SubhaloSpin',result['arr_spin'])
-            append_create_dataset(grp1,'SubhaloLen',result['arr_sublen'])
+            append_create_dataset(grp1,'SnapNum',np.array(result['arr_time'],dtype=np.int32))
+            append_create_dataset(grp1,'SubhaloMass',data=np.array(result['arr_mhalo'],dtype=np.float32))
+            append_create_dataset(grp1,'SubhaloVmax',np.array(result['arr_Vmax'],dtype=np.float32))
+            append_create_dataset(grp1,'TreeDescendant',np.array(result['arr_desc'],dtype=np.int32))
+            append_create_dataset(grp1,'TreeFirstProgenitor',np.array(result['arr_1prog'],dtype=np.int32))
+            append_create_dataset(grp1,'TreeNextProgenitor',np.array(result['arr_nextprog'],dtype=np.int32))
+            append_create_dataset(grp1,'SubhaloPos',np.array(result['arr_pos'],dtype=np.float32))
+            append_create_dataset(grp1,'SubhaloVel',np.array(result['arr_velo'],dtype=np.float32))
+            append_create_dataset(grp1,'SubhaloSpin',np.array(result['arr_spin'],dtype=np.float32))
+            append_create_dataset(grp1,'SubhaloLen',np.array(result['arr_sublen'],dtype=np.int32))
             append_create_dataset(grp1,'TreeID',data=result['arr_treeid'])
-            append_create_dataset(grp1,'TreeIndex',data=result['arr_nodid'])
-            append_create_dataset(grp2,'Length',data=result['count'])
+            append_create_dataset(grp1,'TreeIndex',data=np.array(result['arr_nodid'],dtype=np.int32))
+            append_create_dataset(grp2,'Length',data=np.array([int(np.sum(result['count']))],dtype='int32'))
             append_create_dataset(grp2,'StartOffset',data=np.array([start_offset]))
             append_create_dataset(grp2,'TreeID',data=result['tree_index'])
             start_offset += result['count']
@@ -166,9 +166,9 @@ def parallel_exe_FoF(j,n_tree,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_
             d_time= grp3.create_dataset('Time',data=a_lev[::-1])
         if 'Parameters' not in f:
             f.create_group('Parameters')
-            f['Parameters'].attrs['HubbleParam'] = h_0 #0.6781
-            f['Parameters'].attrs['Omega0'] = omega_0 #0.30988304304812053
-            f['Parameters'].attrs['OmegaLambda'] = l_0 #0.6901169569518795
+            f['Parameters'].attrs['HubbleParam'] = h_0
+            f['Parameters'].attrs['Omega0'] = omega_0
+            f['Parameters'].attrs['OmegaLambda'] = l_0
             f['Parameters'].attrs['BoxSize'] = BoxSize
         for result in results:
             append_create_dataset(grp1,'SnapNum',np.array(result['arr_time'],dtype=np.int32))

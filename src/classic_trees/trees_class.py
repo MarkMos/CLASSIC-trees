@@ -203,7 +203,7 @@ class forest:
             filename: Name of the tree-file
         ----------------------
         Output:
-            hmf_bin     : Mass bins of the halos at redshift z
+            hmf_bin     : Mass bins of the halos at redshift z; masses in M_sun/h
             hmf_bin_edge: Corresponding bin edges
         '''
         if filename==None:
@@ -216,7 +216,7 @@ class forest:
         else:
             import h5py
             f = h5py.File(filename)
-            mass = f['TreeHalos/SubhaloMass'][:]
+            mass = f['TreeHalos/SubhaloMass'][:]*1e10
             time_level = f['TreeHalos/SnapNum'][:]
             z_arr = f['TreeTimes/Redshift'][:]
             z_level = np.where(z_arr==z)[0][0]
