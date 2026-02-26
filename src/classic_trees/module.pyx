@@ -1500,7 +1500,8 @@ def get_tree_vals_FoF(
     int n_frag_tot,
     double[:] pos_base,
     double[:] vel_base,
-    double scaling):
+    double scaling,
+    str random_mass):
     '''
     Function that builds the merger tree and returns the data that is needed for a later analysis.
     ---------------------
@@ -1573,27 +1574,29 @@ def get_tree_vals_FoF(
     # m_halo[0] = m_cen
 
     if n_halos>=1:
-        if n_halos>1:
-            ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_0-m_cen)
+        if n_halos>1 and random_mass=='ST':
+            ppf_HMF = random_masses(w_lev[0]).random_ST(m_res,m_0-m_cen)
+        elif n_halos>1 and random_mass=='PS':
+            ppf_HMF = random_masses(w_lev[0]).random_PS(m_res,m_0-m_cen)
         if n_halos==1:
             mass_sum = m_cen # m_halo[0]
-            ppf_ST = None
-
-        # Routine to get the rest of the masses for this FoF-group
-        while mass_sum>m_0 or mass_sum<0.7*m_0:
-            mass_temp = ppf_ST(np.random.rand(n_halos-1))
-            mass_sum = m_cen + np.sum(mass_temp)
-            c_halos += 1
-            if c_halos>1000:
-                print_level_4('Still in the masses drawing for the FoF-group with mass-fraction',mass_sum/m_0)
-                # m_halo[0] = m_cen_of_FoF(m_0)
-                # ppf_ST = random_masses(w_lev[0]).random_ST(m_res,m_0-m_halo[0])
-                n_halos -= 1
-                c_halos = 0
-                if n_halos==1:
-                    mass_sum = m_cen
-                if n_halos<=0:
-                    raise ValueError('Could not draw masses for subhalos in FoF-group!')
+            ppf_HMF = None
+        if n_halos>1:
+            # Routine to get the rest of the masses for this FoF-group
+            while mass_sum>m_0 or mass_sum<0.7*m_0:
+                mass_temp = ppf_HMF(np.random.rand(n_halos-1))
+                mass_sum = m_cen + np.sum(mass_temp)
+                c_halos += 1
+                if c_halos>1000:
+                    print_level_4('Still in the masses drawing for the FoF-group with mass-fraction',mass_sum/m_0)
+                    # m_halo[0] = m_cen_of_FoF(m_0)
+                    # ppf_HMF = random_masses(w_lev[0]).random_ST(m_res,m_0-m_halo[0])
+                    n_halos -= 1
+                    c_halos = 0
+                    if n_halos==1:
+                        mass_sum = m_cen
+                    if n_halos<=0:
+                        raise ValueError('Could not draw masses for subhalos in FoF-group!')
         m_halo = <double*>malloc((n_halos)*sizeof(double))
         m_halo[0] = m_cen
         if n_halos>1:
