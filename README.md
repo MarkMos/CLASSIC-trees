@@ -1,17 +1,20 @@
 # CLASSIC-trees
 
-#### !!!CLASSIC-trees is still undergoing development and tests. It is not ready for production yet!!!
-#### !!!This code is based on Parkinson, Cole and Helly 2008 MNRAS (383,557) (astro-ph/07081382)!!!
+#### !!!CLASSIC-trees is still undergoing development and tests. It is not yet ready for science use!!!
 
-A new code to generate dark matter halo merger trees directly from running CLASS, for use with semi-analytical galaxy modeling codes.
+The code is developed primarily by [Markus Braun](https://github.com/MarkusBraunPhys) under the supervision of Markus R. Mosbech.
 
-It combines the idea of a fast and user-friendly code with modern output format. CLASSIC-trees can be used to get synthetic dark matter halo merger trees for different cosmologies in a few hours.
+CLASSIC-trees is new public code to generate dark matter halo merger trees directly from running CLASS, for use with semi-analytical galaxy modeling codes, relying on a Monte-Carlo prescription rather than N-body simulations.
+
+CLASSIC-trees is written to be fast and user-friendly, with an easy-to-use Python interface, and integration with [CLASS](https://github.com/lesgourg/class_public) for computation of the background and linear cosmology.
+
+The code relies on the Monte Carlo method of producing halo merger trees presented by Parkinson, Cole, Helly, and the GALFORM Team, [2008 MNRAS (383,557)](https://academic.oup.com/mnras/article/383/2/557/993299) ([arXiv:0708.1382](https://arxiv.org/abs/0708.1382)), and extends it to capture more halo parameters and provide modern output format.
 
 Features of CLASSIC-trees:
-    
-* Easy to use
-* HDF5 output format as in GADGET4
-* Interface with CLASS for custom cosmologies
+* Easy to use Python interface
+* Merger tree output matching the Gadget-4 HDF5 Format
+* Computes all halo parameters, including subhalos, for use with modern semi-analytical galaxy model codes, such as [SAGE](https://github.com/sage-home/sage-model)
+* Support for custom linear matter power spectrum, as well as automatic computation with CLASS.
 
 ## Installation
 
@@ -22,13 +25,11 @@ CLASSIC-trees can be downloaded by cloning the GitHub repository:
 git clone https://github.com/MarkMos/CLASSIC-trees.git
 cd CLASSIC-trees
 ```
-
-and running the following line in the terminal:
+and installing from he local source code using `pip`:
 
 ```bash
 pip install .
 ```
 
 ## Working with CLASSIC-trees
-
-In the examples folder is a python file and a jupyter-notebook, to gain experience with the code.
+We provide several examples for running the code in the examples folder.
