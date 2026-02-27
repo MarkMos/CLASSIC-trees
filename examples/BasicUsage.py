@@ -3,8 +3,8 @@ This script gives you a first overview on how to generate merger-trees.
 '''
 import classic_trees as ct
 
-# create an instance of the class 'forest'
-merger_tree = ct.forest()
+# create an instance of the class 'Forest'
+merger_tree = ct.Forest()
 
 # set a cosmology and a Power-Spectrum
 merger_tree.set(pk_method='file',                      # one of two methods; here for speed a pre-computed Power-Spectrum, other method is directly running class to get it
@@ -19,7 +19,7 @@ merger_tree.set(pk_method='file',                      # one of two methods; her
 # compute one merger-tree with given parameters
 merger_tree.compute_serial(mass = 1e13,                 # mass of the halo today in M_sun/h
                            n_halo_max = 1000000,        # number of maximum halos that can be within a merger tree
-                           file_name = None,            # file_name; has to be set to .hdf5 which is the output-format in classic_trees
+                           file_name = None,            # file_name (optional); has to be set to .hdf5 which is the output-format in classic_trees
                            random_mass = None,          # random mass that can be drawn either from the Press-Schechter or Sheth-Torman approximation or neither for same mass trees; masses in M_sun/h
                            m_max = 1e16,                # maximum mass to draw masses from in M_sun/h
                            m_min = 1e11,                # minimum mass to draw masses from in M_sun/h
@@ -32,3 +32,21 @@ merger_tree.compute_serial(mass = 1e13,                 # mass of the halo today
                            z_max = 4,                   # redshift to which the tree is tracked
                            time_spacing = 'equal_a',    # spacing of the times between z = 0 and z = z_max; either equal in a or z, or a list of scale factors or redshifts that is custom
                            subhalos = True)             # mode of the algorithm; False means no substructure, True means substructure
+
+# compute ten merger-trees in parallel
+merger_tree.compute_parallel(mass = None,                             # not needed for drawn masses
+                           n_halo_max = 1000000,
+                           file_name = 'FirstTreeFile_parallel.hdf5', # file_name (mandatory); to be set to .hdf5 which is the output-format in classic_trees
+                           random_mass = 'ST',                        # masse drawn after Sheth-Tormen
+                           m_max = 1e16,
+                           m_min = 1e11,
+                           BoxSize = 479.0,
+                           n_steps = 10,
+                           m_res = 1e8,
+                           n_tree_per_batch = 5,                      # number of trees to be computed per batch
+                           n_batches = 2,                             # number of batches
+                           i_seed_0 = -8635,
+                           a_halo = 1,
+                           z_max = 4,
+                           time_spacing = 'equal_a',
+                           subhalos = True)

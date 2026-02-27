@@ -1,6 +1,6 @@
 import numpy as np
 
-class forest:
+class Forest:
     def __init__(self):
         self.pk_method = 'class'
         self.default = {'output':'mPk','P_k_max_h/Mpc':10000}
@@ -19,9 +19,29 @@ class forest:
         self.masses = None
         self.jlevels = None
         self.redshifts = None
-        self.factor = 1.0
-    def set(self,pk_method='class',cosmo_params=None,spin_factor = 1,
-            add_cosmo_params=None,file=None,h_units=True,verbose_level=0):
+        self.factor = 2.5e-3
+        
+    def set(self,pk_method='class',cosmo_params=None,
+            spin_factor = 2.5e-3,add_cosmo_params=None,
+            file=None,h_units=True,verbose_level=0):
+        '''
+        Function that sets the cosmological parameters and provides it 
+        for the cython file.
+        ----------------------
+        Input:
+            pk_method        : Method for receiving the Power-Spectrum;
+                               compute with CLASS per default ('class')
+                               or give CLASS-style Power-Spectrum
+                               ('file')
+            cosmo_params     : Cosmological parameters 'h', 'Omega_m'
+                               and 'Omega_Lambda'
+            spin_factor      : Scaling of the spin;
+                               set to newest GADGET4 value per default
+            add_cosmo_params : Additional cosmological parameters
+            file             : File containg Power-Spectrum (optional)
+            h_units          : Units of the code include 'h'
+            verbose_level    : Level of verbosity
+        '''
         if pk_method=='class':
             pk_method = self.pk_method
             file_name_pk = None
@@ -29,9 +49,11 @@ class forest:
             file_name_pk = file
             self.file_name_pk = file
         else:
-            raise KeyError('Choose one of the three options for pk_method:' \
+            raise KeyError(
+                'Choose one of the two options for pk_method:' \
                         '\n - class' \
-                        '\n - file')
+                        '\n - file'
+                        )
         if cosmo_params==None:
             cosmo_params = self.cosmo_params
         self.verbose = verbose_level
@@ -95,29 +117,42 @@ class forest:
                      time_spacing = 'equal_a',
                      subhalos=True):
         '''
-        Function to call the routines of classic_trees for huge numbers of trees to 
-        compute. Ideally to produce large merger tree files.
+        Function to call the routines of classic_trees for huge numbers
+        of trees to compute. Ideally to produce large merger tree files.
         ----------------------
         Input:
-            file_name        : Name of hdf5-file
-            random_mass      : Distribution to draw the mass of the base node(s) of merger tree(s); masses in M_sun/h
-            m_max            : Maximum mass for the random drawing of masses in M_sun/h
-            m_min            : Minimum mass for the random drawing of masses in M_sun/h
-            mass             : Mass of the base node of a merger tree (only if random_mass=None) in M_sun/h
+            file_name        : Name of hdf5-file (mandatory)
+            random_mass      : Distribution to draw the mass of the base
+                               node(s) of merger tree(s); 
+                               masses in M_sun/h
+            m_max            : Maximum mass for the random drawing of 
+                               masses in M_sun/h
+            m_min            : Minimum mass for the random drawing of 
+                               masses in M_sun/h
+            mass             : Mass of the base node of a merger tree 
+                               (only if random_mass=None) in M_sun/h
             BoxSize          : Size of the volume in (Mpc/h)^3
-            n_tree_per_batch : Number of trees that are computed in one Pool
+            n_tree_per_batch : Number of trees that are computed in one
+                               Pool
             i_seed_0         : Used for seed to generate random numbers
-            a_halo           : Value of scale factor today (default) or up to which time the tree is calculated
-            m_res            : Mass resolution limit; minimum mass in M_sun/h
+            a_halo           : Value of scale factor today (default) or
+                               up to which time the tree is calculated
+            m_res            : Mass resolution limit;
+                               minimum mass in M_sun/h
             z_max            : Maximum redshift for lookback
             n_steps          : Number of timesteps
-            n_halo_max       : Maximum number of nodes per tree; used for preallocation 
+            n_halo_max       : Maximum number of nodes per tree; used 
+                               for preallocation 
             n_batches        : Number of runs of a Pool
-            time_spacing     : Either equally spaced times in z or a, or a custom array of z or a
-            subhalos         : Defining the usage of the merger tree with or without substructure; True with and False without.
+            time_spacing     : Either equally spaced times in z or a, 
+                               or a custom array of z or a
+            subhalos         : Defining the usage of the merger tree 
+                               with or without substructure;
+                               True with and False without.
         ----------------------
         Output:
-            hdf5-file with values of random or constant mass merger trees
+            hdf5-file with values of random or constant mass merger 
+            trees; output format like GADGET4
         '''
         n_halo = 1 # Start of counter of nodes inside the tree(s)
         scaling = 0.3
@@ -133,8 +168,29 @@ class forest:
         else:
             mode = 'Normal'
         from .parallel import compute_tree_parallel
-        compute_tree_parallel(random_mass,mass,file_name,omega_0,l_0,h_0,BoxSize,n_tree_per_batch,i_seed_0,
-                          a_halo,m_res,m_min,m_max,z_max,n_steps,n_halo_max,n_halo,n_batches,time_spacing,mode,scaling,verbose)
+        compute_tree_parallel(random_mass,
+                              mass,
+                              file_name,
+                              omega_0,
+                              l_0,
+                              h_0,
+                              BoxSize,
+                              n_tree_per_batch,
+                              i_seed_0,
+                              a_halo,
+                              m_res,
+                              m_min,
+                              m_max,
+                              z_max,
+                              n_steps,
+                              n_halo_max,
+                              n_halo,
+                              n_batches,
+                              time_spacing,
+                              mode,
+                              scaling,
+                              verbose
+                              )
     def compute_serial(self,
                      mass = None,
                      n_halo_max = 1000000,
@@ -152,28 +208,41 @@ class forest:
                      time_spacing = 'equal_a',
                      subhalos = True):
         '''
-        Function to call the routines of classic_trees for small numbers of trees to 
-        compute. Ideally to see what different starting values yield.
+        Function to call the routines of classic_trees for small 
+        numbers of trees to compute. Ideally to see what different
+        starting values yield.
         ----------------------
         Input:
-            mass         : Mass of the base node of a merger tree (only if random_mass=None) in M_sun/h
-            n_halo_max   : Maximum number of nodes per tree; used for preallocation 
+            mass         : Mass of the base node of a merger tree (only
+                           if random_mass=None) in M_sun/h
+            n_halo_max   : Maximum number of nodes per tree; used for
+                           preallocation 
             file_name    : Name of hdf5-file (optional)
-            random_mass  : Distribution to draw the mass of the base node(s) of merger tree(s); masses in M_sun/h
-            m_max        : Maximum mass for the random drawing of masses in M_sun/h
-            m_min        : Minimum mass for the random drawing of masses in M_sun/h
+            random_mass  : Distribution to draw the mass of the base 
+                           node(s) of merger tree(s); masses in M_sun/h
+            m_max        : Maximum mass for the random drawing of 
+                           masses in M_sun/h
+            m_min        : Minimum mass for the random drawing of 
+                           masses in M_sun/h
             BoxSize      : Size of the volume in (Mpc/h)^3
             n_steps      : Number of timesteps
-            m_res        : Mass resolution limit; minimum mass in M_sun/h
+            m_res        : Mass resolution limit;
+                           minimum mass in M_sun/h
             n_tree       : Number of trees that are computed
             i_seed_0     : Used for seed to generate random numbers
-            a_halo       : Value of scale factor today (default) or up to which time the tree is calculated
+            a_halo       : Value of scale factor today (default) or up
+                           to which time the tree is calculated
             z_max        : Maximum redshift for lookback
-            time_spacing : Either equally spaced times in z or a, or a custom array of z or a
-            subhalos     : Defining the usage of the merger tree with or without substructure; True with and False without.
+            time_spacing : Either equally spaced times in z or a, 
+                           or a custom array of z or a
+            subhalos     : Defining the usage of the merger tree with
+                           or without substructure; 
+                           True with and False without.
         ----------------------
         Output:
-            hdf5-file if file_name is not None
+            hdf5-file if file_name is not None; if not None, with values
+            of random or constant mass merger trees;
+            output format like GADGET4
         '''
         n_halo = 1 # Start of counter of nodes inside the tree(s)
         scaling = 0.3
@@ -189,8 +258,29 @@ class forest:
         else:
             mode = 'Normal'
         from .serial import compute_tree
-        self.masses,self.jlevels,self.redshifts = compute_tree(mass,n_halo_max,random_mass,file_name,omega_0,l_0,h_0,BoxSize,n_steps,m_res,
-                     m_min,m_max,n_tree,n_halo,i_seed_0,a_halo,z_max,time_spacing,mode,scaling,verbose)
+        self.masses,self.jlevels,self.redshifts = compute_tree(
+                                                    mass,
+                                                    n_halo_max,
+                                                    random_mass,
+                                                    file_name,
+                                                    omega_0,
+                                                    l_0,
+                                                    h_0,
+                                                    BoxSize,
+                                                    n_steps,
+                                                    m_res,
+                                                    m_min,
+                                                    m_max,
+                                                    n_tree,
+                                                    n_halo,
+                                                    i_seed_0,
+                                                    a_halo,
+                                                    z_max,
+                                                    time_spacing,
+                                                    mode,
+                                                    scaling,
+                                                    verbose
+                                                    )
         
     def hmf_at_z(self,z,n_bins=50,filename=None):
         '''
@@ -198,12 +288,14 @@ class forest:
         IMPORTANT: Only use z that you gave as an input!
         ----------------------
         Input:
-            z       : Redshift to extract information for the halo mass function
+            z       : Redshift to extract information for the halo mass
+                      function
             n_bins  : Number of bins for the mass histogramm
             filename: Name of the tree-file
         ----------------------
         Output:
-            hmf_bin     : Mass bins of the halos at redshift z; masses in M_sun/h
+            hmf_bin     : Mass bins of the halos at redshift z;
+                          masses in M_sun/h
             hmf_bin_edge: Corresponding bin edges
         '''
         if filename==None:
