@@ -1,5 +1,5 @@
 '''
-This script gives you a first overview on how to generate a merger-tree.
+This script gives you a first overview on how to generate merger-trees.
 '''
 import classic_trees as ct
 
@@ -16,7 +16,7 @@ merger_tree.set(pk_method='file',                      # one of two methods; her
                 verbose_level=4,                       # level of verbosity, here set to 1 to see some basic output of the code
                 spin_factor=1e-3)                      # Factor to adjust the placement of the spins absolute value         
 
-# compute merger-tree with given parameters
+# compute one merger-tree with given parameters
 merger_tree.compute_serial(mass = 1e13,                 # mass of the halo today in M_sun/h
                            n_halo_max = 1000000,        # number of maximum halos that can be within a merger tree
                            file_name = None,            # file_name; has to be set to .hdf5 which is the output-format in classic_trees
