@@ -19,13 +19,13 @@ Features of CLASSIC-trees:
 ## Installation
 
 ### Downloading
-CLASSIC-trees can be downloaded by cloning the GitHub repository:
+CLASSIC-trees can be downloaded by cloning the GitHub repository,
 
 ```bash
 git clone https://github.com/MarkMos/CLASSIC-trees.git
 cd CLASSIC-trees
 ```
-and installing from he local source code using `pip`:
+and installing from the local source code using `pip`,
 
 ```bash
 pip install .
