@@ -1476,10 +1476,14 @@ def get_tree_vals(
     
     print_level_1('Example information from tree:')
     this_node = merger_tree[0]
-    print_level_1('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    m_help = this_node.mhalo
+    z_help = 1/a_lev[this_node.jlevel]-1
+    print_level_1('Base node: \n  mass = %1.7e'%m_help,' z= %1.7f'%z_help,' number of progenitors ',this_node.nchild)
     if count>1:
         this_node = this_node.child
-        print_level_1('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+        m_help = this_node.mhalo
+        z_help = 1/a_lev[this_node.jlevel]-1
+        print_level_1('First progenitor: \n  mass = %1.7e'%m_help,' z= %1.7f'%z_help)
     else:
         print_level_1('No Progenitors.')
     free_trees(merger_tree,n_frag_tot+1)
@@ -1554,10 +1558,14 @@ def get_tree_vals_FoF(
 
     print_level_1('Example information from FoF-group tree:')
     this_node = merger_tree_FoF[0]
-    print_level_1('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    m_help = this_node.mhalo
+    z_help = 1/a_lev[this_node.jlevel]-1
+    print_level_1('Base node: \n  mass = %1.7e'%m_help,' z= %1.3f'%z_help,' number of progenitors ',this_node.nchild)
     if count>1:
         this_node = this_node.child
-        print_level_1('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+        m_help = this_node.mhalo
+        z_help = 1/a_lev[this_node.jlevel]-1
+        print_level_1('First progenitor: \n  mass = %1.7e'%m_help,' z= %1.3f'%z_help)
     else:
         print_level_1('No Progenitors.')
     
@@ -1839,10 +1847,14 @@ def get_tree_vals_FoF(
 
     print_level_3('Example information from FoF-group-tree',i+1,' subhalo-tree:')
     this_node = merger_tree_subs[0]
-    print_level_3('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+    m_help = this_node.mhalo
+    z_help = 1/a_lev[this_node.jlevel]-1
+    print_level_3('Base node: \n  mass = %1.7e'%m_help,' z= %1.3f'%z_help,' number of progenitors ',this_node.nchild)
     if arr_count[0]>1:
+        m_help = this_node.mhalo
+        z_help = 1/a_lev[this_node.jlevel]-1
         this_node = this_node.child
-        print_level_3('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+        print_level_3('First progenitor: \n  mass = %1.7e'%m_help,' z= %1.3f'%z_help)
     else:
         print_level_3('No Progenitors.')
     if len(arr_count)>1:
@@ -1850,10 +1862,14 @@ def get_tree_vals_FoF(
 
         print_level_3('Example information from FoF-group',i+1,' subhalo-tree:')
         this_node = merger_tree_subs[n_offset_arr[0]]
-        print_level_3('Base node: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1,' number of progenitors ',this_node.nchild)
+        m_help = this_node.mhalo
+        z_help = 1/a_lev[this_node.jlevel]-1
+        print_level_3('Base node: \n  mass = %1.7e'%m_help,' z= %1.3f'%z_help,' number of progenitors ',this_node.nchild)
         if this_node.nchild>0:
             this_node = this_node.child
-            print_level_3('First progenitor: \n  mass =',this_node.mhalo,' z= ',1/a_lev[this_node.jlevel]-1)
+            m_help = this_node.mhalo
+            z_help = 1/a_lev[this_node.jlevel]-1
+            print_level_3('First progenitor: \n  mass = %1.7e'%m_help,' z= %1.3f'%z_help)
         else:
             print_level_3('No Progenitors.')
     free(m_halo)

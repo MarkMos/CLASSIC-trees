@@ -261,7 +261,7 @@ def compute_tree_parallel(random_mass,
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
             if verbose>0:
-                print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+                print('z = %1.3f'%(1/a_lev[i_lev]-1),' at which delta_crit = %1.3f'%d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
     elif type(times)==str and times=='equal_a':
@@ -271,7 +271,7 @@ def compute_tree_parallel(random_mass,
             d_c = DELTA.delta_crit(a_lev[i_lev])
             w_lev.append(d_c)
             if verbose>0:
-                print('z = ',1/a_lev[i_lev]-1,' at which delta_crit = ',d_c)
+                print('z = %1.3f'%(1/a_lev[i_lev]-1),' at which delta_crit = %1.3f'%d_c)
         a_lev = np.array(a_lev)
         w_lev = np.array(w_lev)
     elif type(times)!=str and len(times)>1:
@@ -285,7 +285,7 @@ def compute_tree_parallel(random_mass,
                 d_c = DELTA.delta_crit(a_temp)
                 w_lev.append(d_c)
                 if verbose>0:
-                    print('z = ',1/a_temp-1,' at which delta_crit = ',d_c)
+                    print('z = %1.3f'%(1/a_temp-1),' at which delta_crit = %1.3f'%d_c)
             a_lev = np.array(a_lev)
             w_lev = np.array(w_lev)
         else:
@@ -295,7 +295,7 @@ def compute_tree_parallel(random_mass,
                 d_c = DELTA.delta_crit(a)
                 w_lev.append(d_c)
                 if verbose>0:
-                    print('z = ',1/a-1,' at which delta_crit = ',d_c)
+                    print('z = %1.3f'%(1/a-1),' at which delta_crit = %1.3f'%d_c)
             a_lev = np.array(a_lev)
             w_lev = np.array(w_lev)
     a_lev = np.array(a_lev)
