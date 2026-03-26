@@ -62,7 +62,7 @@ class Forest:
         if file_name_pk==None:
             from classy import Class
             if verbose_level>0:
-                print('Now calculating Power-Spectrum in class.')
+                print('Now calculating power spectrum in class.')
 
             z = np.array([0],dtype='float64')
             N_k = 1000
