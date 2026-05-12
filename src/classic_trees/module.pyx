@@ -255,7 +255,7 @@ cdef double halo_Vmax(double mass, double a):
     z = 1/a - 1
     E_z = sqrt(l_0 + omega_0*(1+z)**3)
     val = beta*((mass/1e12)*E_z)**alpha
-    return np.random.lognormal(np.log(val),0.3*(mass/1e8)**(-0.1))
+    return np.random.lognormal(np.log(val),0.25*(mass/1e8)**(-0.1))*15
     # return val + random.gauss(0,0.1)*val
 
 cdef int SubhaloLen(double m,double m_res):
@@ -1648,88 +1648,96 @@ def get_tree_vals_FoF(
             merger_tree_subs[c].index = c
             c += 1
     print_level_4('It worked',c)
+    cdef np.ndarray temp_indices
 
-    # lev_indx_FoF =np.zeros(n_lev,dtype=object)
-    # cdef int levcounter_FoF = 0
-    # cdef int tempcounter
-    # cdef int max_level_FoF = 0
-    # for level in range(n_lev):
-    #     temp_indices = np.zeros(count,dtype=int)
-    #     tempcounter = 0
-    #     for j in range(count):
-    #         if merger_tree_FoF[j].jlevel==level:
-    #             max_level_FoF = level + 1
-    #             temp_indices[tempcounter] = j
-    #             tempcounter += 1
-    #     if tempcounter !=0:
-    #         lev_indx_FoF[levcounter_FoF] = np.copy(temp_indices[0:tempcounter])
-    #         levcounter_FoF += 1    
-    # lev_indx_FoF = np.copy(lev_indx_FoF[0:levcounter_FoF])
-    lev_indx_FoF_list = []
+    cdef np.ndarray lev_indx_FoF =np.zeros(n_lev,dtype=object)
+    cdef int levcounter_FoF = 0
+    cdef int tempcounter
+    cdef int max_level_FoF = 0
     for level in range(n_lev):
-        temp_indx = []
+        temp_indices = np.zeros(count,dtype=int)
+        tempcounter = 0
         for j in range(count):
             if merger_tree_FoF[j].jlevel==level:
-                temp_indx.append(j)
-        if len(temp_indx)!=0:
-            lev_indx_FoF_list.append(temp_indx)
-    cdef list lev_indx_FoF = lev_indx_FoF_list
-
-    # lev_indx_subs =np.zeros(n_lev,dtype=object)
-    # cdef int levcounter_subs = 0
-    # tempcounter = 0
-    # cdef max_level_subs = 0
+                max_level_FoF = level + 1
+                temp_indices[tempcounter] = j
+                tempcounter += 1
+        if tempcounter !=0:
+            lev_indx_FoF[levcounter_FoF] = np.copy(temp_indices[0:tempcounter])
+            levcounter_FoF += 1    
+    lev_indx_FoF = np.copy(lev_indx_FoF[0:levcounter_FoF])
+    # lev_indx_FoF_list = []
     # for level in range(n_lev):
-    #     temp_indices = np.zeros(n_offset_sum,dtype=int)
-    #     tempcounter = 0
-    #     for j in range(n_offset_sum):
-    #        if merger_tree_subs[j].jlevel==level:
-    #             max_level_subs = level + 1
-    #             temp_indices[tempcounter] = j
-    #             tempcounter += 1
-    #     if tempcounter !=0:
-    #         lev_indx_subs[levcounter_subs] = np.copy(temp_indices[0:tempcounter])
-    #         levcounter_subs += 1
-    # lev_indx_subs = np.copy(lev_indx_subs[0:levcounter_subs])
+    #     temp_indx = []
+    #     for j in range(count):
+    #         if merger_tree_FoF[j].jlevel==level:
+    #             temp_indx.append(j)
+    #     if len(temp_indx)!=0:
+    #         lev_indx_FoF_list.append(temp_indx)
+    # cdef list lev_indx_FoF = lev_indx_FoF_list
 
-    lev_indx_subs_list = []
+    cdef np.ndarray lev_indx_subs =np.zeros(n_lev,dtype=object)
+    cdef int levcounter_subs = 0
+    tempcounter = 0
+    cdef int max_level_subs = 0
     for level in range(n_lev):
-        temp_indx = []
+        temp_indices = np.zeros(n_offset_sum,dtype=int)
+        tempcounter = 0
         for j in range(n_offset_sum):
-            if merger_tree_subs[j].jlevel==level:
-                temp_indx.append(j)
-        if len(temp_indx)!=0:
-            lev_indx_subs_list.append(temp_indx)
-    cdef list lev_indx_subs = lev_indx_subs_list
-    if not isinstance(lev_indx_subs, list):
-        print("DEBUG: lev_indx_subs is", type(lev_indx_subs), repr(lev_indx_subs))
-        return None  # or raise ValueError
-    cdef Py_ssize_t n_levels = len(lev_indx_subs)
+           if merger_tree_subs[j].jlevel==level:
+                max_level_subs = level + 1
+                temp_indices[tempcounter] = j
+                tempcounter += 1
+        if tempcounter !=0:
+            lev_indx_subs[levcounter_subs] = np.copy(temp_indices[0:tempcounter])
+            levcounter_subs += 1
+    lev_indx_subs = np.copy(lev_indx_subs[0:levcounter_subs])
+
+    # lev_indx_subs_list = []
+    # for level in range(n_lev):
+    #     temp_indx = []
+    #     for j in range(n_offset_sum):
+    #         if merger_tree_subs[j].jlevel==level:
+    #             temp_indx.append(j)
+    #     if len(temp_indx)!=0:
+    #         lev_indx_subs_list.append(temp_indx)
+    # cdef list lev_indx_subs = lev_indx_subs_list
+    # if not isinstance(lev_indx_subs, list):
+    #     print("DEBUG: lev_indx_subs is", type(lev_indx_subs), repr(lev_indx_subs))
+    #     return None  # or raise ValueError
+    # cdef Py_ssize_t n_levels = len(lev_indx_subs)
 
     cdef double m_group, m_max_subs, m_sum, m_temp, m_sum_FoF, m
-    cdef int ind_subs, ind_max_subs, n_range
+    cdef int ind_subs, ind_max_subs, n_range, n_subs, n_fof
+    cdef np.ndarray subs_level, fof_level
 
-    arr_GroupMass = np.zeros(n_offset_sum)
-    fra = np.zeros(n_offset_sum)
+    cdef np.ndarray arr_GroupMass = np.zeros(n_offset_sum)
+    # fra = np.zeros(n_offset_sum)
 
     cdef int n_lev_actual = int(min2(len(lev_indx_FoF),len(lev_indx_subs)))
     # cdef int n_lev_actual = int(min2(max_level_FoF,max_level_subs))
-    indx_already_assigned = []
+    # indx_already_assigned = []
 
     for level in range(n_lev_actual):
         print_level_5(level)
-        if len(lev_indx_FoF[level])==1 or len(lev_indx_subs[level])==1:
+        fof_level = lev_indx_FoF[level]
+        subs_level = lev_indx_subs[level]
+        n_fof = len(fof_level)
+        n_subs = len(subs_level)
+        if n_fof==1 or n_subs==1:
             ind_max_subs = -1
             m_max_subs = 0.0
-            if len(lev_indx_FoF[level])==1:
-                m_group = merger_tree_FoF[lev_indx_FoF[level][0]].mhalo
+            if n_fof==1:
+                m_group = merger_tree_FoF[fof_level[0]].mhalo
             else:
-                m_group = np.sum([merger_tree_FoF[j].mhalo for j in lev_indx_FoF[level]])
+                m_group = 0.0
+                for j in fof_level:
+                    m_group += merger_tree_FoF[j].mhalo
             if level==0:
                 n_range = n_halos
             else:
                 n_range = n_subs_in_FoF(m_group)
-            for ind_subs in lev_indx_subs[level]:
+            for ind_subs in subs_level:
                 print_level_5(ind_subs)
                 if m_max_subs<merger_tree_subs[ind_subs].mhalo and merger_tree_subs[ind_subs].mhalo<=m_group:
                     m_max_subs = merger_tree_subs[ind_subs].mhalo
@@ -1737,59 +1745,60 @@ def get_tree_vals_FoF(
             print_level_5(ind_max_subs)
             m_max_subs = 0.0
             if ind_max_subs==-1:
-                #print('Early Warning 0: No subhalo found for this FoF-group! Check the code for errors! At level',level,'with FoF-group mass',m_group,'vs. Subhalo mass',merger_tree_subs[lev_indx_subs[level][0]].mhalo,' and indices of subhalos ',lev_indx_subs[level])
-                if len(lev_indx_subs[level])==1:
-                    ind_max_subs = lev_indx_subs[level][0]
+                #print('Early Warning 0: No subhalo found for this FoF-group! Check the code for errors! At level',level,'with FoF-group mass',m_group,'vs. Subhalo mass',merger_tree_subs[subs_level[0]].mhalo,' and indices of subhalos ',subs_level)
+                if n_subs==1:
+                    ind_max_subs = subs_level[0]
                     m_max_subs = merger_tree_subs[ind_max_subs].mhalo
-                    merger_tree_FoF[lev_indx_FoF[level][0]].mhalo = m_max_subs*1.5
+                    merger_tree_FoF[fof_level[0]].mhalo = m_max_subs*1.5
                 else:
                     while ind_max_subs==-1:
                         m_max_subs = 0.0
                         if m_group>1e15:
                             print('Mass of FoF-group is larger than 1e15 M_sun/h! Check the code for errors!')
-                        for ind_subs in lev_indx_subs[level]:
+                        for ind_subs in subs_level:
                             if merger_tree_subs[ind_subs].mhalo>m_max_subs:
                                 m_max_subs = merger_tree_subs[ind_subs].mhalo
                                 ind_max_subs = ind_subs
-                        merger_tree_FoF[lev_indx_FoF[level][0]].mhalo = m_max_subs*1.5
-                        m_group = merger_tree_FoF[lev_indx_FoF[level][0]].mhalo
+                        merger_tree_FoF[fof_level[0]].mhalo = m_max_subs*1.5
+                        m_group = merger_tree_FoF[fof_level[0]].mhalo
             merger_tree_subs[ind_max_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
             arr_GroupMass[ind_max_subs] = m_group
-            fra[ind_max_subs] = m_max_subs/m_group
-            if fra[ind_max_subs]>1.0:
-                print_level_5('Early Warning 1: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
+            # fra[ind_max_subs] = m_max_subs/m_group
+            # if fra[ind_max_subs]>1.0:
+            #     print_level_5('Early Warning 1: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
             if merger_tree_subs[ind_max_subs].jlevel!=0:
                 for j in range(3):
-                    merger_tree_subs[ind_max_subs].pos[j] = merger_tree_FoF[lev_indx_FoF[level][0]].pos[j]
-                    merger_tree_subs[ind_max_subs].velo[j] = merger_tree_FoF[lev_indx_FoF[level][0]].velo[j]
+                    merger_tree_subs[ind_max_subs].pos[j] = merger_tree_FoF[fof_level[0]].pos[j]
+                    merger_tree_subs[ind_max_subs].velo[j] = merger_tree_FoF[fof_level[0]].velo[j]
             print_level_5('After Position and Velocity assignment.')
             c = 0
             m_sum = 0.0
             m_temp = 0.0
             same_ind_max = []
-            for ind_subs in lev_indx_subs[level]:
+            for ind_subs in subs_level:
                 m_temp = merger_tree_subs[ind_subs].mhalo
                 if c<n_range and m_sum+m_temp<=m_group:
                     if ind_subs==ind_max_subs:
                         m_sum += merger_tree_subs[ind_subs].mhalo
                         c += 1
-                        indx_already_assigned.append(ind_subs)
-                    elif ind_subs!=ind_max_subs and ind_subs not in indx_already_assigned:
+                        # indx_already_assigned.append(ind_subs)
+                    elif ind_subs!=ind_max_subs:# and ind_subs not in indx_already_assigned:
                         m_sum += merger_tree_subs[ind_subs].mhalo
                         c += 1
                         merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
                         arr_GroupMass[ind_subs] = 0.0
-                        fra[ind_subs] = 0.0
+                        # fra[ind_subs] = 0.0
                         same_ind_max.append(ind_subs)
-                        indx_already_assigned.append(ind_subs)
-                elif ind_subs not in indx_already_assigned:
+                        # indx_already_assigned.append(ind_subs)
+                else:
+                    # elif ind_subs not in indx_already_assigned:
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
-                    fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/arr_GroupMass[ind_subs]
-                    if fra[ind_subs]>1.0:
-                        print_level_5('Early Warning 2: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
+                    # fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/arr_GroupMass[ind_subs]
+                    # if fra[ind_subs]>1.0:
+                    #     print_level_5('Early Warning 2: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                     merger_tree_subs[ind_subs].NextInFoF = NULL
-                    indx_already_assigned.append(ind_subs)
+                    # indx_already_assigned.append(ind_subs)
             print_level_5('After assigning the FirstInFoF.')
             for ind_subs in same_ind_max:
                 if merger_tree_subs[ind_max_subs].NextInFoF==NULL:
@@ -1801,18 +1810,18 @@ def get_tree_vals_FoF(
             if same_ind_max==[]:
                 id_save = ind_max_subs
             merger_tree_subs[id_save].NextInFoF = NULL
-        elif len(lev_indx_FoF[level])>1 and len(lev_indx_FoF[level])>len(lev_indx_subs[level]) and len(lev_indx_subs[level])==1:
-            ind_subs = lev_indx_subs[level][0]
+        elif n_fof>1 and n_fof>n_subs and n_subs==1:
+            ind_subs = subs_level[0]
             merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
             merger_tree_subs[ind_subs].NextInFoF = NULL
             arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
 
-        elif len(lev_indx_FoF[level])>1 and len(lev_indx_FoF[level])>len(lev_indx_subs[level]) and len(lev_indx_subs[level])>1:
+        elif n_fof>1 and n_fof>n_subs:
             ms_group = []
             count_list = []
             m_sum_list = []
             n_range_list = []
-            for j in lev_indx_FoF[level][:len(lev_indx_subs[level])]:
+            for j in fof_level[:n_subs]:
                 ms_group.append(merger_tree_FoF[j].mhalo)
                 count_list.append(0)
                 m_sum_list.append(0.0)
@@ -1826,44 +1835,44 @@ def get_tree_vals_FoF(
                 ind_max_subs = -1
                 m_group = m
                 m_max_subs = 0.0
-                for ind_subs in lev_indx_subs[level]:
+                for ind_subs in subs_level:
                     if m_max_subs<merger_tree_subs[ind_subs].mhalo and merger_tree_subs[ind_subs].mhalo<=m_group and (ind_subs not in ind_max_subs_list):
                         m_max_subs = merger_tree_subs[ind_subs].mhalo
                         ind_max_subs = ind_subs
                 if ind_max_subs==-1:
-                    #print('Early Warning 1: No subhalo found for this FoF-group! Check the code for errors! At level',level,'with FoF-group mass',m_group,'vs. Subhalo mass',merger_tree_subs[lev_indx_subs[level][0]].mhalo,' and indices of subhalos ',lev_indx_subs[level])
-                    if len(lev_indx_subs[level])==2 and len(ind_max_subs_list)!=2:
-                        ind_max_subs = lev_indx_subs[level][1]
+                    #print('Early Warning 1: No subhalo found for this FoF-group! Check the code for errors! At level',level,'with FoF-group mass',m_group,'vs. Subhalo mass',merger_tree_subs[subs_level[0]].mhalo,' and indices of subhalos ',subs_level)
+                    if n_subs==2 and len(ind_max_subs_list)!=2:
+                        ind_max_subs = subs_level[1]
                         m_max_subs = merger_tree_subs[ind_max_subs].mhalo
-                        merger_tree_FoF[lev_indx_FoF[level][j]].mhalo = m_max_subs*1.5
-                        ms_group[j] = merger_tree_FoF[lev_indx_FoF[level][j]].mhalo
-                    elif len(lev_indx_subs[level])>2 and len(ind_max_subs_list)!=len(lev_indx_subs[level]) and -1 not in ind_max_subs_list:
+                        merger_tree_FoF[fof_level[j]].mhalo = m_max_subs*1.5
+                        ms_group[j] = merger_tree_FoF[fof_level[j]].mhalo
+                    elif n_subs>2 and len(ind_max_subs_list)!=n_subs and -1 not in ind_max_subs_list:
                         counter_here = 0
                         while ind_max_subs==-1:
                             m_max_subs = 0.0
                             counter_here += 1
                             if counter_here>1000:
-                                print('Still in the loop for finding the max subhalo for FoF-group with mass',m_group,' at level ',level,'and indices of subhalos ',lev_indx_subs[level],'and ind_max_subs_list ',ind_max_subs_list)
-                                for ind_subs in lev_indx_subs[level]:
+                                print('Still in the loop for finding the max subhalo for FoF-group with mass',m_group,' at level ',level,'and indices of subhalos ',subs_level,'and ind_max_subs_list ',ind_max_subs_list)
+                                for ind_subs in subs_level:
                                     print('Subhalo index ',ind_subs,' with mass ',merger_tree_subs[ind_subs].mhalo)
                             if m_group>1e15:
                                 print('Mass of FoF-group is larger than 1e15 M_sun/h! Check the code for errors!2')
-                            for ind_subs in lev_indx_subs[level]:
+                            for ind_subs in subs_level:
                                 if merger_tree_subs[ind_subs].mhalo>m_max_subs and (ind_subs not in ind_max_subs_list):
                                     m_max_subs = merger_tree_subs[ind_subs].mhalo
                                     ind_max_subs = ind_subs
-                            merger_tree_FoF[lev_indx_FoF[level][j]].mhalo = m_max_subs*1.5
-                            ms_group[j] = merger_tree_FoF[lev_indx_FoF[level][j]].mhalo
+                            merger_tree_FoF[fof_level[j]].mhalo = m_max_subs*1.5
+                            ms_group[j] = merger_tree_FoF[fof_level[j]].mhalo
             for j,ind_subs in enumerate(ind_max_subs_list):
                 merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                 merger_tree_subs[ind_subs].NextInFoF = NULL
                 arr_GroupMass[ind_subs] = ms_group[j]
-        elif len(lev_indx_FoF[level])>1 and len(lev_indx_FoF[level])<=len(lev_indx_subs[level]):
+        elif n_fof>1 and n_fof<=n_subs:
             ms_group = []
             count_list = []
             m_sum_list = []
             n_range_list = []
-            for j in lev_indx_FoF[level]:
+            for j in fof_level:
                 ms_group.append(merger_tree_FoF[j].mhalo)
                 count_list.append(0)
                 m_sum_list.append(0.0)
@@ -1877,35 +1886,35 @@ def get_tree_vals_FoF(
                 ind_max_subs = -1
                 m_group = m
                 m_max_subs = 0.0
-                for ind_subs in lev_indx_subs[level]:
+                for ind_subs in subs_level:
                     if m_max_subs<merger_tree_subs[ind_subs].mhalo and merger_tree_subs[ind_subs].mhalo<=m_group and (ind_subs not in ind_max_subs_list):
                         m_max_subs = merger_tree_subs[ind_subs].mhalo
                         ind_max_subs = ind_subs
                 if ind_max_subs==-1:
-                    #print('Early Warning 1: No subhalo found for this FoF-group! Check the code for errors! At level',level,'with FoF-group mass',m_group,'vs. Subhalo mass',merger_tree_subs[lev_indx_subs[level][0]].mhalo,' and indices of subhalos ',lev_indx_subs[level])
-                    if len(lev_indx_subs[level])==2 and len(ind_max_subs_list)!=2:
-                        ind_max_subs = lev_indx_subs[level][1]
+                    #print('Early Warning 1: No subhalo found for this FoF-group! Check the code for errors! At level',level,'with FoF-group mass',m_group,'vs. Subhalo mass',merger_tree_subs[subs_level[0]].mhalo,' and indices of subhalos ',subs_level)
+                    if n_subs==2 and len(ind_max_subs_list)!=2:
+                        ind_max_subs = subs_level[1]
                         m_max_subs = merger_tree_subs[ind_max_subs].mhalo
-                        merger_tree_FoF[lev_indx_FoF[level][j]].mhalo = m_max_subs*1.5
-                        ms_group[j] = merger_tree_FoF[lev_indx_FoF[level][j]].mhalo
-                    elif len(lev_indx_subs[level])>2 and len(ind_max_subs_list)!=len(lev_indx_subs[level]) and -1 not in ind_max_subs_list:
+                        merger_tree_FoF[fof_level[j]].mhalo = m_max_subs*1.5
+                        ms_group[j] = merger_tree_FoF[fof_level[j]].mhalo
+                    elif n_subs>2 and len(ind_max_subs_list)!=n_subs and -1 not in ind_max_subs_list:
                         counter_here = 0
                         while ind_max_subs==-1:
                             m_max_subs = 0.0
                             counter_here += 1
                             if counter_here>1000:
-                                print('Still in the loop for finding the max subhalo for FoF-group with mass',m_group,' at level ',level,'and indices of subhalos ',lev_indx_subs[level],'and ind_max_subs_list ',ind_max_subs_list)
-                                for ind_subs in lev_indx_subs[level]:
+                                print('Still in the loop for finding the max subhalo for FoF-group with mass',m_group,' at level ',level,'and indices of subhalos ',subs_level,'and ind_max_subs_list ',ind_max_subs_list)
+                                for ind_subs in subs_level:
                                     print('Subhalo index ',ind_subs,' with mass ',merger_tree_subs[ind_subs].mhalo)
                             if m_group>1e15:
                                 print('Mass of FoF-group is larger than 1e15 M_sun/h! Check the code for errors!2')
-                            for ind_subs in lev_indx_subs[level]:
+                            for ind_subs in subs_level:
                                 if merger_tree_subs[ind_subs].mhalo>m_max_subs and (ind_subs not in ind_max_subs_list):
                                     m_max_subs = merger_tree_subs[ind_subs].mhalo
                                     ind_max_subs = ind_subs
-                            merger_tree_FoF[lev_indx_FoF[level][j]].mhalo = m_max_subs*1.5
-                            ms_group[j] = merger_tree_FoF[lev_indx_FoF[level][j]].mhalo
-                    elif len(lev_indx_subs[level])>=len(ind_max_subs_list):
+                            merger_tree_FoF[fof_level[j]].mhalo = m_max_subs*1.5
+                            ms_group[j] = merger_tree_FoF[fof_level[j]].mhalo
+                    elif n_subs>=len(ind_max_subs_list):
                         ms_group[j] = 0.0
                         ind_max_subs = -1
                 ind_max_subs_list.append(ind_max_subs)
@@ -1918,8 +1927,8 @@ def get_tree_vals_FoF(
                 merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
             for k,ind_subs in enumerate(ind_max_subs_list):
                 for j in range(3):
-                    merger_tree_subs[ind_subs].pos[j] = merger_tree_FoF[lev_indx_FoF[level][k]].pos[j]
-                    merger_tree_subs[ind_subs].velo[j] = merger_tree_FoF[lev_indx_FoF[level][k]].velo[j]
+                    merger_tree_subs[ind_subs].pos[j] = merger_tree_FoF[fof_level[k]].pos[j]
+                    merger_tree_subs[ind_subs].velo[j] = merger_tree_FoF[fof_level[k]].velo[j]
             for j in range(len(ms_group)):
                 m_group = ms_group[j]
                 ind_max_subs = ind_max_subs_list[j]
@@ -1927,27 +1936,27 @@ def get_tree_vals_FoF(
                 m_sum = 0
                 c = 0
                 same_ind_max = []
-                for ind_subs in lev_indx_subs[level]:
+                for ind_subs in subs_level:
                     m_temp = merger_tree_subs[ind_subs].mhalo
                     if c<n_range and m_sum+m_temp<=m_group:
-                        if ind_subs==ind_max_subs and ind_subs not in indx_already_assigned:
+                        if ind_subs==ind_max_subs:# and ind_subs not in indx_already_assigned:
                             m_sum += merger_tree_subs[ind_subs].mhalo
                             arr_GroupMass[ind_subs] = m_group
-                            fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/m_group
-                            indx_already_assigned.append(ind_subs)
-                            if fra[ind_subs]>1.0:
-                                print_level_5('Early Warning 3: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
+                            # fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/m_group
+                            # indx_already_assigned.append(ind_subs)
+                            # if fra[ind_subs]>1.0:
+                            #     print_level_5('Early Warning 3: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
                             c += 1
-                        elif ind_subs!=ind_max_subs and ind_subs not in ind_max_subs_list and ind_subs not in indx_already_assigned:
+                        elif ind_subs!=ind_max_subs and ind_subs not in ind_max_subs_list:# and ind_subs not in indx_already_assigned:
                             if merger_tree_subs[ind_subs].FirstInFoF!=NULL:
                                 continue
                             m_sum += merger_tree_subs[ind_subs].mhalo
                             c += 1
                             merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_max_subs]
                             arr_GroupMass[ind_subs] = 0.0
-                            fra[ind_subs] = 0.0
+                            # fra[ind_subs] = 0.0
                             same_ind_max.append(ind_subs)
-                            indx_already_assigned.append(ind_subs)
+                            # indx_already_assigned.append(ind_subs)
 
                 for ind_subs in same_ind_max:
                     if merger_tree_subs[ind_max_subs].NextInFoF==NULL:
@@ -1959,25 +1968,25 @@ def get_tree_vals_FoF(
                 if same_ind_max==[]:
                     id_save = ind_max_subs
                 merger_tree_subs[id_save].NextInFoF = NULL
-            for ind_subs in lev_indx_subs[level]:
-                if merger_tree_subs[ind_subs].FirstInFoF==NULL and ind_subs not in ind_max_subs_list and ind_subs not in indx_already_assigned:
+            for ind_subs in subs_level:
+                if merger_tree_subs[ind_subs].FirstInFoF==NULL and ind_subs not in ind_max_subs_list:# and ind_subs not in indx_already_assigned:
                     arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
-                    fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/arr_GroupMass[ind_subs]
-                    if fra[ind_subs]>1.0:
-                        print_level_5('Early Warning 4: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
+                    # fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/arr_GroupMass[ind_subs]
+                    # if fra[ind_subs]>1.0:
+                    #     print_level_5('Early Warning 4: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
                     merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
                     merger_tree_subs[ind_subs].NextInFoF = NULL
-                    indx_already_assigned.append(ind_subs)
+                    # indx_already_assigned.append(ind_subs)
     # if len(lev_indx_subs)==n_lev:
     #     for level in range(len(lev_indx_FoF),n_lev):
-    #         for ind_subs in lev_indx_subs[level]:
+    #         for ind_subs in subs_level:
     #             merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
     #             arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
     #             fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/arr_GroupMass[ind_subs]
     #             merger_tree_subs[ind_subs].NextInFoF = NULL
     # elif len(lev_indx_subs)>len(lev_indx_FoF) and len(lev_indx_subs)<n_lev:
     #     for level in range(len(lev_indx_FoF),len(lev_indx_subs)):
-    #         for ind_subs in lev_indx_subs[level]:
+    #         for ind_subs in subs_level:
     #             merger_tree_subs[ind_subs].FirstInFoF = merger_tree_subs[ind_subs]
     #             arr_GroupMass[ind_subs] = merger_tree_subs[ind_subs].mhalo
     #             fra[ind_subs] = merger_tree_subs[ind_subs].mhalo/arr_GroupMass[ind_subs]
@@ -1985,18 +1994,18 @@ def get_tree_vals_FoF(
     for j in range(n_offset_sum):
         if merger_tree_subs[j].FirstInFoF!=NULL:
             continue
-        elif merger_tree_subs[j].FirstInFoF==NULL and j not in indx_already_assigned:
+        elif merger_tree_subs[j].FirstInFoF==NULL:# and j not in indx_already_assigned:
             merger_tree_subs[j].FirstInFoF = merger_tree_subs[j]
             arr_GroupMass[j] = merger_tree_subs[j].mhalo
-            fra[j] = merger_tree_subs[j].mhalo/arr_GroupMass[j]
-            if fra[j]>1.0:
-                print_level_5('Early Warning 5: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
+            # fra[j] = merger_tree_subs[j].mhalo/arr_GroupMass[j]
+            # if fra[j]>1.0:
+            #     print_level_5('Early Warning 5: Subhalo mass is larger than FoF-group mass! Check the code for errors!')
             merger_tree_subs[j].NextInFoF = NULL
-            indx_already_assigned.append(j)
+            # indx_already_assigned.append(j)
             
-    for f in fra:
-        if f>1.0:
-            print_level_5('Warning: Some subhalos have mass larger than their FoF-group! Check the code for errors!')
+    # for f in fra:
+    #     if f>1.0:
+    #         print_level_5('Warning: Some subhalos have mass larger than their FoF-group! Check the code for errors!')
     arr_GroupMass_temp = np.zeros(n_offset_sum)
     c = 0
     for level in range(n_lev):
