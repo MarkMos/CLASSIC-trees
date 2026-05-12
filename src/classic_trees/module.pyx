@@ -251,7 +251,7 @@ cdef double halo_Vmax(double mass, double a):
     cdef double l_0 = trees.l_0
     cdef double omega_0 = trees.omega_0
     alpha = 0.346 - 0.059*a + 0.025*a**2
-    beta = exp(2.209 + 0.060*a - 0.021*a**2)*20
+    beta = exp(2.209 + 0.060*a - 0.021*a**2)
     z = 1/a - 1
     E_z = sqrt(l_0 + omega_0*(1+z)**3)
     val = beta*((mass/1e12)*E_z)**alpha
