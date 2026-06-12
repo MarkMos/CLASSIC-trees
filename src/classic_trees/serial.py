@@ -21,6 +21,23 @@ def append_create_dataset(grp,name,data):
     else:
         grp.create_dataset(name,data=data,maxshape=(None,)+data.shape[1:])
 
+def m_200_of_FoF(m):
+    # Function to calculate the mass of th FoF group in M200
+    if m==0.0:
+        return 0.0
+    elif m<5e8:
+        return m
+    m_factor = 1e12
+    exponent = -0.5
+    m_200 = m*np.random.normal(0.9,0.01*(m/m_factor)**(exponent))
+    if m_200>m*1:
+        m_200 = (m_200/m-1)*m
+    if m_200/m<2*10**(-np.log10(m)+8) or m_200<0.0:
+        while m_200/m<2*10**(-np.log10(m)+8) or m_200/m>1 or m_200<0.0:
+            m_200 = m*np.random.normal(0.9,0.1*(m/m_factor)**(exponent))
+            if m_200>m*1:
+                m_200 = (m_200/m-1)*m
+    return m_200
 
 def compute_tree(mass,
                  n_halo_max,
@@ -200,6 +217,9 @@ def compute_tree(mass,
                 count,arr_mhalo,arr_Vmax,arr_nodid,arr_treeid,arr_time,arr_1prog,arr_desc,arr_nextprog,arr_1FoF,arr_nextFoF,arr_pos,arr_velo,arr_spin,arr_GroupMass,arr_sublen = get_tree_vals_FoF(i,i_seed_0,mp_halo[i],a_halo,m_min,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,pos_base,vel_base,scaling,random_mass)
             mass_arr += np.ndarray.tolist(arr_mhalo)
             j_arr += np.ndarray.tolist(arr_time)
+            arr_GroupMass_temp = arr_GroupMass
+            for i_group in range(len(arr_GroupMass)):
+                arr_GroupMass[i_group] = m_200_of_FoF(arr_GroupMass_temp[i_group])
             if file_name!=None:
                 with h5py.File(file_name,'a') as f:
                     # Create or access groups of the merger tree file

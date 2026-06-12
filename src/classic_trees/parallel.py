@@ -15,6 +15,24 @@ else:
     filename = str(importlib.resources.files('classic_trees.Data').joinpath('flat.txt'))
 DELTA = functions(filename)
 
+def m_200_of_FoF(m):
+    # Function to calculate the mass of th FoF group in M200
+    if m==0.0:
+        return 0.0
+    elif m<5e8:
+        return m
+    m_factor = 1e12
+    exponent = -0.5
+    m_200 = m*np.random.normal(0.9,0.01*(m/m_factor)**(exponent))
+    if m_200>m*1:
+        m_200 = (m_200/m-1)*m
+    if m_200/m<2*10**(-np.log10(m)+8) or m_200<0.0:
+        while m_200/m<2*10**(-np.log10(m)+8) or m_200/m>1 or m_200<0.0:
+            m_200 = m*np.random.normal(0.9,0.1*(m/m_factor)**(exponent))
+            if m_200>m*1:
+                m_200 = (m_200/m-1)*m
+    return m_200
+
 def tree_process(i,i_seed_0,mp_halo,a_halo,m_res,w_lev,a_lev,n_lev,n_halo_max,n_halo,Boxsize,scaling):
     if mp_halo > 6e14:
         # Safety to ensure that the merger-tree can be calculated.
@@ -60,6 +78,9 @@ def tree_process_FoF(i,i_seed_0,mp_halo,a_halo,m_res,m_min,w_lev,a_lev,n_lev,n_h
     arr_vel_disp = np.zeros(np.sum(count),dtype=np.float32)
     count = np.array(count,dtype='int_')
     i = np.array([i],dtype='int_')
+    arr_GroupMass_temp = arr_GroupMass
+    for i_group in range(len(arr_GroupMass)):
+                arr_GroupMass[i_group] = m_200_of_FoF(arr_GroupMass[i_group])
 
     return {
         'arr_mhalo': arr_mhalo/1e10,
