@@ -332,7 +332,7 @@ cdef node_vals_and_counter(int i,Tree_Node* this_node,int n_halo_max,Tree_Node**
         arr_nodid[node_ID] = node_ID
         arr_mhalo[node_ID] = this_node.mhalo
         arr_sublen[node_ID] = SubhaloLen(this_node.mhalo,m_res)
-        arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo,a_lev[this_node.jlevel])
+        arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo/trees.h_0,a_lev[this_node.jlevel])
         arr_treeid[node_ID]= i
         arr_time[node_ID]  = this_node.jlevel
         for j in range(3):
@@ -474,7 +474,7 @@ cdef node_vals_and_counter_FoF(int i,int n_halo_max,Tree_Node** merger_tree,int 
             arr_nodid[node_ID] = node_ID
             arr_mhalo[node_ID] = this_node.mhalo
             arr_sublen[node_ID] = SubhaloLen(this_node.mhalo,m_res)
-            arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo,a_lev[this_node.jlevel])
+            arr_Vmax[node_ID] = halo_Vmax(this_node.mhalo/trees.h_0,a_lev[this_node.jlevel])
             arr_treeid[node_ID]= i
             arr_time[node_ID]  = this_node.jlevel
             for k in range(3):
