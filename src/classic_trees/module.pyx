@@ -1574,6 +1574,8 @@ def get_tree_vals_FoF(
         print_level_1('No Progenitors.')
     
     m_cen = m_cen_of_FoF(m_0)
+    while m_cen<m_res:
+        m_cen = m_cen_of_FoF(m_0)
     n_halos = n_subs_in_FoF(m_0)
     while float(n_halos-1)>=(m_0 - m_cen)/m_res:
         n_halos -= 1
