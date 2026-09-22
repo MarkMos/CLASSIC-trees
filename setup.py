@@ -15,8 +15,8 @@ extensions = [
 ]
 
 setup(
-    name='classic_trees',
-    version='0.0.2',
+    name='classic_trees_lite',
+    version='0.0.1',
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     package_data={'classic_trees': ['src/classic_trees/Data/*','src/classic_trees/Data/*.txt']},

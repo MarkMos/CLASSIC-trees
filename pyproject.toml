@@ -3,8 +3,8 @@ requires = ["setuptools>=61","wheel","Cython>=0.29","numpy"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name="classic_trees"
-version="0.0.2"
+name="classic_trees_lite"
+version="0.0.1"
 authors = [
     {name="M. Braun"}
 ]
